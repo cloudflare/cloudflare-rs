@@ -7,6 +7,10 @@ authors = ["Areg Harutyunyan <areg@cloudflare.com>"]
 name = "cloudflare"
 path = "src/lib.rs"
 
+[[bin]]
+name = "cloudflare-rust-examples"
+path = "example/main.rs"
+
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 clap = "2.32"
