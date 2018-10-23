@@ -1,10 +1,16 @@
 [package]
-name = "cloudflare-rust"
+name = "cloudflare"
 version = "0.1.0"
 authors = ["Areg Harutyunyan <areg@cloudflare.com>"]
 
+[lib]
+name = "cloudflare"
+path = "src/lib.rs"
+
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
+clap = "2.32"
+maplit = "1.0"
 reqwest = "0.9"
 serde = "1.0"
 serde_derive = "1.0"

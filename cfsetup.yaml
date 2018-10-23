@@ -1,0 +1,9 @@
+all: &all
+  test:
+    builddeps:
+      - rust=1.29.0-1
+      - cargo-to-teamcity
+    post-cache:
+      - cargo test | cargo-to-teamcity
+jessie: *all
+stretch: *all
