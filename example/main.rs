@@ -24,12 +24,25 @@ fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClie
     }
 }
 
+fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
+    let response = api_client.list_dns_records(arg_matches.value_of("zone_identifier").unwrap(), None);
+    match response {
+        Ok(success) => println!("Success: {:?}", success),
+        Err(error) => println!("Error: {:?}", error),
+    }
+}
+
 fn main() -> Result<(), Box<std::error::Error>> {
     let sections = hashmap!{
         "zone" => Section{
             args: vec![Arg::with_name("zone_identifier").required(true)],
             description: "A Zone is a domain name along with its subdomains and other identities", 
             function: zone
+        },
+        "dns" => Section{
+            args: vec![Arg::with_name("zone_identifier").required(true)],
+            description: "DNS Records for a Zone", 
+            function: dns
         },
     };
 

@@ -4,9 +4,12 @@ extern crate reqwest;
 extern crate serde;
 #[macro_use] extern crate serde_derive;
 extern crate serde_json;
+extern crate serde_qs;
+
 
 mod account;
 pub mod auth;
+mod dns;
 mod endpoint;
 mod plan;
 pub mod response;
@@ -18,8 +21,22 @@ use endpoint::Endpoint;
 use response::{APISuccessResponse, APIResponse, APIResult};
 use reqwest::Url;
 use zone::APIZoneClient;
+use dns::APIDNSRecordsClient;
 
 
+#[derive(Serialize, Debug)]
+pub enum OrderDirection {
+    Ascending,
+    Descending,
+}
+
+#[derive(Serialize, Debug)]
+pub enum SearchMatch {
+    All,
+    Any,
+}
+
+#[derive(Debug)]
 pub enum Environment {
     Production,
 }
@@ -48,8 +65,7 @@ impl HTTPAPIClient {
     }
 }
 
-pub trait APIClient: APIZoneClient {
-}
+pub trait APIClient: APIDNSRecordsClient+APIZoneClient {}
 
 impl HTTPAPIClient {
     fn request<ResultType: APIResult>(&self, endpoint: &Endpoint) -> APIResponse<ResultType> {
