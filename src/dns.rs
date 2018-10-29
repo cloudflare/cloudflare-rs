@@ -78,8 +78,8 @@ pub enum DNSRecordType {
     AAAA{content: Ipv6Addr},
     CNAME{content: String},
     NS{content: String},
-    MX{content: String},
-    TXT{content: String, priority: u32},
+    MX{content: String, priority: u16},
+    TXT{content: String},
 }
 
 #[derive(Deserialize, Debug)]
