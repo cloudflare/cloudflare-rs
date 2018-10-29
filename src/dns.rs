@@ -14,7 +14,12 @@ impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams, ListDNSRecordsParams> fo
     fn method(&self) -> Method { Method::Get }
     fn path(&self) -> String { format!("zones/{}/dns_records", self.zone_identifier) }
     fn query(&self) -> Option<ListDNSRecordsParams> { Some(self.params.clone()) }
-    fn body(&self) -> Option<ListDNSRecordsParams> { Some(self.params.clone()) }
+}
+
+pub struct DeleteDNSRecord<'a> { pub zone_identifier: &'a str, pub identifier: &'a str }
+impl<'a> Endpoint<()> for DeleteDNSRecord<'a> {
+    fn method(&self) -> Method { Method::Delete }
+    fn path(&self) -> String { format!("zones/{}/dns_records/{}", self.zone_identifier, self.identifier) }
 }
 
 #[derive(Serialize, Clone, Debug)]
