@@ -1,11 +1,11 @@
-#![allow(dead_code)]  // TODO: This is temporary
+#![allow(dead_code)] // TODO: This is temporary
 extern crate chrono;
 extern crate reqwest;
 extern crate serde;
-#[macro_use] extern crate serde_derive;
+#[macro_use]
+extern crate serde_derive;
 extern crate serde_json;
 extern crate serde_qs;
-
 
 mod account;
 pub mod auth;
@@ -15,14 +15,12 @@ mod plan;
 pub mod response;
 mod zone;
 
-
 use auth::{AuthClient, Credentials};
-use endpoint::Endpoint;
-use response::{APISuccessResponse, APIResponse, APIResult};
-use reqwest::Url;
-use zone::APIZoneClient;
 use dns::APIDNSRecordsClient;
-
+use endpoint::Endpoint;
+use reqwest::Url;
+use response::{APIResponse, APIResult};
+use zone::APIZoneClient;
 
 #[derive(Serialize, Debug)]
 pub enum OrderDirection {
@@ -44,7 +42,7 @@ pub enum Environment {
 impl<'a> From<&'a Environment> for Url {
     fn from(environment: &Environment) -> Self {
         match environment {
-            Environment::Production => Url::parse("https://api.cloudflare.com/client/v4/").unwrap()
+            Environment::Production => Url::parse("https://api.cloudflare.com/client/v4/").unwrap(),
         }
     }
 }
@@ -65,24 +63,21 @@ impl HTTPAPIClient {
     }
 }
 
-pub trait APIClient: APIDNSRecordsClient+APIZoneClient {}
+pub trait APIClient: APIDNSRecordsClient + APIZoneClient {}
 
 impl HTTPAPIClient {
     fn request<ResultType: APIResult>(&self, endpoint: &Endpoint) -> APIResponse<ResultType> {
         // Build the request
-        let mut response = self.http_client
-            .request(
-                endpoint.info().method, 
-                endpoint.url(&self.environment),
-            )
+        let response = self
+            .http_client
+            .request(endpoint.info().method, endpoint.url(&self.environment))
             .auth(&self.credentials)
-            .send()?
-            .error_for_status()?;
+            .send();
 
-        // Parse the response
-        let result: APISuccessResponse<ResultType> = response.json()?;
-
-        Ok(result)
+        match response {
+            Err(e) => APIResponse::Invalid(e),
+            Ok(resp) => APIResponse::from(resp),
+        }
     }
 }
 

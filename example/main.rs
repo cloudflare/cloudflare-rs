@@ -1,14 +1,14 @@
-#[macro_use] extern crate maplit;
+#[macro_use]
+extern crate maplit;
 extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use cloudflare::{APIClient, HTTPAPIClient};
 use cloudflare::auth::Credentials;
-
+use cloudflare::response::{APIResponse, APIResult};
+use cloudflare::{APIClient, HTTPAPIClient};
 
 type SectionFunction<APIClientType> = fn(&ArgMatches, &APIClientType);
-
 
 struct Section<'a, APIClientType: APIClient> {
     args: Vec<Arg<'a, 'a>>,
@@ -16,32 +16,40 @@ struct Section<'a, APIClientType: APIClient> {
     function: SectionFunction<APIClientType>,
 }
 
-fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
-    let response = api_client.zone_details(arg_matches.value_of("zone_identifier").unwrap());
+fn print_response<T: APIResult>(response: APIResponse<T>) {
     match response {
-        Ok(success) => println!("Success: {:?}", success),
-        Err(error) => println!("Error: {:?}", error),
+        APIResponse::Success(success) => println!("Success: {:#?}", success),
+        APIResponse::Failure(status, errs) => {
+            println!("Error {}:", status);
+            for err in errs {
+                println!("Error {}: {}", err.code, err.message);
+            }
+        }
+        APIResponse::Invalid(e) => println!("Invalid: {:?}", e),
     }
 }
 
+fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
+    let response = api_client.zone_details(arg_matches.value_of("zone_identifier").unwrap());
+    print_response(response)
+}
+
 fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
-    let response = api_client.list_dns_records(arg_matches.value_of("zone_identifier").unwrap(), None);
-    match response {
-        Ok(success) => println!("Success: {:?}", success),
-        Err(error) => println!("Error: {:?}", error),
-    }
+    let response =
+        api_client.list_dns_records(arg_matches.value_of("zone_identifier").unwrap(), None);
+    print_response(response)
 }
 
 fn main() -> Result<(), Box<std::error::Error>> {
     let sections = hashmap!{
         "zone" => Section{
             args: vec![Arg::with_name("zone_identifier").required(true)],
-            description: "A Zone is a domain name along with its subdomains and other identities", 
+            description: "A Zone is a domain name along with its subdomains and other identities",
             function: zone
         },
         "dns" => Section{
             args: vec![Arg::with_name("zone_identifier").required(true)],
-            description: "DNS Records for a Zone", 
+            description: "DNS Records for a Zone",
             function: dns
         },
     };
@@ -51,12 +59,13 @@ fn main() -> Result<(), Box<std::error::Error>> {
         .author("Argo Tunnel team <argo-tunnel-team@cloudflare.com>")
         .about("Issues example requests to the Cloudflare API using the cloudflare-rust client library")
 		.arg(Arg::with_name("email")
-            .long("email") 
+            .long("email")
 			.help("Email address associated with your account")
             .takes_value(true)
 			.required(true))
 		.arg(Arg::with_name("auth-key")
-            .long("auth-key") 
+            .long("auth-key")
+            .env("CF_RS_AUTH_KEY")
 			.help("API key generated on the \"My Account\" page")
             .takes_value(true)
 			.required(true))
@@ -72,20 +81,26 @@ fn main() -> Result<(), Box<std::error::Error>> {
     }
 
     let matches = cli.get_matches();
-    let matched_sections = sections.iter()
-        .filter(|&(section_name, _): &(&&str, &Section<HTTPAPIClient>)| matches.subcommand_matches(section_name).is_some());
+    let matched_sections =
+        sections
+            .iter()
+            .filter(|&(section_name, _): &(&&str, &Section<HTTPAPIClient>)| {
+                matches.subcommand_matches(section_name).is_some()
+            });
 
     let key = matches.value_of("auth-key").unwrap();
     let email = matches.value_of("email").unwrap();
 
-    let api_client = HTTPAPIClient::new(Credentials::User{
+    let api_client = HTTPAPIClient::new(Credentials::User {
         key: key.to_string(),
         email: email.to_string(),
     });
 
-    println!("{:?}", matches);
     for (section_name, section) in matched_sections {
-        (section.function)(&matches.subcommand_matches(section_name).unwrap(), &api_client);
+        (section.function)(
+            &matches.subcommand_matches(section_name).unwrap(),
+            &api_client,
+        );
     }
 
     Ok(())
