@@ -5,4 +5,3 @@ pub struct Account {
     /// Account name
     name: String,
 }
-

@@ -2,3 +2,5 @@
 **/*.rs.bk
 Cargo.lock
 *.swp
+tags
+rusty-tags.vi

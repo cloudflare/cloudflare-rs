@@ -4,9 +4,12 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
+use cloudflare::{APIClient, HTTPAPIClient, OrderDirection};
+use cloudflare::dns;
+use cloudflare::zone;
 use cloudflare::auth::Credentials;
 use cloudflare::response::{APIResponse, APIResult};
-use cloudflare::{APIClient, HTTPAPIClient};
+
 
 type SectionFunction<APIClientType> = fn(&ArgMatches, &APIClientType);
 
@@ -30,14 +33,24 @@ fn print_response<T: APIResult>(response: APIResponse<T>) {
 }
 
 fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
-    let response = api_client.zone_details(arg_matches.value_of("zone_identifier").unwrap());
+    let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
+    let response = api_client.request(&zone::ZoneDetails{identifier: zone_identifier});
     print_response(response)
 }
 
 fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
-    let response =
-        api_client.list_dns_records(arg_matches.value_of("zone_identifier").unwrap(), None);
-    print_response(response)
+    let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
+    let response = api_client.request(
+        &dns::ListDNSRecords{
+            zone_identifier: zone_identifier,
+            params: dns::ListDNSRecordsParams {
+                direction: Some(OrderDirection::Ascending),
+                ..Default::default()
+            }
+        }
+    );
+
+    print_response(response);
 }
 
 fn main() -> Result<(), Box<std::error::Error>> {
@@ -58,18 +71,18 @@ fn main() -> Result<(), Box<std::error::Error>> {
         .version("0.0")
         .author("Argo Tunnel team <argo-tunnel-team@cloudflare.com>")
         .about("Issues example requests to the Cloudflare API using the cloudflare-rust client library")
-		.arg(Arg::with_name("email")
+        .arg(Arg::with_name("email")
             .long("email")
-			.help("Email address associated with your account")
+            .help("Email address associated with your account")
             .takes_value(true)
-			.required(true))
-		.arg(Arg::with_name("auth-key")
+            .required(true))
+        .arg(Arg::with_name("auth-key")
             .long("auth-key")
             .env("CF_RS_AUTH_KEY")
-			.help("API key generated on the \"My Account\" page")
+            .help("API key generated on the \"My Account\" page")
             .takes_value(true)
-			.required(true))
-		.setting(AppSettings::ArgRequiredElseHelp);
+            .required(true))
+        .setting(AppSettings::ArgRequiredElseHelp);
 
     for (section_name, section) in sections.iter() {
         let mut subcommand = SubCommand::with_name(section_name).about(section.description);

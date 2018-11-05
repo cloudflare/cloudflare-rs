@@ -1,45 +1,23 @@
+/// https://api.cloudflare.com/#dns-records-for-a-zone-properties
+
 use chrono::DateTime;
 use chrono::offset::Utc;
-use endpoint::{Endpoint, EndpointInfo};
-use reqwest::Method;
-use response::{APIResponse, APIResult};
+use endpoint::{Endpoint, Method};
+use response::APIResult;
 use std::net::{Ipv4Addr, Ipv6Addr};
-use super::{HTTPAPIClient, OrderDirection, SearchMatch};
-use serde_qs;
+use super::{OrderDirection, SearchMatch};
 
 
-pub enum DNSRecordEndpoint<'a> {
-    ListDNSRecords{zone_identifier: &'a str, params: Option<ListDNSRecordsParams>},
+/// List DNS Records (https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records)
+pub struct ListDNSRecords<'a> { pub zone_identifier: &'a str, pub params: ListDNSRecordsParams }
+impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams, ListDNSRecordsParams> for ListDNSRecords<'a> {
+    fn method(&self) -> Method { Method::Get }
+    fn path(&self) -> String { format!("zones/{}/dns_records", self.zone_identifier) }
+    fn query(&self) -> Option<ListDNSRecordsParams> { Some(self.params.clone()) }
+    fn body(&self) -> Option<ListDNSRecordsParams> { Some(self.params.clone()) }
 }
 
-/// https://api.cloudflare.com/#dns-records-for-a-zone-properties
-pub trait APIDNSRecordsClient {
-    /// List DNS Records (https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records)
-    fn list_dns_records(&self, zone_identifier: &str, params: Option<ListDNSRecordsParams>) -> APIResponse<Vec<DNSRecord>>;
-}
-
-impl<'a> Endpoint for DNSRecordEndpoint<'a> {
-    fn info(&self) -> EndpointInfo {
-        match self {
-            DNSRecordEndpoint::ListDNSRecords{zone_identifier, params} => {
-                let params = serde_qs::to_string(&params).unwrap();
-
-                EndpointInfo{
-                    method: Method::GET, 
-                    path: format!("zones/{}/dns_records?{}", zone_identifier, params)
-                }
-            }
-        }
-    }
-}
-
-impl APIDNSRecordsClient for HTTPAPIClient {
-    fn list_dns_records(&self, zone_identifier: &str, params: Option<ListDNSRecordsParams>) -> APIResponse<Vec<DNSRecord>> {
-        self.request::<Vec<DNSRecord>>(&DNSRecordEndpoint::ListDNSRecords{zone_identifier: zone_identifier, params: params})
-    }
-}
-
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum ListDNSRecordsOrder {
     Type,
@@ -49,31 +27,31 @@ pub enum ListDNSRecordsOrder {
     Proxied,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Clone, Debug, Default)]
 pub struct ListDNSRecordsParams {
-    record_type: Option<DNSRecordType>,
-    name: Option<String>,
-    page: Option<u32>,
-    per_page: Option<u32>,
-    order: Option<ListDNSRecordsOrder>,
-    direction: Option<OrderDirection>,
+    pub record_type: Option<DNSContent>,
+    pub name: Option<String>,
+    pub page: Option<u32>,
+    pub per_page: Option<u32>,
+    pub order: Option<ListDNSRecordsOrder>,
+    pub direction: Option<OrderDirection>,
     #[serde(rename = "match")]
-    search_match: Option<SearchMatch>,
+    pub search_match: Option<SearchMatch>,
 }
 
 /// Extra Cloudflare-specific information about the record
 #[derive(Deserialize, Debug)]
 pub struct Meta {
     /// Will exist if Cloudflare automatically added this DNS record during initial setup.
-    auto_added: bool,
+    pub auto_added: bool,
 }
 
 /// Type of the DNS record, along with the associated value.
 /// When we add support for other types (LOC/SRV/...), the `meta` field should also probably be encoded
 /// here as an associated, strongly typed value.
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(tag = "type")]
-pub enum DNSRecordType {
+pub enum DNSContent {
     A{content: Ipv4Addr},
     AAAA{content: Ipv6Addr},
     CNAME{content: String},
@@ -85,30 +63,30 @@ pub enum DNSRecordType {
 #[derive(Deserialize, Debug)]
 pub struct DNSRecord {
     /// Extra Cloudflare-specific information about the record
-    meta: Meta,
+    pub meta: Meta,
     /// Whether this record can be modified/deleted (true means it's managed by Cloudflare)
-    locked: bool,
+    pub locked: bool,
     /// DNS record name
-    name: String,
+    pub name: String,
     /// Time to live for DNS record. Value of 1 is 'automatic'
-    ttl: u32,
+    pub ttl: u32,
     /// Zone identifier tag
-    zone_id: String,
+    pub zone_id: String,
     /// When the record was last modified
-    modified_on: DateTime<Utc>,
+    pub modified_on: DateTime<Utc>,
     /// When the record was created
-    created_on: DateTime<Utc>,
+    pub created_on: DateTime<Utc>,
     /// Whether this record can be modified/deleted (true means it's managed by Cloudflare)
-    proxiable: bool,
+    pub proxiable: bool,
     /// Type of the DNS record that also holds the record value
     #[serde(flatten)]
-    content: DNSRecordType,
+    pub content: DNSContent,
     /// DNS record identifier tag
-    id: String,
+    pub id: String,
     /// Whether the record is receiving the performance and security benefits of Cloudflare
-    proxied: bool,
+    pub proxied: bool,
     /// The domain of the record
-    zone_name: String,
+    pub zone_name: String,
 }
 
 impl APIResult for DNSRecord {}

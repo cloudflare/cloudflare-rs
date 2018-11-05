@@ -1,15 +1,26 @@
-use reqwest::{Method, Url};
+use url::{Url};
+use serde::Serialize;
 use super::Environment;
 
 
-pub struct EndpointInfo {
-    pub method: Method,
-    pub path: String,
+pub enum Method {
+	Get,
+	Post,
+	Put,
+	Delete,
+	Patch,
 }
 
-pub trait Endpoint {
-    fn info(&self) -> EndpointInfo;
+pub trait Endpoint<ResultType, QueryType = (), BodyType = ()>
+    where QueryType: Serialize,
+          BodyType: Serialize {
+
+    fn method(&self) -> Method;
+    fn path(&self) -> String;
+    fn query(&self) -> Option<QueryType> { None }
+    fn body(&self) -> Option<BodyType> { None }
+
     fn url(&self, environment: &Environment) -> Url {
-        Url::from(environment).join(self.info().path.as_str()).unwrap()
+        Url::from(environment).join(&self.path()).unwrap()
     }
 }

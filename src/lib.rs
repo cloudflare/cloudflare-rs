@@ -1,4 +1,4 @@
-#![allow(dead_code)] // TODO: This is temporary
+#![allow(dead_code)]  // TODO: This is temporary
 extern crate chrono;
 extern crate reqwest;
 extern crate serde;
@@ -6,29 +6,32 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 extern crate serde_qs;
+extern crate url;
 
 mod account;
 pub mod auth;
-mod dns;
+pub mod dns;
 mod endpoint;
 mod plan;
 pub mod response;
-mod zone;
+pub mod zone;
 
 use auth::{AuthClient, Credentials};
-use dns::APIDNSRecordsClient;
-use endpoint::Endpoint;
-use reqwest::Url;
+use endpoint::{Endpoint, Method};
 use response::{APIResponse, APIResult};
-use zone::APIZoneClient;
+use serde::Serialize;
 
-#[derive(Serialize, Debug)]
+
+#[derive(Serialize, Clone, Debug)]
 pub enum OrderDirection {
+    #[serde(rename = "asc")]
     Ascending,
+    #[serde(rename = "desc")]
     Descending,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Clone, Debug)]
+#[serde(rename_all = "lowercase")]
 pub enum SearchMatch {
     All,
     Any,
@@ -39,10 +42,10 @@ pub enum Environment {
     Production,
 }
 
-impl<'a> From<&'a Environment> for Url {
+impl<'a> From<&'a Environment> for url::Url {
     fn from(environment: &Environment) -> Self {
         match environment {
-            Environment::Production => Url::parse("https://api.cloudflare.com/client/v4/").unwrap(),
+            Environment::Production => url::Url::parse("https://api.cloudflare.com/client/v4/").unwrap()
         }
     }
 }
@@ -63,16 +66,45 @@ impl HTTPAPIClient {
     }
 }
 
-pub trait APIClient: APIDNSRecordsClient + APIZoneClient {}
+pub trait APIClient {
+    fn request<ResultType, QueryType, BodyType>(&self, endpoint: &Endpoint<ResultType, QueryType, BodyType>) -> APIResponse<ResultType>
+        where
+            ResultType: APIResult,
+            QueryType: Serialize,
+            BodyType: Serialize;
+}
 
-impl HTTPAPIClient {
-    fn request<ResultType: APIResult>(&self, endpoint: &Endpoint) -> APIResponse<ResultType> {
+// TODO: This should probably just implement request for the Reqwest client itself :)
+// TODO: It should also probably be called `ReqwestAPIClient` rather than `HTTPAPIClient`.
+impl<'a> APIClient for HTTPAPIClient {
+    fn request<ResultType, QueryType, BodyType>(&self, endpoint: &Endpoint<ResultType, QueryType, BodyType>) -> APIResponse<ResultType>
+        where
+            ResultType: APIResult,
+            QueryType: Serialize,
+            BodyType: Serialize {
+
+        fn match_reqwest_method(method: Method) -> reqwest::Method {
+            match method {
+                Method::Get => reqwest::Method::GET,
+                Method::Post => reqwest::Method::POST,
+                Method::Delete => reqwest::Method::DELETE,
+                Method::Put => reqwest::Method::PUT,
+                Method::Patch => reqwest::Method::PATCH,
+            }
+        }
+
         // Build the request
-        let response = self
-            .http_client
-            .request(endpoint.info().method, endpoint.url(&self.environment))
-            .auth(&self.credentials)
-            .send();
+        let mut request = self.http_client
+            .request(match_reqwest_method(endpoint.method()), endpoint.url(&self.environment))
+            .query(&endpoint.query());
+
+        if let Some(body) = endpoint.body() {
+            request = request.body(serde_json::to_string(&body).unwrap());
+        }
+
+        request = request.auth(&self.credentials);
+
+        let response = request.send();
 
         match response {
             Err(e) => APIResponse::Invalid(e),
@@ -80,5 +112,3 @@ impl HTTPAPIClient {
         }
     }
 }
-
-impl APIClient for HTTPAPIClient {}
