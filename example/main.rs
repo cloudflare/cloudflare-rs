@@ -4,12 +4,11 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use cloudflare::{APIClient, HTTPAPIClient, OrderDirection};
-use cloudflare::dns;
-use cloudflare::zone;
 use cloudflare::auth::Credentials;
-use cloudflare::response::{APIResponse, APIResult};
-
+use cloudflare::dns;
+use cloudflare::response::{APIFailure, APIResponse, APIResult};
+use cloudflare::zone;
+use cloudflare::{APIClient, HTTPAPIClient, OrderDirection};
 
 type SectionFunction<APIClientType> = fn(&ArgMatches, &APIClientType);
 
@@ -21,34 +20,36 @@ struct Section<'a, APIClientType: APIClient> {
 
 fn print_response<T: APIResult>(response: APIResponse<T>) {
     match response {
-        APIResponse::Success(success) => println!("Success: {:#?}", success),
-        APIResponse::Failure(status, errs) => {
-            println!("Error {}:", status);
-            for err in errs {
-                println!("Error {}: {}", err.code, err.message);
+        Ok(success) => println!("Success: {:#?}", success),
+        Err(e) => match e {
+            APIFailure::Error(status, errors) => {
+                println!("Error {}:", status);
+                for err in errors {
+                    println!("Error {}: {}", err.code, err.message);
+                }
             }
-        }
-        APIResponse::Invalid(e) => println!("Invalid: {:?}", e),
+            APIFailure::Invalid(reqwest_err) => println!("Error: {}", reqwest_err),
+        },
     }
 }
 
 fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
     let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
-    let response = api_client.request(&zone::ZoneDetails{identifier: zone_identifier});
+    let response = api_client.request(&zone::ZoneDetails {
+        identifier: zone_identifier,
+    });
     print_response(response)
 }
 
 fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
     let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
-    let response = api_client.request(
-        &dns::ListDNSRecords{
-            zone_identifier: zone_identifier,
-            params: dns::ListDNSRecordsParams {
-                direction: Some(OrderDirection::Ascending),
-                ..Default::default()
-            }
-        }
-    );
+    let response = api_client.request(&dns::ListDNSRecords {
+        zone_identifier: zone_identifier,
+        params: dns::ListDNSRecordsParams {
+            direction: Some(OrderDirection::Ascending),
+            ..Default::default()
+        },
+    });
 
     print_response(response);
 }

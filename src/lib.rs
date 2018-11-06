@@ -104,11 +104,8 @@ impl<'a> APIClient for HTTPAPIClient {
 
         request = request.auth(&self.credentials);
 
-        let response = request.send();
+        let response = request.send()?;
 
-        match response {
-            Err(e) => APIResponse::Invalid(e),
-            Ok(resp) => APIResponse::from(resp),
-        }
+        response::map_api_response(response)
     }
 }
