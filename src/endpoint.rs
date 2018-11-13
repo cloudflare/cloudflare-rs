@@ -1,4 +1,5 @@
-use url::{Url};
+use response::APIResult;
+use url::Url;
 use serde::Serialize;
 use super::Environment;
 
@@ -12,7 +13,8 @@ pub enum Method {
 }
 
 pub trait Endpoint<ResultType, QueryType = (), BodyType = ()>
-    where QueryType: Serialize,
+    where ResultType: APIResult,
+          QueryType: Serialize,
           BodyType: Serialize {
 
     fn method(&self) -> Method;

@@ -17,7 +17,7 @@ impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams, ListDNSRecordsParams> fo
 }
 
 pub struct DeleteDNSRecord<'a> { pub zone_identifier: &'a str, pub identifier: &'a str }
-impl<'a> Endpoint<()> for DeleteDNSRecord<'a> {
+impl<'a> Endpoint<DeleteDNSRecordResponse> for DeleteDNSRecord<'a> {
     fn method(&self) -> Method { Method::Delete }
     fn path(&self) -> String { format!("zones/{}/dns_records/{}", self.zone_identifier, self.identifier) }
 }
@@ -66,6 +66,12 @@ pub enum DNSContent {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct DeleteDNSRecordResponse {
+    /// DNS record identifier tag
+    pub id: String,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct DNSRecord {
     /// Extra Cloudflare-specific information about the record
     pub meta: Meta,
@@ -96,3 +102,4 @@ pub struct DNSRecord {
 
 impl APIResult for DNSRecord {}
 impl APIResult for Vec<DNSRecord> {}
+impl APIResult for DeleteDNSRecordResponse {}
