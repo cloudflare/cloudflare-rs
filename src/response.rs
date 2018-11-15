@@ -2,6 +2,7 @@ extern crate reqwest;
 extern crate serde_json;
 
 use serde::de::DeserializeOwned;
+use std::fmt;
 use std::fmt::Debug;
 
 #[derive(Deserialize, Debug)]
@@ -18,6 +19,12 @@ pub struct APIError {
     pub message: String,
 }
 
+impl fmt::Display for APIError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Error {}: {}", self.code, self.message)
+    }
+}
+
 pub trait APIResult: DeserializeOwned + Debug {}
 
 pub type APIResponse<ResultType> = Result<APISuccess<ResultType>, APIFailure>;
@@ -26,6 +33,18 @@ pub type APIResponse<ResultType> = Result<APISuccess<ResultType>, APIFailure>;
 pub enum APIFailure {
     Error(reqwest::StatusCode, Vec<APIError>),
     Invalid(reqwest::Error),
+}
+
+impl fmt::Display for APIFailure {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            APIFailure::Error(status, api_errs) => {
+                let errs: Vec<String> = api_errs.iter().map(|e| format!("[{}]", e)).collect();
+                write!(f, "Code {}: {}", status, errs.join(", "))
+            }
+            APIFailure::Invalid(err) => write!(f, "{}", err),
+        }
+    }
 }
 
 impl From<reqwest::Error> for APIFailure {
@@ -54,5 +73,31 @@ pub fn map_api_response<ResultType: APIResult>(
         let parsed: Result<APIErrorWrapper, reqwest::Error> = resp.json();
         let errors = parsed.and_then(|x| Ok(x.errors)).unwrap_or_default();
         Err(APIFailure::Error(resp.status(), errors))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let failure = APIFailure::Error(
+            reqwest::StatusCode::NOT_FOUND,
+            vec![
+                APIError {
+                    code: 1000,
+                    message: "Ding".to_owned(),
+                },
+                APIError {
+                    code: 1006,
+                    message: "Dong".to_owned(),
+                },
+            ],
+        );
+        assert_eq!(
+            "Code 404 Not Found: [Error 1000: Ding], [Error 1006: Dong]",
+            failure.to_string()
+        );
     }
 }
