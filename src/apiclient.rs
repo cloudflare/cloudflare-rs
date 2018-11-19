@@ -1,0 +1,14 @@
+use endpoint::Endpoint;
+use response::{APIResponse, APIResult};
+use serde::Serialize;
+
+pub trait APIClient {
+    fn request<ResultType, QueryType, BodyType>(
+        &self,
+        endpoint: &Endpoint<ResultType, QueryType, BodyType>,
+    ) -> APIResponse<ResultType>
+    where
+        ResultType: APIResult,
+        QueryType: Serialize,
+        BodyType: Serialize;
+}

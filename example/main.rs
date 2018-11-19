@@ -4,11 +4,13 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
+use cloudflare::apiclient::APIClient;
 use cloudflare::auth::Credentials;
 use cloudflare::dns;
+use cloudflare::mock::{MockAPIClient, NoopEndpoint};
 use cloudflare::response::{APIFailure, APIResponse, APIResult};
 use cloudflare::zone;
-use cloudflare::{APIClient, HTTPAPIClient, OrderDirection};
+use cloudflare::{HTTPAPIClient, OrderDirection};
 
 type SectionFunction<APIClientType> = fn(&ArgMatches, &APIClientType);
 
@@ -54,6 +56,13 @@ fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClien
     print_response(response);
 }
 
+fn mock_api<APIClientType: APIClient>(_args: &ArgMatches, _api: &APIClientType) {
+    let mock_api = MockAPIClient {};
+    let endpoint = NoopEndpoint {};
+    let _ = mock_api.request(&endpoint);
+    println!("Ran mock API")
+}
+
 fn main() -> Result<(), Box<std::error::Error>> {
     let sections = hashmap!{
         "zone" => Section{
@@ -65,6 +74,11 @@ fn main() -> Result<(), Box<std::error::Error>> {
             args: vec![Arg::with_name("zone_identifier").required(true)],
             description: "DNS Records for a Zone",
             function: dns
+        },
+        "mock_api" => Section{
+            args: vec![],
+            description: "Run a mock API request",
+            function: mock_api
         },
     };
 
