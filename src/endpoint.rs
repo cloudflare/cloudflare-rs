@@ -1,26 +1,30 @@
-use response::APIResult;
-use url::Url;
-use serde::Serialize;
 use super::Environment;
-
+use crate::response::APIResult;
+use serde::Serialize;
+use url::Url;
 
 pub enum Method {
-	Get,
-	Post,
-	Put,
-	Delete,
-	Patch,
+    Get,
+    Post,
+    Put,
+    Delete,
+    Patch,
 }
 
 pub trait Endpoint<ResultType, QueryType = (), BodyType = ()>
-    where ResultType: APIResult,
-          QueryType: Serialize,
-          BodyType: Serialize {
-
+where
+    ResultType: APIResult,
+    QueryType: Serialize,
+    BodyType: Serialize,
+{
     fn method(&self) -> Method;
     fn path(&self) -> String;
-    fn query(&self) -> Option<QueryType> { None }
-    fn body(&self) -> Option<BodyType> { None }
+    fn query(&self) -> Option<QueryType> {
+        None
+    }
+    fn body(&self) -> Option<BodyType> {
+        None
+    }
 
     fn url(&self, environment: &Environment) -> Url {
         Url::from(environment).join(&self.path()).unwrap()

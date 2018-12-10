@@ -1,25 +1,44 @@
-/// https://api.cloudflare.com/#dns-records-for-a-zone-properties
-
-use chrono::DateTime;
-use chrono::offset::Utc;
-use endpoint::{Endpoint, Method};
-use response::APIResult;
-use std::net::{Ipv4Addr, Ipv6Addr};
 use super::{OrderDirection, SearchMatch};
-
+use crate::endpoint::{Endpoint, Method};
+use crate::response::APIResult;
+use chrono::offset::Utc;
+/// https://api.cloudflare.com/#dns-records-for-a-zone-properties
+use chrono::DateTime;
+use std::net::{Ipv4Addr, Ipv6Addr};
 
 /// List DNS Records (https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records)
-pub struct ListDNSRecords<'a> { pub zone_identifier: &'a str, pub params: ListDNSRecordsParams }
-impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams, ListDNSRecordsParams> for ListDNSRecords<'a> {
-    fn method(&self) -> Method { Method::Get }
-    fn path(&self) -> String { format!("zones/{}/dns_records", self.zone_identifier) }
-    fn query(&self) -> Option<ListDNSRecordsParams> { Some(self.params.clone()) }
+pub struct ListDNSRecords<'a> {
+    pub zone_identifier: &'a str,
+    pub params: ListDNSRecordsParams,
+}
+impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams, ListDNSRecordsParams>
+    for ListDNSRecords<'a>
+{
+    fn method(&self) -> Method {
+        Method::Get
+    }
+    fn path(&self) -> String {
+        format!("zones/{}/dns_records", self.zone_identifier)
+    }
+    fn query(&self) -> Option<ListDNSRecordsParams> {
+        Some(self.params.clone())
+    }
 }
 
-pub struct DeleteDNSRecord<'a> { pub zone_identifier: &'a str, pub identifier: &'a str }
+pub struct DeleteDNSRecord<'a> {
+    pub zone_identifier: &'a str,
+    pub identifier: &'a str,
+}
 impl<'a> Endpoint<DeleteDNSRecordResponse> for DeleteDNSRecord<'a> {
-    fn method(&self) -> Method { Method::Delete }
-    fn path(&self) -> String { format!("zones/{}/dns_records/{}", self.zone_identifier, self.identifier) }
+    fn method(&self) -> Method {
+        Method::Delete
+    }
+    fn path(&self) -> String {
+        format!(
+            "zones/{}/dns_records/{}",
+            self.zone_identifier, self.identifier
+        )
+    }
 }
 
 #[derive(Serialize, Clone, Debug)]
@@ -57,12 +76,12 @@ pub struct Meta {
 #[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(tag = "type")]
 pub enum DNSContent {
-    A{content: Ipv4Addr},
-    AAAA{content: Ipv6Addr},
-    CNAME{content: String},
-    NS{content: String},
-    MX{content: String, priority: u16},
-    TXT{content: String},
+    A { content: Ipv4Addr },
+    AAAA { content: Ipv6Addr },
+    CNAME { content: String },
+    NS { content: String },
+    MX { content: String, priority: u16 },
+    TXT { content: String },
 }
 
 #[derive(Deserialize, Debug)]

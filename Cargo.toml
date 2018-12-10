@@ -2,6 +2,7 @@
 name = "cloudflare"
 version = "0.1.0"
 authors = ["Areg Harutyunyan <areg@cloudflare.com>"]
+edition = "2018"
 
 [lib]
 name = "cloudflare"

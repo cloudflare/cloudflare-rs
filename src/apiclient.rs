@@ -1,5 +1,5 @@
-use endpoint::Endpoint;
-use response::{APIResponse, APIResult};
+use crate::endpoint::Endpoint;
+use crate::response::{APIResponse, APIResult};
 use serde::Serialize;
 
 pub trait APIClient {

@@ -18,10 +18,10 @@ mod plan;
 pub mod response;
 pub mod zone;
 
-use apiclient::APIClient;
-use auth::{AuthClient, Credentials};
-use endpoint::{Endpoint, Method};
-use response::{APIResponse, APIResult};
+use crate::apiclient::APIClient;
+use crate::auth::{AuthClient, Credentials};
+use crate::endpoint::{Endpoint, Method};
+use crate::response::{APIResponse, APIResult};
 use serde::Serialize;
 
 #[derive(Serialize, Clone, Debug)]
@@ -98,7 +98,8 @@ impl<'a> APIClient for HTTPAPIClient {
             .request(
                 match_reqwest_method(endpoint.method()),
                 endpoint.url(&self.environment),
-            ).query(&endpoint.query());
+            )
+            .query(&endpoint.query());
 
         if let Some(body) = endpoint.body() {
             request = request.body(serde_json::to_string(&body).unwrap());

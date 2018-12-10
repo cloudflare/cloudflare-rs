@@ -64,7 +64,7 @@ fn mock_api<APIClientType: APIClient>(_args: &ArgMatches, _api: &APIClientType) 
 }
 
 fn main() -> Result<(), Box<std::error::Error>> {
-    let sections = hashmap!{
+    let sections = hashmap! {
         "zone" => Section{
             args: vec![Arg::with_name("zone_identifier").required(true)],
             description: "A Zone is a domain name along with its subdomains and other identities",

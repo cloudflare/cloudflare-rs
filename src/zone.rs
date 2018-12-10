@@ -1,16 +1,21 @@
-use account::Account;
-use chrono::DateTime;
+use crate::account::Account;
+use crate::endpoint::{Endpoint, Method};
+use crate::plan::Plan;
+use crate::response::APIResult;
 use chrono::offset::Utc;
-use endpoint::{Endpoint, Method};
-use plan::Plan;
-use response::{APIResult};
-
+use chrono::DateTime;
 
 /// Zone Details (https://api.cloudflare.com/#zone-zone-details)
-pub struct ZoneDetails<'a> { pub identifier: &'a str }
+pub struct ZoneDetails<'a> {
+    pub identifier: &'a str,
+}
 impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
-    fn method(&self) -> Method { Method::Get }
-    fn path(&self) -> String { format!("zones/{}", self.identifier) }
+    fn method(&self) -> Method {
+        Method::Get
+    }
+    fn path(&self) -> String {
+        format!("zones/{}", self.identifier)
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -27,8 +32,8 @@ pub enum Status {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase", tag = "type")]
 pub enum Owner {
-    User {id: String, email: String},
-    Organization {id: String, name: String},
+    User { id: String, email: String },
+    Organization { id: String, name: String },
 }
 
 #[derive(Deserialize, Debug)]
@@ -60,7 +65,6 @@ pub struct Meta {
     /// Indicates whether the zone is allowed to be connected to multiple Railguns at once
     pub multiple_railguns_allowed: bool,
 }
-
 
 /// A Zone is a domain name along with its subdomains and other identities
 /// https://api.cloudflare.com/#zone-properties

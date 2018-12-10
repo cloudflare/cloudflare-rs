@@ -1,7 +1,7 @@
-use apiclient::APIClient;
-use endpoint::{Endpoint, Method};
+use crate::apiclient::APIClient;
+use crate::endpoint::{Endpoint, Method};
+use crate::response::{APIFailure, APIResponse, APIResult};
 use reqwest;
-use response::{APIFailure, APIResponse, APIResult};
 
 pub struct MockAPIClient {}
 
