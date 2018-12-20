@@ -1,19 +1,18 @@
+/// https://api.cloudflare.com/#dns-records-for-a-zone-properties
 use super::{OrderDirection, SearchMatch};
 use crate::endpoint::{Endpoint, Method};
 use crate::response::APIResult;
 use chrono::offset::Utc;
-/// https://api.cloudflare.com/#dns-records-for-a-zone-properties
 use chrono::DateTime;
 use std::net::{Ipv4Addr, Ipv6Addr};
 
-/// List DNS Records (https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records)
+/// List DNS Records
+/// https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records
 pub struct ListDNSRecords<'a> {
     pub zone_identifier: &'a str,
     pub params: ListDNSRecordsParams,
 }
-impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams, ListDNSRecordsParams>
-    for ListDNSRecords<'a>
-{
+impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams> for ListDNSRecords<'a> {
     fn method(&self) -> Method {
         Method::Get
     }
@@ -25,6 +24,8 @@ impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams, ListDNSRecordsParams>
     }
 }
 
+/// Delete DNS Record
+/// https://api.cloudflare.com/#dns-records-for-a-zone-delete-dns-record
 pub struct DeleteDNSRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
