@@ -64,7 +64,7 @@ impl HTTPAPIClient {
     pub fn new(credentials: Credentials) -> HTTPAPIClient {
         HTTPAPIClient {
             environment: Environment::Production,
-            credentials: credentials,
+            credentials,
             http_client: reqwest::Client::new(),
         }
     }

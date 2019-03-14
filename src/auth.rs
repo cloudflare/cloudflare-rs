@@ -13,14 +13,10 @@ pub trait AuthClient {
 impl AuthClient for RequestBuilder {
     fn auth(self, credentials: &Credentials) -> RequestBuilder {
         match credentials {
-            Credentials::User { key, email } => {
-                return self
-                    .header("X-Auth-Key", key.as_str())
-                    .header("X-Auth-Email", email.as_str());
-            }
-            Credentials::Service { key } => {
-                return self.header("X-Auth-User-Service-Key", key.as_str());
-            }
+            Credentials::User { key, email } => self
+                .header("X-Auth-Key", key.as_str())
+                .header("X-Auth-Email", email.as_str()),
+            Credentials::Service { key } => self.header("X-Auth-User-Service-Key", key.as_str()),
         }
     }
 }
