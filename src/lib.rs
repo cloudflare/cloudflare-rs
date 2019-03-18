@@ -12,7 +12,7 @@ mod account;
 pub mod apiclient;
 pub mod auth;
 pub mod dns;
-mod endpoint;
+pub mod endpoint;
 pub mod mock;
 mod plan;
 pub mod response;
