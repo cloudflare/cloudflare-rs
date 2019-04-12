@@ -11,7 +11,7 @@ pub enum Method {
     Patch,
 }
 
-pub trait Endpoint<ResultType, QueryType = (), BodyType = ()>
+pub trait Endpoint<ResultType = (), QueryType = (), BodyType = ()>
 where
     ResultType: APIResult,
     QueryType: Serialize,

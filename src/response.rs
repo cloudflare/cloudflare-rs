@@ -87,6 +87,9 @@ pub fn map_api_response<ResultType: APIResult>(
     }
 }
 
+/// Some endpoints return nothing. That's OK.
+impl APIResult for () {}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -16,6 +16,7 @@ pub mod endpoint;
 pub mod mock;
 mod plan;
 pub mod response;
+pub mod workerskv;
 pub mod zone;
 
 use crate::apiclient::APIClient;
