@@ -25,7 +25,7 @@ fn print_response<T: APIResult>(response: APIResponse<T>) {
         Ok(success) => println!("Success: {:#?}", success),
         Err(e) => match e {
             APIFailure::Error(status, errors) => {
-                println!("Error {}:", status);
+                println!("HTTP {}:", status);
                 for err in errors {
                     println!("Error {}: {}", err.code, err.message);
                 }
@@ -56,6 +56,39 @@ fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClien
     print_response(response);
 }
 
+fn create_txt_record<APIClientType: APIClient>(
+    arg_matches: &ArgMatches,
+    api_client: &APIClientType,
+) {
+    let usage = "usage: create_txt_record ZONE_ID NAME CONTENT";
+
+    let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
+    let zone_identifier = arg_matches
+        .value_of("zone_identifier")
+        .expect(&zone_id_missing);
+
+    let name_missing = format!("missing '{}': {}", "NAME", usage);
+    let name = arg_matches.value_of("name").expect(&name_missing);
+
+    let content_missing = format!("missing '{}': {}", "CONTENT", usage);
+    let content = arg_matches.value_of("content").expect(&content_missing);
+
+    let response = api_client.request(&dns::CreateDNSRecord {
+        zone_identifier: zone_identifier,
+        params: dns::CreateDNSRecordParams {
+            name,
+            content: dns::DNSContent::TXT {
+                content: content.to_owned(),
+            },
+            priority: None,
+            proxied: None,
+            ttl: None,
+        },
+    });
+
+    print_response(response);
+}
+
 fn mock_api<APIClientType: APIClient>(_args: &ArgMatches, _api: &APIClientType) {
     let mock_api = MockAPIClient {};
     let endpoint = NoopEndpoint {};
@@ -74,6 +107,15 @@ fn main() -> Result<(), Box<std::error::Error>> {
             args: vec![Arg::with_name("zone_identifier").required(true)],
             description: "DNS Records for a Zone",
             function: dns
+        },
+        "create_txt_record" => Section{
+            args: vec![
+                Arg::with_name("zone_identifier").required(true),
+                Arg::with_name("name").required(true),
+                Arg::with_name("content").required(true),
+                ],
+            description: "Create a TXT record for a zone",
+            function: create_txt_record
         },
         "mock_api" => Section{
             args: vec![],
