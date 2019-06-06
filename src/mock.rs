@@ -1,7 +1,8 @@
 use crate::apiclient::APIClient;
 use crate::endpoint::{Endpoint, Method};
-use crate::response::{APIFailure, APIResponse, APIResult};
+use crate::response::{APIErrors, APIFailure, APIResponse, APIResult, APIError};
 use reqwest;
+use std::collections::HashMap;
 
 pub struct MockAPIClient {}
 
@@ -13,7 +14,7 @@ impl Endpoint<NoopResult> for NoopEndpoint {
         Method::Get
     }
     fn path(&self) -> String {
-        format!("no/such/path/")
+        "no/such/path/".to_owned()
     }
 }
 
@@ -28,7 +29,14 @@ impl APIClient for MockAPIClient {
     ) -> APIResponse<ResultType> {
         Err(APIFailure::Error(
             reqwest::StatusCode::INTERNAL_SERVER_ERROR,
-            vec![],
+            APIErrors {
+                errors: vec![APIError {
+                    code: 9999,
+                    message: "This is a mocked failure response".to_owned(),
+                    other: HashMap::new(),
+                }],
+                other: HashMap::new(),
+            },
         ))
     }
 }

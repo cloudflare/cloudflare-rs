@@ -26,8 +26,14 @@ fn print_response<T: APIResult>(response: APIResponse<T>) {
         Err(e) => match e {
             APIFailure::Error(status, errors) => {
                 println!("HTTP {}:", status);
-                for err in errors {
+                for err in errors.errors {
                     println!("Error {}: {}", err.code, err.message);
+                    for (k, v) in err.other {
+                        println!("{}: {}", k, v);
+                    }
+                }
+                for (k, v) in errors.other {
+                    println!("{}: {}", k, v);
                 }
             }
             APIFailure::Invalid(reqwest_err) => println!("Error: {}", reqwest_err),
@@ -46,7 +52,7 @@ fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClie
 fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
     let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
     let response = api_client.request(&dns::ListDNSRecords {
-        zone_identifier: zone_identifier,
+        zone_identifier,
         params: dns::ListDNSRecordsParams {
             direction: Some(OrderDirection::Ascending),
             ..Default::default()
@@ -74,7 +80,7 @@ fn create_txt_record<APIClientType: APIClient>(
     let content = arg_matches.value_of("content").expect(&content_missing);
 
     let response = api_client.request(&dns::CreateDNSRecord {
-        zone_identifier: zone_identifier,
+        zone_identifier,
         params: dns::CreateDNSRecordParams {
             name,
             content: dns::DNSContent::TXT {
