@@ -1,59 +1,15 @@
 use super::{OrderDirection, SearchMatch};
 use crate::account::Account;
-use crate::endpoint::{Endpoint, Method};
 use crate::plan::Plan;
 use crate::response::APIResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
 
-/// List Zones
-/// List, search, sort, and filter your zones
-/// https://api.cloudflare.com/#zone-list-zones
-pub struct ListZones<'a> {
-    pub identifier: &'a str,
-}
-impl<'a> Endpoint<Vec<Zone>, ListZonesParams> for ListZones<'a> {
-    fn method(&self) -> Method {
-        Method::Get
-    }
-    fn path(&self) -> String {
-        "zones".to_string()
-    }
-}
+mod list_zones;
+mod zone_details;
 
-/// Zone Details
-/// https://api.cloudflare.com/#zone-zone-details
-pub struct ZoneDetails<'a> {
-    pub identifier: &'a str,
-}
-impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
-    fn method(&self) -> Method {
-        Method::Get
-    }
-    fn path(&self) -> String {
-        format!("zones/{}", self.identifier)
-    }
-}
-
-#[derive(Serialize, Clone, Debug, Default)]
-pub struct ListZonesParams {
-    pub name: Option<String>,
-    pub status: Option<Status>,
-    pub page: Option<u32>,
-    pub per_page: Option<u32>,
-    pub order: Option<ListZonesOrder>,
-    pub direction: Option<OrderDirection>,
-    #[serde(rename = "match")]
-    pub search_match: Option<SearchMatch>,
-}
-
-#[derive(Serialize, Clone, Debug)]
-#[serde(rename_all = "lowercase")]
-pub enum ListZonesOrder {
-    Name,
-    Status,
-    Email,
-}
+pub use list_zones::ListZones;
+pub use zone_details::ZoneDetails;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename = "status", rename_all = "lowercase")]
