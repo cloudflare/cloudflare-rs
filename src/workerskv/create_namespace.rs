@@ -9,14 +9,18 @@ use crate::endpoint::{Endpoint, Method};
 /// https://api.cloudflare.com/#workers-kv-namespace-create-a-namespace
 pub struct CreateNamespace<'a> {
     pub account_identifier: &'a str,
+    pub params: CreateNamespaceParams,
 }
 
-impl<'a> Endpoint<WorkersKVNamespace, CreateNamespaceParams> for CreateNamespace<'a> {
+impl<'a> Endpoint<WorkersKVNamespace, (), CreateNamespaceParams> for CreateNamespace<'a> {
     fn method(&self) -> Method {
         Method::Post
     }
     fn path(&self) -> String {
         format!("accounts/{}/storage/kv/namespaces", self.account_identifier)
+    }
+    fn body(&self) -> Option<CreateNamespaceParams> {
+        Some(self.params.clone())
     }
 }
 
