@@ -2,17 +2,11 @@ use crate::response::APIResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
 
-mod create_namespace;
-mod list_namespace_keys;
-mod list_namespaces;
-mod remove_namespace;
-mod rename_namespace;
-
-pub use create_namespace::CreateNamespace;
-pub use list_namespace_keys::ListNamespaceKeys;
-pub use list_namespaces::ListNamespaces;
-pub use remove_namespace::RemoveNamespace;
-pub use rename_namespace::RenameNamespace;
+pub mod create_namespace;
+pub mod list_namespace_keys;
+pub mod list_namespaces;
+pub mod remove_namespace;
+pub mod rename_namespace;
 
 /// Workers KV Namespace
 /// A Namespace is a collection of key-value pairs stored in Workers KV.
