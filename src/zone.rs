@@ -35,6 +35,33 @@ impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
     }
 }
 
+
+/// Zone Details
+/// https://api.cloudflare.com/#zone-purge-files-by-cache-tags-or-host
+pub struct ZoneCachePurge<'a> {
+    pub identifier: &'a str,
+    pub params: PurgeZoneCacheParams,
+}
+
+impl<'a> Endpoint<Zone, (), PurgeZoneCacheParams> for ZoneCachePurge<'a> {
+    fn method(&self) -> Method {
+        Method::Post
+    }
+    fn path(&self) -> String {
+        format!("zones/{}/purge_cache", self.identifier)
+    }
+    fn body(&self) -> Option<PurgeZoneCacheParams> {
+        Some(self.params.clone())
+    }
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub struct PurgeZoneCacheParams {
+    pub tags: Vec<String>,
+    pub hosts: Vec<String>,
+    pub files: Vec<String>,
+}
+
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListZonesParams {
     pub name: Option<String>,

@@ -37,6 +37,21 @@ fn print_response<T: APIResult>(response: APIResponse<T>) {
 
 fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
     let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
+    let purge = arg_matches.value_of("purge").unwrap();
+    if purge != "false" {
+        let response = api_client.request(&zone::ZoneCachePurge {
+            identifier: zone_identifier,
+            params: zone::PurgeZoneCacheParams {
+                tags: vec![String::from("")],
+                hosts: vec![String::from("")],
+                files: vec![String::from("")],
+            }
+        });
+
+        print_response(response);
+        return;
+    }
+
     let response = api_client.request(&zone::ZoneDetails {
         identifier: zone_identifier,
     });
@@ -66,7 +81,10 @@ fn mock_api<APIClientType: APIClient>(_args: &ArgMatches, _api: &APIClientType) 
 fn main() -> Result<(), Box<std::error::Error>> {
     let sections = hashmap! {
         "zone" => Section{
-            args: vec![Arg::with_name("zone_identifier").required(true)],
+            args: vec![
+                Arg::with_name("zone_identifier").required(true),
+                Arg::with_name("purge").required(false).long("purge").default_value("false"),
+            ],
             description: "A Zone is a domain name along with its subdomains and other identities",
             function: zone
         },
