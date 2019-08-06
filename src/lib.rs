@@ -103,6 +103,7 @@ impl<'a> APIClient for HTTPAPIClient {
 
         if let Some(body) = endpoint.body() {
             request = request.body(serde_json::to_string(&body).unwrap());
+            request = request.header(reqwest::header::CONTENT_TYPE, endpoint.content_type());
         }
 
         request = request.auth(&self.credentials);
