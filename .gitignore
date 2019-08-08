@@ -4,3 +4,4 @@ Cargo.lock
 *.swp
 tags
 rusty-tags.vi
+.idea

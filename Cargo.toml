@@ -3,6 +3,10 @@ name = "cloudflare"
 version = "0.1.0"
 authors = ["Areg Harutyunyan <areg@cloudflare.com>"]
 edition = "2018"
+description = "Rust library for the Cloudflare v4 API"
+keywords = ["cloudflare", "api", "client"]
+categories = ["api-bindings", "web-programming::http-client"]
+license = "BSD-3-Clause"
 
 [lib]
 name = "cloudflare"
