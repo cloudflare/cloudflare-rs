@@ -1,4 +1,4 @@
-use crate::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{Endpoint, Method};
 
 /// Rename a Namespace
 /// Modifies a namespace's title.

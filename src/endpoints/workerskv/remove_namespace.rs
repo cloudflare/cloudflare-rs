@@ -1,4 +1,4 @@
-use crate::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{Endpoint, Method};
 
 /// Remove a Namespace
 /// Deletes the namespace corresponding to the given ID.

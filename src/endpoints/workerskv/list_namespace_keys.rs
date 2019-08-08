@@ -1,6 +1,6 @@
 use super::Key;
 
-use crate::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{Endpoint, Method};
 
 /// List a Namespace's Keys
 /// https://api.cloudflare.com/#workers-kv-namespace-list-a-namespace-s-keys

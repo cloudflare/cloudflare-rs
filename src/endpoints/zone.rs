@@ -1,8 +1,9 @@
-use super::{OrderDirection, SearchMatch};
-use crate::account::Account;
-use crate::endpoint::{Endpoint, Method};
-use crate::plan::Plan;
-use crate::response::ApiResult;
+use crate::endpoints::{account::Account, plan::Plan};
+use crate::framework::{
+    endpoint::{Endpoint, Method},
+    response::ApiResult,
+};
+use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
 

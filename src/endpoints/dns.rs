@@ -1,7 +1,9 @@
+use crate::framework::{
+    endpoint::{Endpoint, Method},
+    response::ApiResult,
+};
 /// https://api.cloudflare.com/#dns-records-for-a-zone-properties
-use super::{OrderDirection, SearchMatch};
-use crate::endpoint::{Endpoint, Method};
-use crate::response::ApiResult;
+use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
 use std::net::{Ipv4Addr, Ipv6Addr};
