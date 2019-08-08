@@ -75,7 +75,7 @@ impl HTTPAPIClient {
 impl<'a> APIClient for HTTPAPIClient {
     fn request<ResultType, QueryType, BodyType>(
         &self,
-        endpoint: &Endpoint<ResultType, QueryType, BodyType>,
+        endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
     ) -> APIResponse<ResultType>
     where
         ResultType: APIResult,
