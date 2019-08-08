@@ -1,4 +1,4 @@
-use super::WorkersKVNamespace;
+use super::WorkersKvNamespace;
 
 use crate::endpoint::{Endpoint, Method};
 
@@ -9,7 +9,7 @@ pub struct ListNamespaces<'a> {
     pub account_identifier: &'a str,
 }
 
-impl<'a> Endpoint<Vec<WorkersKVNamespace>, ListNamespacesParams> for ListNamespaces<'a> {
+impl<'a> Endpoint<Vec<WorkersKvNamespace>, ListNamespacesParams> for ListNamespaces<'a> {
     fn method(&self) -> Method {
         Method::Get
     }

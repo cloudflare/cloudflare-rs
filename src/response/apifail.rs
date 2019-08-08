@@ -7,7 +7,7 @@ use std::fmt::Debug;
 /// Note that APIError's `eq` implementation only compares `code` and `message`.
 /// It does NOT compare the `other` values.
 #[derive(Deserialize, Debug)]
-pub struct APIError {
+pub struct ApiError {
     pub code: u16,
     pub message: String,
     #[serde(flatten)]
@@ -17,59 +17,59 @@ pub struct APIError {
 /// Note that APIErrors's `eq` implementation only compares `code` and `message`.
 /// It does NOT compare the `other` values.
 #[derive(Deserialize, Debug, Default)]
-pub struct APIErrors {
+pub struct ApiErrors {
     #[serde(flatten)]
     pub other: HashMap<String, JValue>,
-    pub errors: Vec<APIError>,
+    pub errors: Vec<ApiError>,
 }
 
-impl PartialEq for APIErrors {
+impl PartialEq for ApiErrors {
     fn eq(&self, other: &Self) -> bool {
         self.errors == other.errors
     }
 }
 
-impl PartialEq for APIError {
+impl PartialEq for ApiError {
     fn eq(&self, other: &Self) -> bool {
         self.code == other.code && self.message == other.message
     }
 }
 
-impl Eq for APIError {}
-impl Eq for APIErrors {}
+impl Eq for ApiError {}
+impl Eq for ApiErrors {}
 
-impl fmt::Display for APIError {
+impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Error {}: {}", self.code, self.message)
     }
 }
 
-pub trait APIResult: DeserializeOwned + Debug {}
+pub trait ApiResult: DeserializeOwned + Debug {}
 
 
 #[derive(Debug)]
-pub enum APIFailure {
-    Error(reqwest::StatusCode, APIErrors),
+pub enum ApiFailure {
+    Error(reqwest::StatusCode, ApiErrors),
     Invalid(reqwest::Error),
 }
 
-impl PartialEq for APIFailure {
-    fn eq(&self, other: &APIFailure) -> bool {
+impl PartialEq for ApiFailure {
+    fn eq(&self, other: &ApiFailure) -> bool {
         match (self, other) {
-            (APIFailure::Invalid(e1), APIFailure::Invalid(e2)) => e1.to_string() == e2.to_string(),
-            (APIFailure::Error(status1, e1), APIFailure::Error(status2, e2)) => {
+            (ApiFailure::Invalid(e1), ApiFailure::Invalid(e2)) => e1.to_string() == e2.to_string(),
+            (ApiFailure::Error(status1, e1), ApiFailure::Error(status2, e2)) => {
                 status1 == status2 && e1 == e2
             }
             _ => false,
         }
     }
 }
-impl Eq for APIFailure {}
+impl Eq for ApiFailure {}
 
-impl fmt::Display for APIFailure {
+impl fmt::Display for ApiFailure {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            APIFailure::Error(status, api_errors) => {
+            ApiFailure::Error(status, api_errors) => {
 
                 let mut output = "".to_owned();
                 output.push_str(&format!("HTTP {}", status));
@@ -84,13 +84,13 @@ impl fmt::Display for APIFailure {
                 }
                 write!(f, "{}", output)
             }
-            APIFailure::Invalid(err) => write!(f, "{}", err),
+            ApiFailure::Invalid(err) => write!(f, "{}", err),
         }
     }
 }
 
-impl From<reqwest::Error> for APIFailure {
+impl From<reqwest::Error> for ApiFailure {
     fn from(error: reqwest::Error) -> Self {
-        APIFailure::Invalid(error)
+        ApiFailure::Invalid(error)
     }
 }

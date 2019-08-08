@@ -18,10 +18,10 @@ pub mod response;
 pub mod workerskv;
 pub mod zone;
 
-use crate::apiclient::APIClient;
+use crate::apiclient::ApiClient;
 use crate::auth::{AuthClient, Credentials};
 use crate::endpoint::{Endpoint, Method};
-use crate::response::{APIResponse, APIResult};
+use crate::response::{ApiResponse, ApiResult};
 use serde::Serialize;
 
 #[derive(Serialize, Clone, Debug)]
@@ -54,15 +54,15 @@ impl<'a> From<&'a Environment> for url::Url {
     }
 }
 
-pub struct HTTPAPIClient {
+pub struct HttpApiClient {
     environment: Environment,
     credentials: Credentials,
     http_client: reqwest::Client,
 }
 
-impl HTTPAPIClient {
-    pub fn new(credentials: Credentials) -> HTTPAPIClient {
-        HTTPAPIClient {
+impl HttpApiClient {
+    pub fn new(credentials: Credentials) -> HttpApiClient {
+        HttpApiClient {
             environment: Environment::Production,
             credentials,
             http_client: reqwest::Client::new(),
@@ -71,14 +71,14 @@ impl HTTPAPIClient {
 }
 
 // TODO: This should probably just implement request for the Reqwest client itself :)
-// TODO: It should also probably be called `ReqwestAPIClient` rather than `HTTPAPIClient`.
-impl<'a> APIClient for HTTPAPIClient {
+// TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
+impl<'a> ApiClient for HttpApiClient {
     fn request<ResultType, QueryType, BodyType>(
         &self,
         endpoint: &Endpoint<ResultType, QueryType, BodyType>,
-    ) -> APIResponse<ResultType>
+    ) -> ApiResponse<ResultType>
     where
-        ResultType: APIResult,
+        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize,
     {

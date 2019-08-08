@@ -1,4 +1,4 @@
-use super::WorkersKVNamespace;
+use super::WorkersKvNamespace;
 
 use crate::endpoint::{Endpoint, Method};
 
@@ -12,7 +12,7 @@ pub struct CreateNamespace<'a> {
     pub params: CreateNamespaceParams,
 }
 
-impl<'a> Endpoint<WorkersKVNamespace, (), CreateNamespaceParams> for CreateNamespace<'a> {
+impl<'a> Endpoint<WorkersKvNamespace, (), CreateNamespaceParams> for CreateNamespace<'a> {
     fn method(&self) -> Method {
         Method::Post
     }
