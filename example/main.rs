@@ -4,27 +4,27 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use cloudflare::apiclient::APIClient;
+use cloudflare::apiclient::ApiClient;
 use cloudflare::auth::Credentials;
 use cloudflare::dns;
-use cloudflare::mock::{MockAPIClient, NoopEndpoint};
-use cloudflare::response::{APIFailure, APIResponse, APIResult};
+use cloudflare::mock::{MockApiClient, NoopEndpoint};
+use cloudflare::response::{ApiFailure, ApiResponse, ApiResult};
 use cloudflare::zone;
-use cloudflare::{HTTPAPIClient, OrderDirection};
+use cloudflare::{HttpApiClient, OrderDirection};
 
-type SectionFunction<APIClientType> = fn(&ArgMatches, &APIClientType);
+type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 
-struct Section<'a, APIClientType: APIClient> {
+struct Section<'a, ApiClientType: ApiClient> {
     args: Vec<Arg<'a, 'a>>,
     description: &'a str,
-    function: SectionFunction<APIClientType>,
+    function: SectionFunction<ApiClientType>,
 }
 
-fn print_response<T: APIResult>(response: APIResponse<T>) {
+fn print_response<T: ApiResult>(response: ApiResponse<T>) {
     match response {
         Ok(success) => println!("Success: {:#?}", success),
         Err(e) => match e {
-            APIFailure::Error(status, errors) => {
+            ApiFailure::Error(status, errors) => {
                 println!("HTTP {}:", status);
                 for err in errors.errors {
                     println!("Error {}: {}", err.code, err.message);
@@ -36,12 +36,12 @@ fn print_response<T: APIResult>(response: APIResponse<T>) {
                     println!("{}: {}", k, v);
                 }
             }
-            APIFailure::Invalid(reqwest_err) => println!("Error: {}", reqwest_err),
+            ApiFailure::Invalid(reqwest_err) => println!("Error: {}", reqwest_err),
         },
     }
 }
 
-fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
+fn zone<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
     let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
     let response = api_client.request(&zone::ZoneDetails {
         identifier: zone_identifier,
@@ -49,11 +49,11 @@ fn zone<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClie
     print_response(response)
 }
 
-fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClientType) {
+fn dns<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
     let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
-    let response = api_client.request(&dns::ListDNSRecords {
+    let response = api_client.request(&dns::ListDnsRecords {
         zone_identifier,
-        params: dns::ListDNSRecordsParams {
+        params: dns::ListDnsRecordsParams {
             direction: Some(OrderDirection::Ascending),
             ..Default::default()
         },
@@ -62,9 +62,9 @@ fn dns<APIClientType: APIClient>(arg_matches: &ArgMatches, api_client: &APIClien
     print_response(response);
 }
 
-fn create_txt_record<APIClientType: APIClient>(
+fn create_txt_record<ApiClientType: ApiClient>(
     arg_matches: &ArgMatches,
-    api_client: &APIClientType,
+    api_client: &ApiClientType,
 ) {
     let usage = "usage: create_txt_record ZONE_ID NAME CONTENT";
 
@@ -79,11 +79,11 @@ fn create_txt_record<APIClientType: APIClient>(
     let content_missing = format!("missing '{}': {}", "CONTENT", usage);
     let content = arg_matches.value_of("content").expect(&content_missing);
 
-    let response = api_client.request(&dns::CreateDNSRecord {
+    let response = api_client.request(&dns::CreateDnsRecord {
         zone_identifier,
-        params: dns::CreateDNSRecordParams {
+        params: dns::CreateDnsRecordParams {
             name,
-            content: dns::DNSContent::TXT {
+            content: dns::DnsContent::TXT {
                 content: content.to_owned(),
             },
             priority: None,
@@ -95,8 +95,8 @@ fn create_txt_record<APIClientType: APIClient>(
     print_response(response);
 }
 
-fn mock_api<APIClientType: APIClient>(_args: &ArgMatches, _api: &APIClientType) {
-    let mock_api = MockAPIClient {};
+fn mock_api<ApiClientType: ApiClient>(_args: &ArgMatches, _api: &ApiClientType) {
+    let mock_api = MockApiClient {};
     let endpoint = NoopEndpoint {};
     let _ = mock_api.request(&endpoint);
     println!("Ran mock API")
@@ -160,14 +160,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let matched_sections =
         sections
             .iter()
-            .filter(|&(section_name, _): &(&&str, &Section<HTTPAPIClient>)| {
+            .filter(|&(section_name, _): &(&&str, &Section<HttpApiClient>)| {
                 matches.subcommand_matches(section_name).is_some()
             });
 
     let key = matches.value_of("auth-key").unwrap();
     let email = matches.value_of("email").unwrap();
 
-    let api_client = HTTPAPIClient::new(Credentials::User {
+    let api_client = HttpApiClient::new(Credentials::User {
         key: key.to_string(),
         email: email.to_string(),
     });

@@ -1,5 +1,5 @@
 use super::Environment;
-use crate::response::APIResult;
+use crate::response::ApiResult;
 use serde::Serialize;
 use url::Url;
 
@@ -13,7 +13,7 @@ pub enum Method {
 
 pub trait Endpoint<ResultType = (), QueryType = (), BodyType = ()>
 where
-    ResultType: APIResult,
+    ResultType: ApiResult,
     QueryType: Serialize,
     BodyType: Serialize,
 {

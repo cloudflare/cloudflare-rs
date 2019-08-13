@@ -2,7 +2,7 @@ use super::{OrderDirection, SearchMatch};
 use crate::account::Account;
 use crate::endpoint::{Endpoint, Method};
 use crate::plan::Plan;
-use crate::response::APIResult;
+use crate::response::ApiResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
 
@@ -161,5 +161,5 @@ pub struct Zone {
 }
 
 // TODO: This should probably be a derive macro
-impl APIResult for Zone {}
-impl APIResult for Vec<Zone> {}
+impl ApiResult for Zone {}
+impl ApiResult for Vec<Zone> {}

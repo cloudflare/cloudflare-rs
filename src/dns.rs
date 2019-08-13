@@ -1,50 +1,50 @@
 /// https://api.cloudflare.com/#dns-records-for-a-zone-properties
 use super::{OrderDirection, SearchMatch};
 use crate::endpoint::{Endpoint, Method};
-use crate::response::APIResult;
+use crate::response::ApiResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
 use std::net::{Ipv4Addr, Ipv6Addr};
 
 /// List DNS Records
 /// https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records
-pub struct ListDNSRecords<'a> {
+pub struct ListDnsRecords<'a> {
     pub zone_identifier: &'a str,
-    pub params: ListDNSRecordsParams,
+    pub params: ListDnsRecordsParams,
 }
-impl<'a> Endpoint<Vec<DNSRecord>, ListDNSRecordsParams> for ListDNSRecords<'a> {
+impl<'a> Endpoint<Vec<DnsRecord>, ListDnsRecordsParams> for ListDnsRecords<'a> {
     fn method(&self) -> Method {
         Method::Get
     }
     fn path(&self) -> String {
         format!("zones/{}/dns_records", self.zone_identifier)
     }
-    fn query(&self) -> Option<ListDNSRecordsParams> {
+    fn query(&self) -> Option<ListDnsRecordsParams> {
         Some(self.params.clone())
     }
 }
 
 /// Create DNS Record
 /// https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record
-pub struct CreateDNSRecord<'a> {
+pub struct CreateDnsRecord<'a> {
     pub zone_identifier: &'a str,
-    pub params: CreateDNSRecordParams<'a>,
+    pub params: CreateDnsRecordParams<'a>,
 }
 
-impl<'a> Endpoint<DNSRecord, (), CreateDNSRecordParams<'a>> for CreateDNSRecord<'a> {
+impl<'a> Endpoint<DnsRecord, (), CreateDnsRecordParams<'a>> for CreateDnsRecord<'a> {
     fn method(&self) -> Method {
         Method::Post
     }
     fn path(&self) -> String {
         format!("zones/{}/dns_records", self.zone_identifier)
     }
-    fn body(&self) -> Option<CreateDNSRecordParams<'a>> {
+    fn body(&self) -> Option<CreateDnsRecordParams<'a>> {
         Some(self.params.clone())
     }
 }
 
 #[derive(Serialize, Clone, Debug)]
-pub struct CreateDNSRecordParams<'a> {
+pub struct CreateDnsRecordParams<'a> {
     /// Time to live for DNS record. Value of 1 is 'automatic'
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ttl: Option<u32>,
@@ -59,16 +59,16 @@ pub struct CreateDNSRecordParams<'a> {
     pub name: &'a str,
     /// Type of the DNS record that also holds the record value
     #[serde(flatten)]
-    pub content: DNSContent,
+    pub content: DnsContent,
 }
 
 /// Delete DNS Record
 /// https://api.cloudflare.com/#dns-records-for-a-zone-delete-dns-record
-pub struct DeleteDNSRecord<'a> {
+pub struct DeleteDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
 }
-impl<'a> Endpoint<DeleteDNSRecordResponse> for DeleteDNSRecord<'a> {
+impl<'a> Endpoint<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
     fn method(&self) -> Method {
         Method::Delete
     }
@@ -82,18 +82,18 @@ impl<'a> Endpoint<DeleteDNSRecordResponse> for DeleteDNSRecord<'a> {
 
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
-pub enum ListDNSRecordsOrder {
+pub enum ListDnsRecordsOrder {
     Type,
     Name,
     Content,
-    TTL,
+    Ttl,
     Proxied,
 }
 
 #[derive(Serialize, Clone, Debug, Default)]
-pub struct ListDNSRecordsParams {
+pub struct ListDnsRecordsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub record_type: Option<DNSContent>,
+    pub record_type: Option<DnsContent>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -101,7 +101,7 @@ pub struct ListDNSRecordsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub per_page: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub order: Option<ListDNSRecordsOrder>,
+    pub order: Option<ListDnsRecordsOrder>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<OrderDirection>,
     #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
@@ -120,7 +120,7 @@ pub struct Meta {
 /// here as an associated, strongly typed value.
 #[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(tag = "type")]
-pub enum DNSContent {
+pub enum DnsContent {
     A { content: Ipv4Addr },
     AAAA { content: Ipv6Addr },
     CNAME { content: String },
@@ -130,13 +130,13 @@ pub enum DNSContent {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct DeleteDNSRecordResponse {
+pub struct DeleteDnsRecordResponse {
     /// DNS record identifier tag
     pub id: String,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct DNSRecord {
+pub struct DnsRecord {
     /// Extra Cloudflare-specific information about the record
     pub meta: Meta,
     /// Whether this record can be modified/deleted (true means it's managed by Cloudflare)
@@ -155,7 +155,7 @@ pub struct DNSRecord {
     pub proxiable: bool,
     /// Type of the DNS record that also holds the record value
     #[serde(flatten)]
-    pub content: DNSContent,
+    pub content: DnsContent,
     /// DNS record identifier tag
     pub id: String,
     /// Whether the record is receiving the performance and security benefits of Cloudflare
@@ -164,6 +164,6 @@ pub struct DNSRecord {
     pub zone_name: String,
 }
 
-impl APIResult for DNSRecord {}
-impl APIResult for Vec<DNSRecord> {}
-impl APIResult for DeleteDNSRecordResponse {}
+impl ApiResult for DnsRecord {}
+impl ApiResult for Vec<DnsRecord> {}
+impl ApiResult for DeleteDnsRecordResponse {}

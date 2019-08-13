@@ -1,4 +1,4 @@
-use crate::response::APIResult;
+use crate::response::ApiResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
 
@@ -12,15 +12,15 @@ pub mod rename_namespace;
 /// A Namespace is a collection of key-value pairs stored in Workers KV.
 /// https://api.cloudflare.com/#workers-kv-namespace-properties
 #[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
-pub struct WorkersKVNamespace {
+pub struct WorkersKvNamespace {
     /// Namespace identifier tag.
     pub id: String,
     /// A human-readable string name for a Namespace.
     pub title: String,
 }
 
-impl APIResult for WorkersKVNamespace {}
-impl APIResult for Vec<WorkersKVNamespace> {}
+impl ApiResult for WorkersKvNamespace {}
+impl ApiResult for Vec<WorkersKvNamespace> {}
 
 #[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Key {
@@ -28,5 +28,5 @@ pub struct Key {
     pub expiration: Option<DateTime<Utc>>,
 }
 
-impl APIResult for Key {}
-impl APIResult for Vec<Key> {}
+impl ApiResult for Key {}
+impl ApiResult for Vec<Key> {}

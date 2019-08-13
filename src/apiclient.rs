@@ -1,14 +1,14 @@
 use crate::endpoint::Endpoint;
-use crate::response::{APIResponse, APIResult};
+use crate::response::{ApiResponse, ApiResult};
 use serde::Serialize;
 
-pub trait APIClient {
+pub trait ApiClient {
     fn request<ResultType, QueryType, BodyType>(
         &self,
         endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
-    ) -> APIResponse<ResultType>
+    ) -> ApiResponse<ResultType>
     where
-        ResultType: APIResult,
+        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize;
 }
