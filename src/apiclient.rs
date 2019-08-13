@@ -5,7 +5,7 @@ use serde::Serialize;
 pub trait ApiClient {
     fn request<ResultType, QueryType, BodyType>(
         &self,
-        endpoint: &Endpoint<ResultType, QueryType, BodyType>,
+        endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
     ) -> ApiResponse<ResultType>
     where
         ResultType: ApiResult,

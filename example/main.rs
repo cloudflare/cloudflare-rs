@@ -102,7 +102,7 @@ fn mock_api<ApiClientType: ApiClient>(_args: &ArgMatches, _api: &ApiClientType) 
     println!("Ran mock API")
 }
 
-fn main() -> Result<(), Box<std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sections = hashmap! {
         "zone" => Section{
             args: vec![Arg::with_name("zone_identifier").required(true)],

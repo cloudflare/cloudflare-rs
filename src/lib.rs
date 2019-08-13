@@ -75,7 +75,7 @@ impl HttpApiClient {
 impl<'a> ApiClient for HttpApiClient {
     fn request<ResultType, QueryType, BodyType>(
         &self,
-        endpoint: &Endpoint<ResultType, QueryType, BodyType>,
+        endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
     ) -> ApiResponse<ResultType>
     where
         ResultType: ApiResult,
@@ -103,6 +103,7 @@ impl<'a> ApiClient for HttpApiClient {
 
         if let Some(body) = endpoint.body() {
             request = request.body(serde_json::to_string(&body).unwrap());
+            request = request.header(reqwest::header::CONTENT_TYPE, endpoint.content_type());
         }
 
         request = request.auth(&self.credentials);

@@ -25,7 +25,7 @@ impl ApiResult for NoopResult {}
 impl ApiClient for MockApiClient {
     fn request<ResultType, QueryType, BodyType>(
         &self,
-        _endpoint: &Endpoint<ResultType, QueryType, BodyType>,
+        _endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
     ) -> ApiResponse<ResultType> {
         Err(ApiFailure::Error(
             reqwest::StatusCode::INTERNAL_SERVER_ERROR,

@@ -7,6 +7,7 @@ use crate::endpoint::{Endpoint, Method};
 pub struct ListNamespaceKeys<'a> {
     pub account_identifier: &'a str,
     pub namespace_identifier: &'a str,
+    pub params: ListNamespaceKeysParams,
 }
 
 impl<'a> Endpoint<Vec<Key>, ListNamespaceKeysParams> for ListNamespaceKeys<'a> {
@@ -19,10 +20,14 @@ impl<'a> Endpoint<Vec<Key>, ListNamespaceKeysParams> for ListNamespaceKeys<'a> {
             self.account_identifier, self.namespace_identifier
         )
     }
+    fn query(&self) -> Option<ListNamespaceKeysParams> {
+        Some(self.params.clone())
+    }
 }
 
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListNamespaceKeysParams {
     pub limit: Option<u16>,
     pub cursor: Option<String>,
+    pub prefix: Option<String>,
 }
