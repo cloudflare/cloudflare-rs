@@ -46,6 +46,10 @@ impl fmt::Display for ApiError {
 
 pub trait ApiResult: DeserializeOwned + Debug {}
 
+// Ensure that even a raw text response body can be an ApiResult (this takes advantage
+// of the fact that Serde can deserialize strings into... strings).
+impl ApiResult for String {}
+
 
 #[derive(Debug)]
 pub enum ApiFailure {
