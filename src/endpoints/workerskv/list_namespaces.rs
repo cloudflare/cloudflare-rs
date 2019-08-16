@@ -1,6 +1,6 @@
 use super::WorkersKvNamespace;
 
-use crate::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{Endpoint, Method};
 
 /// List Namespaces
 /// Returns the namespaces owned by an account

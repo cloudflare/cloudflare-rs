@@ -4,13 +4,14 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use cloudflare::apiclient::ApiClient;
-use cloudflare::auth::Credentials;
-use cloudflare::dns;
-use cloudflare::mock::{MockApiClient, NoopEndpoint};
-use cloudflare::response::{ApiFailure, ApiResponse, ApiResult};
-use cloudflare::zone;
-use cloudflare::{HttpApiClient, OrderDirection};
+use cloudflare::endpoints::{dns, zone};
+use cloudflare::framework::{
+    apiclient::ApiClient,
+    auth::Credentials,
+    mock::{MockApiClient, NoopEndpoint},
+    response::{ApiFailure, ApiResponse, ApiResult},
+    HttpApiClient, OrderDirection,
+};
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 

@@ -1,6 +1,6 @@
 use super::WorkersKvNamespace;
 
-use crate::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{Endpoint, Method};
 
 /// Create a Namespace
 /// Creates a namespace under the given title.

@@ -1,6 +1,6 @@
-use crate::apiclient::ApiClient;
-use crate::endpoint::{Endpoint, Method};
-use crate::response::{ApiErrors, ApiFailure, ApiResponse, ApiResult, ApiError};
+use crate::framework::apiclient::ApiClient;
+use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::response::{ApiError, ApiErrors, ApiFailure, ApiResponse, ApiResult};
 use reqwest;
 use std::collections::HashMap;
 

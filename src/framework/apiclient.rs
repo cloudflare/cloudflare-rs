@@ -1,5 +1,7 @@
-use crate::endpoint::Endpoint;
-use crate::response::{ApiResponse, ApiResult};
+use crate::framework::{
+    endpoint::Endpoint,
+    response::{ApiResponse, ApiResult},
+};
 use serde::Serialize;
 
 pub trait ApiClient {

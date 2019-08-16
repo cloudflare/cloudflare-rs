@@ -46,7 +46,6 @@ impl fmt::Display for ApiError {
 
 pub trait ApiResult: DeserializeOwned + Debug {}
 
-
 #[derive(Debug)]
 pub enum ApiFailure {
     Error(reqwest::StatusCode, ApiErrors),
@@ -70,7 +69,6 @@ impl fmt::Display for ApiFailure {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             ApiFailure::Error(status, api_errors) => {
-
                 let mut output = "".to_owned();
                 output.push_str(&format!("HTTP {}", status));
                 for err in &api_errors.errors {
