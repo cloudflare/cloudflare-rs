@@ -7,6 +7,8 @@ pub mod list_namespace_keys;
 pub mod list_namespaces;
 pub mod remove_namespace;
 pub mod rename_namespace;
+pub mod delete_key;
+pub mod delete_bulk;
 
 /// Workers KV Namespace
 /// A Namespace is a collection of key-value pairs stored in Workers KV.
