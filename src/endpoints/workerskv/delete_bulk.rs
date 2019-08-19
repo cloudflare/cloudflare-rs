@@ -16,7 +16,10 @@ impl<'a> Endpoint<(), (), Vec<String>> for DeleteBulk<'a> {
     }
     fn path(&self) -> String {
         // Need multiple cases for presence of ttl or expiration parameters.
-        format!("accounts/{}/storage/kv/namespaces/{}/bulk", self.account_identifier, self.namespace_identifier)
+        format!(
+            "accounts/{}/storage/kv/namespaces/{}/bulk",
+            self.account_identifier, self.namespace_identifier
+        )
     }
     fn body(&self) -> Option<Vec<String>> {
         Some(self.bulk_keys.clone())

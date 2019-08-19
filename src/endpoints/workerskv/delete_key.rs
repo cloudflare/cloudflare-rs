@@ -16,6 +16,9 @@ impl<'a> Endpoint<(), (), ()> for DeleteKey<'a> {
     }
     fn path(&self) -> String {
         // Need multiple cases for presence of ttl or expiration parameters.
-        format!("accounts/{}/storage/kv/namespaces/{}/values/{}", self.account_identifier, self.namespace_identifier, self.key)
+        format!(
+            "accounts/{}/storage/kv/namespaces/{}/values/{}",
+            self.account_identifier, self.namespace_identifier, self.key
+        )
     }
 }
