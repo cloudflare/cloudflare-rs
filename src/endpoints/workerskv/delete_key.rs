@@ -1,4 +1,4 @@
-use crate::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{Endpoint, Method};
 
 /// Delete a key-value pair from Workers KV
 /// Deletes a given key from the given namespace in Workers KV.

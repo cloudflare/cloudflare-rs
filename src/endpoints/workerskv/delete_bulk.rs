@@ -1,4 +1,4 @@
-use crate::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{Endpoint, Method};
 
 /// Delete Key-Value Pairs in Bulk
 /// Deletes multiple key-value pairs from Workers KV at once.
