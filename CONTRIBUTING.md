@@ -1,12 +1,16 @@
+# Contributing to cloudflare-rs
+
+There are two root-level modules in `cloudflare-rs`. Most PRs will only touch one of them. If you're
+working on the API framework itself, all the relevant code lives under the `framework/`
+module. If you're adding or editing a particular endpoint, read the "Adding New Endpoints" section below.
+
+## Pull Requests
+
 Every PR should have a corresponding issue, and the issue number should appear in the PR's description and commit message.
 
 PRs should be squashed to one commit before merging.
 
-There are two root-level modules in `cloudflare-rs`. Most PRs will only touch one of them. If you're
-working on the API framework itself, all the relevant code lives under the `framework/`
-module. If you're looking to add or edit an endpoint, read on.
-
-# Adding New Endpoints
+## Adding New Endpoints
 
 Every Cloudflare product should have its own directory under `endpoints/`. For example, all the
 DNS endpoints live under `endpoints/dns`.
