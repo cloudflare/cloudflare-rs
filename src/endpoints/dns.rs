@@ -45,17 +45,15 @@ impl<'a> Endpoint<DnsRecord, (), CreateDnsRecordParams<'a>> for CreateDnsRecord<
     }
 }
 
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug)]
 pub struct CreateDnsRecordParams<'a> {
     /// Time to live for DNS record. Value of 1 is 'automatic'
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub ttl: Option<u32>,
     /// Used with some records like MX and SRV to determine priority.
     /// If you do not supply a priority for an MX record, a default value of 0 will be set
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u16>,
     /// Whether the record is receiving the performance and security benefits of Cloudflare
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub proxied: Option<bool>,
     /// DNS record name
     pub name: &'a str,
@@ -92,21 +90,16 @@ pub enum ListDnsRecordsOrder {
     Proxied,
 }
 
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListDnsRecordsParams {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub record_type: Option<DnsContent>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub page: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub per_page: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<ListDnsRecordsOrder>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub direction: Option<OrderDirection>,
-    #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "match")]
     pub search_match: Option<SearchMatch>,
 }
 
