@@ -7,10 +7,10 @@ use crate::framework::endpoint::{Endpoint, Method};
 pub struct ListNamespaceKeys<'a> {
     pub account_identifier: &'a str,
     pub namespace_identifier: &'a str,
-    pub params: ListNamespaceKeysParams,
+    pub params: &'a ListNamespaceKeysParams<'a>,
 }
 
-impl<'a> Endpoint<Vec<Key>, ListNamespaceKeysParams> for ListNamespaceKeys<'a> {
+impl<'a> Endpoint<Vec<Key>, ListNamespaceKeysParams<'a>> for ListNamespaceKeys<'a> {
     fn method(&self) -> Method {
         Method::Get
     }
@@ -20,17 +20,17 @@ impl<'a> Endpoint<Vec<Key>, ListNamespaceKeysParams> for ListNamespaceKeys<'a> {
             self.account_identifier, self.namespace_identifier
         )
     }
-    fn query(&self) -> Option<ListNamespaceKeysParams> {
+    fn query(&self) -> Option<ListNamespaceKeysParams<'a>> {
         Some(self.params.clone())
     }
 }
 
 #[derive(Serialize, Clone, Debug, Default)]
-pub struct ListNamespaceKeysParams {
+pub struct ListNamespaceKeysParams<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cursor: Option<String>,
+    pub cursor: Option<&'a str>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub prefix: Option<String>,
+    pub prefix: Option<&'a str>,
 }
