@@ -26,14 +26,12 @@ impl<'a> Endpoint<(), (), Vec<KeyValuePair>> for WriteBulk<'a> {
     // default content-type is already application/json
 }
 
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct KeyValuePair {
     pub key: String,
     pub value: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiration: Option<i32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiration_ttl: Option<i32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expiration: Option<i64>,
+    pub expiration_ttl: Option<i64>,
     pub base64: Option<bool>,
 }
