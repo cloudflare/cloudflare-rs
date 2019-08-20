@@ -1,4 +1,4 @@
-Every PR should have a corresponding issue, and the issue number should appear in the PR's description.
+Every PR should have a corresponding issue, and the issue number should appear in the PR's description and commit message.
 
 PRs should be squashed to one commit before merging.
 
