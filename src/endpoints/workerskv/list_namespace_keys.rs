@@ -27,7 +27,10 @@ impl<'a> Endpoint<Vec<Key>, ListNamespaceKeysParams> for ListNamespaceKeys<'a> {
 
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListNamespaceKeysParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub prefix: Option<String>,
 }
