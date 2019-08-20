@@ -17,7 +17,7 @@ impl<'a> Endpoint<(), (), ()> for DeleteKey<'a> {
     fn path(&self) -> String {
         format!(
             "accounts/{}/storage/kv/namespaces/{}/values/{}",
-            self.account_identifier, self.namespace_identifier, self.key
+            self.account_identifier, self.namespace_identifier, super::url_encode_key(self.key)
         )
     }
 }

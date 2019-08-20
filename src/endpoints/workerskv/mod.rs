@@ -1,6 +1,7 @@
 use crate::framework::response::ApiResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
+use percent_encoding::{percent_encode, PATH_SEGMENT_ENCODE_SET};
 
 pub mod create_namespace;
 pub mod delete_bulk;
@@ -32,3 +33,7 @@ pub struct Key {
 
 impl ApiResult for Key {}
 impl ApiResult for Vec<Key> {}
+
+pub fn url_encode_key(key: &str) -> String {
+    percent_encode(key.as_bytes(), PATH_SEGMENT_ENCODE_SET).to_string()
+}
