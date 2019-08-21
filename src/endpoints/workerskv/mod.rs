@@ -22,7 +22,8 @@ pub struct WorkersKvNamespace {
 impl ApiResult for WorkersKvNamespace {}
 impl ApiResult for Vec<WorkersKvNamespace> {}
 
-#[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
+#[serde_with::skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Key {
     pub name: String,
     pub expiration: Option<DateTime<Utc>>,
