@@ -3,7 +3,7 @@ extern crate maplit;
 extern crate clap;
 extern crate cloudflare;
 
-use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
+use clap::{App, AppSettings, Arg, ArgGroup, ArgMatches, SubCommand};
 use cloudflare::endpoints::{dns, zone};
 use cloudflare::framework::{
     apiclient::ApiClient,
@@ -144,7 +144,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .long("auth-key")
             .env("CF_RS_AUTH_KEY")
             .help("API key generated on the \"My Account\" page")
-            .takes_value(true)
+            .takes_value(true))
+        .arg(Arg::with_name("auth-token")
+            .long("auth-token")
+            .env("CF_RS_AUTH_TOKEN")
+            .help("API token generated on the \"My Account\" page")
+            .takes_value(true))
+        .group(ArgGroup::with_name("auth")
+            .args(&["auth-key", "auth-token"])
+            .multiple(false)
             .required(true))
         .setting(AppSettings::ArgRequiredElseHelp);
 
@@ -165,12 +173,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 matches.subcommand_matches(section_name).is_some()
             });
 
-    let key = matches.value_of("auth-key").unwrap();
+    let key = matches.value_of("auth-key").map(|s| s.to_string());
+    let token = matches.value_of("auth-token").map(|s| s.to_string());
     let email = matches.value_of("email").unwrap();
 
     let api_client = HttpApiClient::new(Credentials::User {
-        key: key.to_string(),
         email: email.to_string(),
+        key: key,
+        token: token,
     });
 
     for (section_name, section) in matched_sections {

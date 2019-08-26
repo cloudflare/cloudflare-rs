@@ -2,8 +2,14 @@ use reqwest::RequestBuilder;
 
 #[derive(Debug)]
 pub enum Credentials {
-    User { key: String, email: String },
-    Service { key: String },
+    User {
+        email: String,
+        key: Option<String>,
+        token: Option<String>,
+    },
+    Service {
+        key: String,
+    },
 }
 
 pub trait AuthClient {
@@ -13,9 +19,17 @@ pub trait AuthClient {
 impl AuthClient for RequestBuilder {
     fn auth(self, credentials: &Credentials) -> RequestBuilder {
         match credentials {
-            Credentials::User { key, email } => self
-                .header("X-Auth-Key", key.as_str())
-                .header("X-Auth-Email", email.as_str()),
+            Credentials::User { email, key, token } => {
+                if !key.is_none() {
+                    self.header("X-Auth-Email", email.as_str())
+                        .header("X-Auth-Key", key.clone().unwrap())
+                } else {
+                    self.header("X-Auth-Email", email.as_str()).header(
+                        "Authorization",
+                        &format!("Bearer {}", token.clone().unwrap()),
+                    )
+                }
+            }
             Credentials::Service { key } => self.header("X-Auth-User-Service-Key", key.as_str()),
         }
     }
