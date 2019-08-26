@@ -23,11 +23,14 @@ impl AuthClient for RequestBuilder {
                 if !key.is_none() {
                     self.header("X-Auth-Email", email.as_str())
                         .header("X-Auth-Key", key.clone().unwrap())
-                } else {
+                } else if !token.is_none() {
                     self.header("X-Auth-Email", email.as_str()).header(
                         "Authorization",
                         &format!("Bearer {}", token.clone().unwrap()),
                     )
+                } else {
+                    // The API will throw an error because there is no auth param.
+                    self.header("X-Auth-Email", email.as_str())
                 }
             }
             Credentials::Service { key } => self.header("X-Auth-User-Service-Key", key.as_str()),
