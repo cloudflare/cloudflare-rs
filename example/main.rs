@@ -173,15 +173,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 matches.subcommand_matches(section_name).is_some()
             });
 
-    let key = matches.value_of("auth-key").map(|s| s.to_string());
-    let token = matches.value_of("auth-token").map(|s| s.to_string());
     let email = matches.value_of("email").unwrap();
+    let key = matches.value_of("auth-key");
+    let token = matches.value_of("auth-token");
 
-    let api_client = HttpApiClient::new(Credentials::User {
-        email: email.to_string(),
-        key: key,
-        token: token,
-    });
+    // Create bogus default api_client; this will be overwritten with a client
+    // that uses a key or token.
+    let mut credentials = Credentials::Default;
+
+    if let Some(key) = key {
+        credentials = Credentials::UserAuthKey {
+            email: email.to_string(),
+            key: key.to_string(),
+        };
+    }
+
+    if let Some(token) = token {
+        credentials = Credentials::UserAuthToken {
+            email: email.to_string(),
+            token: token.to_string(),
+        };
+    }
+
+    let api_client = HttpApiClient::new(credentials);
 
     for (section_name, section) in matched_sections {
         (section.function)(
