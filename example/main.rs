@@ -3,7 +3,7 @@ extern crate maplit;
 extern crate clap;
 extern crate cloudflare;
 
-use clap::{App, AppSettings, Arg, ArgGroup, ArgMatches, SubCommand};
+use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 use cloudflare::endpoints::{dns, zone};
 use cloudflare::framework::{
     apiclient::ApiClient,
@@ -139,21 +139,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .long("email")
             .help("Email address associated with your account")
             .takes_value(true)
-            .required(true))
+            .requires("auth-key"))
         .arg(Arg::with_name("auth-key")
             .long("auth-key")
             .env("CF_RS_AUTH_KEY")
             .help("API key generated on the \"My Account\" page")
-            .takes_value(true))
+            .takes_value(true)
+            .requires("email"))
         .arg(Arg::with_name("auth-token")
             .long("auth-token")
             .env("CF_RS_AUTH_TOKEN")
             .help("API token generated on the \"My Account\" page")
-            .takes_value(true))
-        .group(ArgGroup::with_name("auth")
-            .args(&["auth-key", "auth-token"])
-            .multiple(false)
-            .required(true))
+            .takes_value(true)
+            .conflicts_with_all(&["email", "auth-key"]))
         .setting(AppSettings::ArgRequiredElseHelp);
 
     for (section_name, section) in sections.iter() {
@@ -173,7 +171,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 matches.subcommand_matches(section_name).is_some()
             });
 
-    let email = matches.value_of("email").unwrap();
+    let email = matches.value_of("email");
     let key = matches.value_of("auth-key");
     let token = matches.value_of("auth-token");
 
@@ -183,7 +181,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if let Some(key) = key {
         credentials = Credentials::UserAuthKey {
-            email: email.to_string(),
+            email: email.unwrap().to_string(),
             key: key.to_string(),
         };
     }
