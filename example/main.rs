@@ -190,7 +190,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if let Some(token) = token {
         credentials = Credentials::UserAuthToken {
-            email: email.to_string(),
             token: token.to_string(),
         };
     }
