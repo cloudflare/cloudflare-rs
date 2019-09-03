@@ -175,22 +175,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let key = matches.value_of("auth-key");
     let token = matches.value_of("auth-token");
 
-    // Create bogus default api_client; this will be overwritten with a client
-    // that uses a key or token.
-    let mut credentials = Credentials::Default;
-
-    if let Some(key) = key {
-        credentials = Credentials::UserAuthKey {
+    let credentials: Credentials = if let Some(key) = key {
+        Credentials::UserAuthKey {
             email: email.unwrap().to_string(),
             key: key.to_string(),
-        };
-    }
-
-    if let Some(token) = token {
-        credentials = Credentials::UserAuthToken {
+        }
+    } else if let Some(token) = token {
+        Credentials::UserAuthToken {
             token: token.to_string(),
-        };
-    }
+        }
+    } else {
+        panic!("Either API token or API key + email pair must be provided")
+    };
 
     let api_client = HttpApiClient::new(credentials);
 

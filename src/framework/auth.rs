@@ -5,7 +5,6 @@ pub enum Credentials {
     UserAuthKey { email: String, key: String },
     UserAuthToken { token: String },
     Service { key: String },
-    Default,
 }
 
 pub trait AuthClient {
@@ -22,7 +21,6 @@ impl AuthClient for RequestBuilder {
                 self.header("Authorization", &format!("Bearer {}", token.clone()))
             }
             Credentials::Service { key } => self.header("X-Auth-User-Service-Key", key.as_str()),
-            _ => self,
         }
     }
 }
