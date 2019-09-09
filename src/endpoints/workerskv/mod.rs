@@ -1,7 +1,9 @@
 use crate::framework::response::ApiResult;
-use chrono::offset::Utc;
 use chrono::DateTime;
+use chrono::{TimeZone, Utc};
 use percent_encoding::{percent_encode, PATH_SEGMENT_ENCODE_SET};
+
+use serde::{Deserialize, Deserializer};
 
 pub mod create_namespace;
 pub mod delete_bulk;
@@ -30,7 +32,23 @@ impl ApiResult for Vec<WorkersKvNamespace> {}
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Key {
     pub name: String,
+    #[serde(default)]
+    #[serde(deserialize_with = "deserialize_option_timestamp")]
     pub expiration: Option<DateTime<Utc>>,
+}
+
+pub fn deserialize_option_timestamp<'de, D>(
+    deserializer: D,
+) -> Result<Option<DateTime<Utc>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: Option<i64> = Option::deserialize(deserializer)?;
+    if let Some(s) = s {
+        return Ok(Some(Utc.timestamp(s, 0)));
+    }
+
+    Ok(None)
 }
 
 impl ApiResult for Key {}
