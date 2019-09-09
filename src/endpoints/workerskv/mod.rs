@@ -30,7 +30,7 @@ impl ApiResult for Vec<WorkersKvNamespace> {}
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Key {
     pub name: String,
-    pub expiration: Option<DateTime<Utc>>,
+    pub expiration: Option<i64>,
 }
 
 impl ApiResult for Key {}
