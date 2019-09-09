@@ -15,7 +15,7 @@ pub mod write_bulk;
 /// Workers KV Namespace
 /// A Namespace is a collection of key-value pairs stored in Workers KV.
 /// https://api.cloudflare.com/#workers-kv-namespace-properties
-#[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersKvNamespace {
     /// Namespace identifier tag.
     pub id: String,
