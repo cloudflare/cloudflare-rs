@@ -19,6 +19,7 @@ path = "example/main.rs"
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 clap = "2.33"
+http = "0.1.18"
 maplit = "1.0"
 reqwest = "0.9"
 serde = "1.0"
