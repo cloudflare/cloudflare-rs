@@ -1,5 +1,7 @@
 use crate::framework::response::ApiResult;
+use crate::framework::response::ApiFailure;
 use crate::framework::Environment;
+
 use serde::Serialize;
 use url::Url;
 
@@ -10,6 +12,7 @@ pub enum Method {
     Delete,
     Patch,
 }
+
 
 pub trait Endpoint<ResultType = (), QueryType = (), BodyType = ()>
 where
@@ -24,6 +27,10 @@ where
     }
     fn body(&self) -> Option<BodyType> {
         None
+    }
+    /// Some endpoints dont need to validate. That's OK.
+    fn validate(&self) -> Result<(), ApiFailure> {
+        Ok(())
     }
     fn url(&self, environment: &Environment) -> Url {
         Url::from(environment).join(&self.path()).unwrap()
