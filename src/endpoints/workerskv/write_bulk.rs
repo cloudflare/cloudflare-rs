@@ -27,24 +27,41 @@ impl<'a> Endpoint<(), (), Vec<KeyValuePair>> for WriteBulk<'a> {
     fn validate(&self)  -> Result<(), ApiFailure> {
         if let Some(body) = self.body() {
             // this matches the serialization in HttpApiClient
-            let len = serde_json::to_string(&body).unwrap().len();
-            if len >= 100_000_000 {
-                return Err(ApiFailure::Error(
-                    reqwest::StatusCode::PAYLOAD_TOO_LARGE,
-                    ApiErrors {
-                        errors: vec![ApiError {
-                            code: 413,
-                            message: "request payload too large, must be less than 100MB".to_owned(),
+            match serde_json::to_string(&body) {
+                Ok(json) => {
+                    let len = json.len();
+                    if len >= 100_000_000 {
+                        return Err(ApiFailure::Error(
+                            reqwest::StatusCode::PAYLOAD_TOO_LARGE,
+                            ApiErrors {
+                                errors: vec![ApiError {
+                                    code: 413,
+                                    message: "request payload too large, must be less than 100MB".to_owned(),
+                                    other: HashMap::new(),
+                                }],
+                                other: HashMap::new(),
+                            },
+                        ));
+                    }
+                },
+                Err(e) => {
+                    return Err(ApiFailure::Error(
+                        reqwest::StatusCode::BAD_REQUEST,
+                        ApiErrors {
+                            errors: vec![ApiError {
+                                code: 400,
+                                message: format!("request body is malformed, failed json serialization: {}", e),
+                                other: HashMap::new(),
+                            }],
                             other: HashMap::new(),
-                        }],
-                        other: HashMap::new(),
-                    },
-                ));
+                        },
+                    ));
+                }
             }
+
         }
         Ok(())
     }
-    // default content-type is already application/json
 }
 
 #[serde_with::skip_serializing_none]
