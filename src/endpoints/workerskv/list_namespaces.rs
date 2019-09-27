@@ -22,6 +22,7 @@ impl<'a> Endpoint<Vec<WorkersKvNamespace>, ListNamespacesParams> for ListNamespa
     }
 }
 
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListNamespacesParams {
     pub page: Option<u32>,
