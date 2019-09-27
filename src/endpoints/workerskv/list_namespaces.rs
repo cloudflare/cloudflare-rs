@@ -7,6 +7,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 /// https://api.cloudflare.com/#workers-kv-namespace-list-namespaces
 pub struct ListNamespaces<'a> {
     pub account_identifier: &'a str,
+    pub params: ListNamespacesParams,
 }
 
 impl<'a> Endpoint<Vec<WorkersKvNamespace>, ListNamespacesParams> for ListNamespaces<'a> {
@@ -15,6 +16,9 @@ impl<'a> Endpoint<Vec<WorkersKvNamespace>, ListNamespacesParams> for ListNamespa
     }
     fn path(&self) -> String {
         format!("accounts/{}/storage/kv/namespaces", self.account_identifier)
+    }
+    fn query(&self) -> Option<ListNamespacesParams> {
+        Some(self.params.clone())
     }
 }
 
