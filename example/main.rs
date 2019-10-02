@@ -134,7 +134,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut cli = App::new("cloudflare-rust")
         .version("0.0")
         .author("Argo Tunnel team <argo-tunnel-team@cloudflare.com>")
-        .about("Issues example requests to thcliente Cloudflare API using the cloudflare-rust client library")
+        .about("Issues example requests to the Cloudflare API using the cloudflare-rust client library")
         .arg(Arg::with_name("email")
             .long("email")
             .help("Email address associated with your account")
