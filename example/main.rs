@@ -10,7 +10,7 @@ use cloudflare::framework::{
     auth::Credentials,
     mock::{MockApiClient, NoopEndpoint},
     response::{ApiFailure, ApiResponse, ApiResult},
-    HttpApiClient, OrderDirection,
+    HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
@@ -134,7 +134,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut cli = App::new("cloudflare-rust")
         .version("0.0")
         .author("Argo Tunnel team <argo-tunnel-team@cloudflare.com>")
-        .about("Issues example requests to the Cloudflare API using the cloudflare-rust client library")
+        .about("Issues example requests to thcliente Cloudflare API using the cloudflare-rust client library")
         .arg(Arg::with_name("email")
             .long("email")
             .help("Email address associated with your account")
@@ -188,7 +188,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("Either API token or API key + email pair must be provided")
     };
 
-    let api_client = HttpApiClient::new(credentials);
+    let api_client = HttpApiClient::new(credentials, HttpApiClientConfig::default())?;
 
     for (section_name, section) in matched_sections {
         (section.function)(

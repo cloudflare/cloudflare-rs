@@ -51,19 +51,19 @@ pub struct HttpApiClient {
 }
 
 pub struct HttpApiClientConfig {
-    http_timeout: Option<Duration>,
+    http_timeout: Duration,
+}
+
+impl Default for HttpApiClientConfig {
+    fn default() -> Self {
+        HttpApiClientConfig {
+            http_timeout: Duration::from_secs(30),
+        }
+    }
 }
 
 impl HttpApiClient {
-    pub fn new(credentials: auth::Credentials) -> HttpApiClient {
-        HttpApiClient {
-            environment: Environment::Production,
-            credentials,
-            http_client: reqwest::Client::new(),
-        }
-    }
-
-    pub fn new_custom(
+    pub fn new(
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
     ) -> Result<HttpApiClient, failure::Error> {
