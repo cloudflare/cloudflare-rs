@@ -7,6 +7,8 @@ pub mod endpoint;
 pub mod mock;
 pub mod response;
 
+use std::time::Duration;
+
 use crate::framework::{
     apiclient::ApiClient, auth::AuthClient, endpoint::Method, response::map_api_response,
 };
@@ -48,12 +50,33 @@ pub struct HttpApiClient {
     http_client: reqwest::Client,
 }
 
+pub struct HttpApiClientConfig {
+    http_timeout: Option<Duration>,
+}
+
 impl HttpApiClient {
     pub fn new(credentials: auth::Credentials) -> HttpApiClient {
         HttpApiClient {
             environment: Environment::Production,
             credentials,
             http_client: reqwest::Client::new(),
+        }
+    }
+
+    pub fn new_custom(
+        credentials: auth::Credentials,
+        config: HttpApiClientConfig,
+    ) -> HttpApiClient {
+        let http_client = reqwest::Client::builder()
+            .timeout(config.http_timeout)
+            .build()
+            .unwrap(); // Ok to unwrap; the only time this fails is if the native TLS backend cannot
+                       // be initialized, which is a system and not user error.
+
+        HttpApiClient {
+            environment: Environment::Production,
+            credentials,
+            http_client,
         }
     }
 }
