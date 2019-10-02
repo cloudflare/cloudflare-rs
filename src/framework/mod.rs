@@ -51,7 +51,7 @@ pub struct HttpApiClient {
 }
 
 pub struct HttpApiClientConfig {
-    http_timeout: Duration,
+    pub http_timeout: Duration,
 }
 
 impl Default for HttpApiClientConfig {
