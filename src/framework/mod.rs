@@ -66,18 +66,16 @@ impl HttpApiClient {
     pub fn new_custom(
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
-    ) -> HttpApiClient {
+    ) -> Result<HttpApiClient, failure::Error> {
         let http_client = reqwest::Client::builder()
             .timeout(config.http_timeout)
-            .build()
-            .unwrap(); // Ok to unwrap; the only time this fails is if the native TLS backend cannot
-                       // be initialized, which is a system and not user error.
+            .build()?;
 
-        HttpApiClient {
+        Ok(HttpApiClient {
             environment: Environment::Production,
             credentials,
             http_client,
-        }
+        })
     }
 }
 
