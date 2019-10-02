@@ -7,6 +7,8 @@ pub mod endpoint;
 pub mod mock;
 pub mod response;
 
+use std::time::Duration;
+
 use crate::framework::{
     apiclient::ApiClient, auth::AuthClient, endpoint::Method, response::map_api_response,
 };
@@ -48,13 +50,32 @@ pub struct HttpApiClient {
     http_client: reqwest::Client,
 }
 
+pub struct HttpApiClientConfig {
+    pub http_timeout: Duration,
+}
+
+impl Default for HttpApiClientConfig {
+    fn default() -> Self {
+        HttpApiClientConfig {
+            http_timeout: Duration::from_secs(30),
+        }
+    }
+}
+
 impl HttpApiClient {
-    pub fn new(credentials: auth::Credentials) -> HttpApiClient {
-        HttpApiClient {
+    pub fn new(
+        credentials: auth::Credentials,
+        config: HttpApiClientConfig,
+    ) -> Result<HttpApiClient, failure::Error> {
+        let http_client = reqwest::Client::builder()
+            .timeout(config.http_timeout)
+            .build()?;
+
+        Ok(HttpApiClient {
             environment: Environment::Production,
             credentials,
-            http_client: reqwest::Client::new(),
-        }
+            http_client,
+        })
     }
 }
 
