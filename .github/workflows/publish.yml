@@ -1,6 +1,9 @@
 name: Rust
 
-on: [release]
+on:
+  release
+    types: [published] # Only publish to crates.io when we formally publish a release
+  # For more on how to formally release cloudflare-rs, check out https://help.github.com/en/articles/creating-releases
 
 jobs:
   build:
@@ -12,7 +15,7 @@ jobs:
     - name: Login to crates.io
       run: cargo login $CRATES_IO_TOKEN
       env:
-        CRATES_IO_TOKEN: ${{ secrets.crates_io_token }} # https://help.github.com/en/articles/virtual-environments-for-github-actions#environment-variables
+        CRATES_IO_TOKEN: ${{ secrets.crates_io_token }} # https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables
     - name: Dry run publish
       run: cargo publish --dry-run
     - name: Publish
