@@ -1,7 +1,7 @@
 name: Rust
 
 on:
-  release
+  release:
     types: [published] # Only publish to crates.io when we formally publish a release
   # For more on how to formally release cloudflare-rs, check out https://help.github.com/en/articles/creating-releases
 
