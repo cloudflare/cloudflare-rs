@@ -1,0 +1,19 @@
+name: Rust
+
+on: [release]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Login to crates.io
+      run: cargo login $CRATES_IO_TOKEN
+      env:
+        CRATES_IO_TOKEN: ${{ secrets.crates_io_token }} # https://help.github.com/en/articles/virtual-environments-for-github-actions#environment-variables
+    - name: Dry run publish
+      run: cargo publish --dry-run
+    - name: Publish
+      run: cargo publish
