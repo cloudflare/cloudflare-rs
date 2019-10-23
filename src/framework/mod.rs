@@ -22,10 +22,14 @@ pub enum OrderDirection {
     Descending,
 }
 
+/// Used as a parameter to API calls that search for a resource (e.g. DNS records).
+/// Tells the API whether to return results that match all search requirements or at least one (any).
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum SearchMatch {
+    /// Match all search requirements
     All,
+    /// Match at least one search requirement
     Any,
 }
 
