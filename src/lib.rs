@@ -1,3 +1,4 @@
+///! An API client for the [Cloudflare API](https://api.cloudflare.com)
 extern crate chrono;
 extern crate reqwest;
 extern crate serde;
