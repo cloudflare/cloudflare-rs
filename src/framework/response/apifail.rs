@@ -1,6 +1,7 @@
 use serde::de::DeserializeOwned;
 use serde_json::value::Value as JValue;
 use std::collections::HashMap;
+use std::error::Error;
 
 use std::fmt;
 use std::fmt::Debug;
@@ -37,6 +38,7 @@ impl PartialEq for ApiError {
 
 impl Eq for ApiError {}
 impl Eq for ApiErrors {}
+impl Error for ApiError {}
 
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -51,6 +53,8 @@ pub enum ApiFailure {
     Error(reqwest::StatusCode, ApiErrors),
     Invalid(reqwest::Error),
 }
+
+impl Error for ApiFailure {}
 
 impl PartialEq for ApiFailure {
     fn eq(&self, other: &ApiFailure) -> bool {
