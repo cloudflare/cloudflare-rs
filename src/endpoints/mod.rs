@@ -8,3 +8,4 @@ pub mod dns;
 pub mod plan;
 pub mod workerskv;
 pub mod zone;
+pub mod user;
