@@ -45,7 +45,7 @@ impl<'a> From<&'a Environment> for url::Url {
             Environment::Production => {
                 url::Url::parse("https://api.cloudflare.com/client/v4/").unwrap()
             }
-            Environment::Custom(url) => url.clone()
+            Environment::Custom(url) => url.clone(),
         }
     }
 }

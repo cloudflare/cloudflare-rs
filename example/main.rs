@@ -8,10 +8,9 @@ use cloudflare::endpoints::{dns, zone};
 use cloudflare::framework::{
     apiclient::ApiClient,
     auth::Credentials,
-    Environment,
     mock::{MockApiClient, NoopEndpoint},
     response::{ApiFailure, ApiResponse, ApiResult},
-    HttpApiClient, HttpApiClientConfig, OrderDirection,
+    Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
@@ -189,7 +188,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("Either API token or API key + email pair must be provided")
     };
 
-    let api_client = HttpApiClient::new(credentials, HttpApiClientConfig::default(), Environment::Production)?;
+    let api_client = HttpApiClient::new(
+        credentials,
+        HttpApiClientConfig::default(),
+        Environment::Production,
+    )?;
 
     for (section_name, section) in matched_sections {
         (section.function)(
