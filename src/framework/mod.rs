@@ -36,6 +36,7 @@ pub enum SearchMatch {
 #[derive(Debug)]
 pub enum Environment {
     Production,
+    Custom(url::Url),
 }
 
 impl<'a> From<&'a Environment> for url::Url {
@@ -44,6 +45,7 @@ impl<'a> From<&'a Environment> for url::Url {
             Environment::Production => {
                 url::Url::parse("https://api.cloudflare.com/client/v4/").unwrap()
             }
+            Environment::Custom(url) => url.clone()
         }
     }
 }
@@ -70,13 +72,14 @@ impl HttpApiClient {
     pub fn new(
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
+        environment: Environment,
     ) -> Result<HttpApiClient, failure::Error> {
         let http_client = reqwest::Client::builder()
             .timeout(config.http_timeout)
             .build()?;
 
         Ok(HttpApiClient {
-            environment: Environment::Production,
+            environment,
             credentials,
             http_client,
         })
