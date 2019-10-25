@@ -6,5 +6,6 @@ module.
 pub mod account;
 pub mod dns;
 pub mod plan;
+pub mod user;
 pub mod workerskv;
 pub mod zone;
