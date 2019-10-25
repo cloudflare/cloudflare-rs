@@ -20,7 +20,7 @@ pub struct UserDetails {
     pub created_on: DateTime<Utc>,
     pub modified_on: DateTime<Utc>,
     pub two_factor_authentication_enabled: bool,
-    pub suspented: bool,
+    pub suspended: bool,
 }
 impl ApiResult for UserDetails {}
 
