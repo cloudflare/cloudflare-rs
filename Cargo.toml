@@ -16,6 +16,10 @@ path = "src/lib.rs"
 name = "cloudflare-rust-examples"
 path = "example/main.rs"
 
+[[bin]]
+name = "e2e-tests"
+path = "e2e_tests/main.rs"
+
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 clap = "2.33"
