@@ -8,19 +8,30 @@ use chrono::{DateTime, Utc};
 /// https://api.cloudflare.com/#user-user-details
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct Organization {
+    id: String,
+    name: String,
+    status: String,
+    permissions: Vec<String>,
+    roles: Vec<String>,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct UserDetails {
-    pub id: String,
-    pub email: String,
-    pub first_name: String,
-    pub last_name: String,
-    pub username: String,
-    pub telephone: String,
-    pub contry: String,
-    pub zipcode: String,
-    pub created_on: DateTime<Utc>,
+    pub organizations: Vec<Organization>,
+    pub betas: Vec<String>,
+    pub telephone: Option<String>,
+    pub zipcode: Option<String>,
+    pub last_name: Option<String>,
     pub modified_on: DateTime<Utc>,
+    pub username: String,
+    pub created_on: DateTime<Utc>,
+    pub country: Option<String>,
     pub two_factor_authentication_enabled: bool,
+    pub first_name: Option<String>,
+    pub id: String,
     pub suspended: bool,
+    pub email: String,
 }
 impl ApiResult for UserDetails {}
 
