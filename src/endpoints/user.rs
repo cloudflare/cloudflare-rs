@@ -11,9 +11,9 @@ use chrono::{DateTime, Utc};
 pub struct Organization {
     id: String,
     name: String,
-    status: String,
-    permissions: Vec<String>,
-    roles: Vec<String>,
+    status: String, // Whether or not the user is a member of the organization or has an inivitation pending
+    permissions: Vec<String>, // Access permissions for this User
+    roles: Vec<String>, // List of role names for the User at the Organization
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
