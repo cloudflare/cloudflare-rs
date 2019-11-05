@@ -45,3 +45,25 @@ impl<'a> Endpoint<UserDetails, (), ()> for GetUserDetails {
         "user".to_string()
     }
 }
+
+/// Validate User Token
+/// Returns whether a given token is valid or not.
+/// https://blog.cloudflare.com/api-tokens-general-availability/
+///
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct UserTokenStatus {
+    pub id: String,
+    pub status: String,
+}
+impl ApiResult for UserTokenStatus {}
+
+pub struct GetUserTokenStatus {}
+
+impl<'a> Endpoint<UserTokenStatus, (), ()> for GetUserTokenStatus {
+    fn method(&self) -> Method {
+        Method::Get
+    }
+    fn path(&self) -> String {
+        "user/tokens/verify".to_string()
+    }
+}
