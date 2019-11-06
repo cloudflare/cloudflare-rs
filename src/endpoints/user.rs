@@ -17,7 +17,7 @@ pub struct Organization {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
-pub struct UserDetails {
+pub struct Details {
     pub organizations: Vec<Organization>,
     pub betas: Vec<String>,
     pub telephone: Option<String>,
@@ -33,11 +33,11 @@ pub struct UserDetails {
     pub suspended: bool,
     pub email: String,
 }
-impl ApiResult for UserDetails {}
+impl ApiResult for Details {}
 
-pub struct GetUserDetails {}
+pub struct GetDetails {}
 
-impl<'a> Endpoint<UserDetails, (), ()> for GetUserDetails {
+impl<'a> Endpoint<Details, (), ()> for GetDetails {
     fn method(&self) -> Method {
         Method::Get
     }
@@ -51,15 +51,15 @@ impl<'a> Endpoint<UserDetails, (), ()> for GetUserDetails {
 /// https://blog.cloudflare.com/api-tokens-general-availability/
 ///
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
-pub struct UserTokenStatus {
+pub struct TokenStatus {
     pub id: String,
     pub status: String,
 }
-impl ApiResult for UserTokenStatus {}
+impl ApiResult for TokenStatus {}
 
-pub struct GetUserTokenStatus {}
+pub struct GetTokenStatus {}
 
-impl<'a> Endpoint<UserTokenStatus, (), ()> for GetUserTokenStatus {
+impl<'a> Endpoint<TokenStatus, (), ()> for GetTokenStatus {
     fn method(&self) -> Method {
         Method::Get
     }
