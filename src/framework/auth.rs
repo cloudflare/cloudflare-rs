@@ -1,4 +1,4 @@
-use reqwest::RequestBuilder;
+use reqwest::blocking::RequestBuilder;
 
 #[derive(Debug)]
 pub enum Credentials {
@@ -7,20 +7,29 @@ pub enum Credentials {
     Service { key: String },
 }
 
+impl Credentials {
+    pub fn headers(&self) -> Vec<(&'static str, String)> {
+        match self {
+            Self::UserAuthKey { email, key } => {
+                vec![("X-Auth-Email", email.clone()), ("X-Auth-Key", key.clone())]
+            }
+            Self::UserAuthToken { token } => {
+                vec![("Authorization", format!("Bearer {}", token.clone()))]
+            }
+            Self::Service { key } => vec![("X-Auth-User-Service-Key", key.clone())],
+        }
+    }
+}
+
 pub trait AuthClient {
-    fn auth(self, credentials: &Credentials) -> RequestBuilder;
+    fn auth(self, credentials: &Credentials) -> Self;
 }
 
 impl AuthClient for RequestBuilder {
-    fn auth(self, credentials: &Credentials) -> RequestBuilder {
-        match credentials {
-            Credentials::UserAuthKey { email, key } => self
-                .header("X-Auth-Email", email.as_str())
-                .header("X-Auth-Key", key.clone()),
-            Credentials::UserAuthToken { token } => {
-                self.header("Authorization", &format!("Bearer {}", token.clone()))
-            }
-            Credentials::Service { key } => self.header("X-Auth-User-Service-Key", key.as_str()),
+    fn auth(mut self, credentials: &Credentials) -> Self {
+        for (k, v) in credentials.headers() {
+            self = self.header(k, v);
         }
+        self
     }
 }

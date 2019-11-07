@@ -5,7 +5,6 @@ pub mod pool_details;
 use crate::framework::response::ApiResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
-use serde::Deserialize;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 use std::net::IpAddr;

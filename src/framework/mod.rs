@@ -2,17 +2,17 @@
 This module controls how requests are sent to Cloudflare's API, and how responses are parsed from it.
  */
 pub mod apiclient;
+pub mod async_api;
 pub mod auth;
 pub mod endpoint;
 pub mod mock;
+mod reqwest_adaptors;
 pub mod response;
 
-use std::time::Duration;
-
-use crate::framework::{
-    apiclient::ApiClient, auth::AuthClient, endpoint::Method, response::map_api_response,
-};
+use crate::framework::{apiclient::ApiClient, auth::AuthClient, response::map_api_response};
+use reqwest_adaptors::match_reqwest_method;
 use serde::Serialize;
+use std::time::Duration;
 
 #[derive(Serialize, Clone, Debug)]
 pub enum OrderDirection {
@@ -50,10 +50,11 @@ impl<'a> From<&'a Environment> for url::Url {
     }
 }
 
+/// Synchronous Cloudflare API client.
 pub struct HttpApiClient {
     environment: Environment,
     credentials: auth::Credentials,
-    http_client: reqwest::Client,
+    http_client: reqwest::blocking::Client,
 }
 
 pub struct HttpApiClientConfig {
@@ -74,7 +75,7 @@ impl HttpApiClient {
         config: HttpApiClientConfig,
         environment: Environment,
     ) -> Result<HttpApiClient, failure::Error> {
-        let http_client = reqwest::Client::builder()
+        let http_client = reqwest::blocking::Client::builder()
             .timeout(config.http_timeout)
             .build()?;
 
@@ -89,6 +90,7 @@ impl HttpApiClient {
 // TODO: This should probably just implement request for the Reqwest client itself :)
 // TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
 impl<'a> ApiClient for HttpApiClient {
+    /// Synchronously send a request to the Cloudflare API.
     fn request<ResultType, QueryType, BodyType>(
         &self,
         endpoint: &dyn endpoint::Endpoint<ResultType, QueryType, BodyType>,
@@ -98,16 +100,6 @@ impl<'a> ApiClient for HttpApiClient {
         QueryType: Serialize,
         BodyType: Serialize,
     {
-        fn match_reqwest_method(method: Method) -> reqwest::Method {
-            match method {
-                Method::Get => reqwest::Method::GET,
-                Method::Post => reqwest::Method::POST,
-                Method::Delete => reqwest::Method::DELETE,
-                Method::Put => reqwest::Method::PUT,
-                Method::Patch => reqwest::Method::PATCH,
-            }
-        }
-
         // Build the request
         let mut request = self
             .http_client

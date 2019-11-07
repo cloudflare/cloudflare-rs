@@ -1,18 +1,16 @@
 use clap::{App, AppSettings, Arg};
-use cloudflare::framework::{
-    apiclient::ApiClient, auth::Credentials, Environment, HttpApiClient, HttpApiClientConfig,
-};
+use cloudflare::framework::{async_api, auth::Credentials, Environment, HttpApiClientConfig};
 use failure::{Error, Fallible};
 use std::fmt::Display;
 use std::net::{IpAddr, Ipv4Addr};
 
-fn tests(api_client: &HttpApiClient, account_id: &str) -> Fallible<()> {
-    test_lb_pool(&api_client, &account_id)?;
+async fn tests(api_client: &async_api::Client, account_id: &str) -> Fallible<()> {
+    test_lb_pool(&api_client, &account_id).await?;
     println!("Tests passed");
     Ok(())
 }
 
-fn test_lb_pool(api_client: &HttpApiClient, account_identifier: &str) -> Fallible<()> {
+async fn test_lb_pool(api_client: &async_api::Client, account_identifier: &str) -> Fallible<()> {
     use cloudflare::endpoints::load_balancing::*;
 
     // Create a pool
@@ -45,6 +43,7 @@ fn test_lb_pool(api_client: &HttpApiClient, account_identifier: &str) -> Fallibl
                 origins: &origins,
             },
         })
+        .await
         .log_err(|e| println!("Error in CreatePool: {}", e))?
         .result;
 
@@ -54,6 +53,7 @@ fn test_lb_pool(api_client: &HttpApiClient, account_identifier: &str) -> Fallibl
             account_identifier,
             identifier: &pool.id,
         })
+        .await
         .log_err(|e| println!("Error in PoolDetails: {}", e));
 
     // Delete the pool
@@ -62,6 +62,7 @@ fn test_lb_pool(api_client: &HttpApiClient, account_identifier: &str) -> Fallibl
             account_identifier,
             identifier: &pool.id,
         })
+        .await
         .log_err(|e| println!("Error in DeletePool: {}", e))?;
 
     // Validate the pool we got was the same as the pool we sent
@@ -71,7 +72,8 @@ fn test_lb_pool(api_client: &HttpApiClient, account_identifier: &str) -> Fallibl
     Ok(())
 }
 
-fn main() -> Result<(), Error> {
+#[tokio::main]
+async fn main() -> Result<(), Error> {
     let cli =
     App::new("Cloudflare-rs E2E tests")
         .version("0.0")
@@ -122,13 +124,13 @@ fn main() -> Result<(), Error> {
         panic!("Either API token or API key + email pair must be provided")
     };
 
-    let api_client = HttpApiClient::new(
+    let api_client = async_api::Client::new(
         credentials,
         HttpApiClientConfig::default(),
         Environment::Production,
     )?;
 
-    tests(&api_client, &account_id)
+    tests(&api_client, &account_id).await
 }
 
 pub trait ResultExt<T, E: Display> {

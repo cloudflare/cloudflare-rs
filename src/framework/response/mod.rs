@@ -19,9 +19,10 @@ pub type ApiResponse<ResultType> = Result<ApiSuccess<ResultType>, ApiFailure>;
 // If the response is 200 and doesn't parse, return Invalid.
 // If the response isn't 200, return Failure, with API errors if they were included.
 pub fn map_api_response<ResultType: ApiResult>(
-    mut resp: reqwest::Response,
+    resp: reqwest::blocking::Response,
 ) -> ApiResponse<ResultType> {
-    if resp.status() == reqwest::StatusCode::OK {
+    let status = resp.status();
+    if status == reqwest::StatusCode::OK {
         let parsed: Result<ApiSuccess<ResultType>, reqwest::Error> = resp.json();
         match parsed {
             Ok(api_resp) => Ok(api_resp),
@@ -30,7 +31,7 @@ pub fn map_api_response<ResultType: ApiResult>(
     } else {
         let parsed: Result<ApiErrors, reqwest::Error> = resp.json();
         let errors = parsed.unwrap_or_default();
-        Err(ApiFailure::Error(resp.status(), errors))
+        Err(ApiFailure::Error(status, errors))
     }
 }
 
@@ -71,7 +72,7 @@ mod tests {
         assert_ne!(err2, err1);
 
         let not_real_website = "notavalid:url.evena little";
-        let fail = ApiFailure::Invalid(reqwest::get(not_real_website).unwrap_err());
+        let fail = ApiFailure::Invalid(reqwest::blocking::get(not_real_website).unwrap_err());
         assert_eq!(fail, fail);
         assert_ne!(fail, err1);
         assert_ne!(fail, err2);
