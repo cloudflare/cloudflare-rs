@@ -53,7 +53,7 @@ impl<'a> From<&'a Environment> for url::Url {
 pub struct HttpApiClient {
     environment: Environment,
     credentials: auth::Credentials,
-    http_client: reqwest::Client,
+    http_client: reqwest::blocking::Client,
 }
 
 pub struct HttpApiClientConfig {
@@ -74,7 +74,7 @@ impl HttpApiClient {
         config: HttpApiClientConfig,
         environment: Environment,
     ) -> Result<HttpApiClient, failure::Error> {
-        let http_client = reqwest::Client::builder()
+        let http_client = reqwest::blocking::Client::builder()
             .timeout(config.http_timeout)
             .build()?;
 

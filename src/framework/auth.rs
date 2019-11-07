@@ -1,4 +1,4 @@
-use reqwest::RequestBuilder;
+use reqwest::blocking::RequestBuilder;
 
 #[derive(Debug)]
 pub enum Credentials {
