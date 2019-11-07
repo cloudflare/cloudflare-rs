@@ -1,4 +1,4 @@
-use reqwest::RequestBuilder;
+use reqwest::blocking::RequestBuilder;
 
 #[derive(Debug)]
 pub enum Credentials {
@@ -8,11 +8,11 @@ pub enum Credentials {
 }
 
 pub trait AuthClient {
-    fn auth(self, credentials: &Credentials) -> RequestBuilder;
+    fn auth(self, credentials: &Credentials) -> Self;
 }
 
 impl AuthClient for RequestBuilder {
-    fn auth(self, credentials: &Credentials) -> RequestBuilder {
+    fn auth(self, credentials: &Credentials) -> Self {
         match credentials {
             Credentials::UserAuthKey { email, key } => self
                 .header("X-Auth-Email", email.as_str())
