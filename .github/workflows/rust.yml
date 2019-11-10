@@ -1,14 +1,20 @@
-name: Rust
+
+name: Test cloudflare-rs
 
 on: [push]
 
 jobs:
-  build:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        rust: [stable]
 
-    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Build
-      run: cargo build --verbose
+    - uses: hecrj/setup-rust-action@v1
+      with:
+        rust-version: ${{ matrix.rust }}
+    - uses: actions/checkout@master
     - name: Run tests
       run: cargo test --verbose
