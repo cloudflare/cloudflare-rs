@@ -12,6 +12,7 @@ use cloudflare::framework::{
     response::{ApiFailure, ApiResponse, ApiResult},
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
+use serde::Serialize;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 
@@ -24,6 +25,31 @@ struct Section<'a, ApiClientType: ApiClient> {
 fn print_response<T: ApiResult>(response: ApiResponse<T>) {
     match response {
         Ok(success) => println!("Success: {:#?}", success),
+        Err(e) => match e {
+            ApiFailure::Error(status, errors) => {
+                println!("HTTP {}:", status);
+                for err in errors.errors {
+                    println!("Error {}: {}", err.code, err.message);
+                    for (k, v) in err.other {
+                        println!("{}: {}", k, v);
+                    }
+                }
+                for (k, v) in errors.other {
+                    println!("{}: {}", k, v);
+                }
+            }
+            ApiFailure::Invalid(reqwest_err) => println!("Error: {}", reqwest_err),
+        },
+    }
+}
+
+/// Sometimes you want to pipe results to jq etc
+fn print_response_json<T: ApiResult>(response: ApiResponse<T>)
+where
+    T: Serialize,
+{
+    match response {
+        Ok(success) => println!("{}", serde_json::to_string(&success.result).unwrap()),
         Err(e) => match e {
             ApiFailure::Error(status, errors) => {
                 println!("HTTP {}:", status);
