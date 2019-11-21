@@ -8,5 +8,6 @@ pub mod dns;
 pub mod load_balancing;
 pub mod plan;
 pub mod user;
+pub mod workers;
 pub mod workerskv;
 pub mod zone;
