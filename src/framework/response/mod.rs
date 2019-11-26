@@ -70,7 +70,7 @@ mod tests {
         );
         assert_ne!(err2, err1);
 
-        let not_real_website = "http://adamchalmersateabatoncebutjfusdfnwetbwefhsd.com/this/is/not/a/real/website.xyzqrs";
+        let not_real_website = "notavalid:url.evena little";
         let fail = ApiFailure::Invalid(reqwest::get(not_real_website).unwrap_err());
         assert_eq!(fail, fail);
         assert_ne!(fail, err1);
