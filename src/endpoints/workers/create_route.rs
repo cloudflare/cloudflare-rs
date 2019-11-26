@@ -22,6 +22,10 @@ impl<'a> Endpoint<WorkersRouteIdOnly, (), CreateRouteParams> for CreateRoute<'a>
     }
 }
 
+/// pattern: the zone name along with glob-style wildcards
+///         e.g. "example.net/*"
+/// script: Name of the script to apply when the route is matched.
+///         The route is skipped when this is blank/missing.
 #[derive(Serialize, Clone, Debug)]
 pub struct CreateRouteParams {
     pub pattern: String,
