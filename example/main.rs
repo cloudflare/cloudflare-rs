@@ -170,7 +170,9 @@ fn delete_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: 
         .expect(&zone_id_missing);
 
     let route_id_missing = format!("missing '{}': {}", "ROUTE_PATTERN", usage);
-    let route_id = arg_matches.value_of("route_id").expect(&route_id_missing);
+    let route_id = arg_matches
+        .value_of("route_identifier")
+        .expect(&route_id_missing);
 
     let response = api_client.request(&workers::DeleteRoute {
         zone_identifier,

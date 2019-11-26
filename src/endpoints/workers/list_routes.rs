@@ -2,9 +2,9 @@ use super::WorkersRoute;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
-/// Create a Route
-/// Creates a route mapping the given pattern to the given script
-/// https://api.cloudflare.com/#worker-routes-create-route
+/// List Routes
+/// Lists all route mappings for a given zone
+/// https://api.cloudflare.com/#worker-routes-list-routes
 pub struct ListRoutes<'a> {
     pub zone_identifier: &'a str,
 }
