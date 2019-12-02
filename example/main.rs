@@ -4,7 +4,7 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use cloudflare::endpoints::{dns, zone};
+use cloudflare::endpoints::{dns, workers, zone};
 use cloudflare::framework::{
     apiclient::ApiClient,
     auth::Credentials,
@@ -12,6 +12,7 @@ use cloudflare::framework::{
     response::{ApiFailure, ApiResponse, ApiResult},
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
+use serde::Serialize;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 
@@ -24,6 +25,31 @@ struct Section<'a, ApiClientType: ApiClient> {
 fn print_response<T: ApiResult>(response: ApiResponse<T>) {
     match response {
         Ok(success) => println!("Success: {:#?}", success),
+        Err(e) => match e {
+            ApiFailure::Error(status, errors) => {
+                println!("HTTP {}:", status);
+                for err in errors.errors {
+                    println!("Error {}: {}", err.code, err.message);
+                    for (k, v) in err.other {
+                        println!("{}: {}", k, v);
+                    }
+                }
+                for (k, v) in errors.other {
+                    println!("{}: {}", k, v);
+                }
+            }
+            ApiFailure::Invalid(reqwest_err) => println!("Error: {}", reqwest_err),
+        },
+    }
+}
+
+/// Sometimes you want to pipe results to jq etc
+fn print_response_json<T: ApiResult>(response: ApiResponse<T>)
+where
+    T: Serialize,
+{
+    match response {
+        Ok(success) => println!("{}", serde_json::to_string(&success.result).unwrap()),
         Err(e) => match e {
             ApiFailure::Error(status, errors) => {
                 println!("HTTP {}:", status);
@@ -96,6 +122,66 @@ fn create_txt_record<ApiClientType: ApiClient>(
     print_response(response);
 }
 
+fn list_routes<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let usage = "usage: list_routes ZONE_ID";
+
+    let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
+    let zone_identifier = arg_matches
+        .value_of("zone_identifier")
+        .expect(&zone_id_missing);
+
+    let response = api_client.request(&workers::ListRoutes { zone_identifier });
+
+    print_response_json(response);
+}
+
+fn create_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let usage = "usage: create_route ZONE_ID SCRIPT_NAME ROUTE_PATTERN";
+
+    let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
+    let zone_identifier = arg_matches
+        .value_of("zone_identifier")
+        .expect(&zone_id_missing);
+
+    let route_pattern_missing = format!("missing '{}': {}", "ROUTE_PATTERN", usage);
+    let route_pattern = arg_matches
+        .value_of("route_pattern")
+        .expect(&route_pattern_missing);
+
+    let script_name = arg_matches.value_of("script_name");
+
+    let response = api_client.request(&workers::CreateRoute {
+        zone_identifier,
+        params: workers::CreateRouteParams {
+            pattern: route_pattern.to_string(),
+            script: script_name.map(|n| n.to_string()),
+        },
+    });
+
+    print_response_json(response);
+}
+
+fn delete_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let usage = "usage: delete_route ZONE_ID ROUTE_ID";
+
+    let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
+    let zone_identifier = arg_matches
+        .value_of("zone_identifier")
+        .expect(&zone_id_missing);
+
+    let route_id_missing = format!("missing '{}': {}", "ROUTE_PATTERN", usage);
+    let route_id = arg_matches
+        .value_of("route_identifier")
+        .expect(&route_id_missing);
+
+    let response = api_client.request(&workers::DeleteRoute {
+        zone_identifier,
+        identifier: route_id,
+    });
+
+    print_response_json(response);
+}
+
 fn mock_api<ApiClientType: ApiClient>(_args: &ArgMatches, _api: &ApiClientType) {
     let mock_api = MockApiClient {};
     let endpoint = NoopEndpoint {};
@@ -128,6 +214,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             args: vec![],
             description: "Run a mock API request",
             function: mock_api
+        },
+        "list_routes" => Section{
+            args: vec![
+                Arg::with_name("zone_identifier").required(true),
+            ],
+            description: "Activate a Worker on a Route",
+            function: list_routes
+        },
+        "create_route" => Section{
+            args: vec![
+                Arg::with_name("zone_identifier").required(true),
+                Arg::with_name("route_pattern").required(true),
+                Arg::with_name("script_name").required(false),
+            ],
+            description: "Activate a Worker on a Route",
+            function: create_route
+        },
+        "delete_route" => Section{
+            args: vec![
+                Arg::with_name("zone_identifier").required(true),
+                Arg::with_name("route_identifier").required(true),
+            ],
+            description: "Activate a Worker on a Route",
+            function: delete_route
         },
     };
 
