@@ -4,7 +4,7 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use cloudflare::endpoints::{dns, workers, zone};
+use cloudflare::endpoints::{dns, workers, zone, account};
 use cloudflare::framework::{
     apiclient::ApiClient,
     auth::Credentials,
@@ -135,6 +135,14 @@ fn list_routes<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &
     print_response_json(response);
 }
 
+fn list_accounts<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let usage = "usage: list_accounts";
+
+    let response = api_client.request(&account::ListAccounts { params: None,});
+
+    print_response_json(response);
+}
+
 fn create_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
     let usage = "usage: create_route ZONE_ID SCRIPT_NAME ROUTE_PATTERN";
 
@@ -221,6 +229,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ],
             description: "Activate a Worker on a Route",
             function: list_routes
+        },
+        "list_accounts" => Section{
+            args: vec![],
+            description: "List accounts",
+            function: list_accounts
         },
         "create_route" => Section{
             args: vec![
