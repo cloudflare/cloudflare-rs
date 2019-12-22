@@ -108,6 +108,8 @@ impl<'a> ApiClient for HttpApiClient {
             }
         }
 
+        endpoint.validate()?;
+
         // Build the request
         let mut request = self
             .http_client
@@ -125,7 +127,6 @@ impl<'a> ApiClient for HttpApiClient {
         request = request.auth(&self.credentials);
 
         let response = request.send()?;
-
         map_api_response(response)
     }
 }
