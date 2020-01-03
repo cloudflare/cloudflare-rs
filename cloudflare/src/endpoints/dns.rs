@@ -80,6 +80,25 @@ impl<'a> Endpoint<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
     }
 }
 
+/// Patch DNS Record
+/// https://api.cloudflare.com/#dns-records-for-a-zone-patch-dns-record
+pub struct PatchDnsRecord<'a> {
+    pub zone_identifier: &'a str,
+    pub identifier: &'a str,
+    pub params: PatchDnsRecordParams,
+}
+impl<'a> Endpoint<DnsRecord, (), PatchDnsRecordParams> for PatchDnsRecord<'a> {
+    fn method(&self) -> Method {
+        Method::Patch
+    }
+    fn path(&self) -> String {
+        format!("zones/{}/dns_records/{}", self.zone_identifier, self.identifier)
+    }
+    fn body(&self) -> Option<PatchDnsRecordParams> {
+        Some(self.params.clone())
+    }
+}
+
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum ListDnsRecordsOrder {
@@ -101,6 +120,20 @@ pub struct ListDnsRecordsParams {
     pub direction: Option<OrderDirection>,
     #[serde(rename = "match")]
     pub search_match: Option<SearchMatch>,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Serialize, Clone, Debug, Default)]
+pub struct PatchDnsRecordParams {
+    /// DNS record name
+    pub name: Option<String>,
+    /// Type of the DNS record that also holds the record value
+    #[serde(flatten)]
+    pub content: Option<DnsContent>,
+    /// Time to live for DNS record. Value of 1 is 'automatic'
+    pub ttl: Option<u32>,
+    /// Whether the record is receiving the performance and security benefits of Cloudflare
+    pub proxied: Option<bool>,
 }
 
 /// Extra Cloudflare-specific information about the record
