@@ -1,14 +1,26 @@
 # Contributing to cloudflare-rs
 
-There are two root-level modules in `cloudflare-rs`. Most PRs will only touch one of them. If you're
-working on the API framework itself, all the relevant code lives under the `framework/`
-module. If you're adding or editing a particular endpoint, read the "Adding New Endpoints" section below.
+There are two root-level modules in `cloudflare-rs`. Most PRs will only touch one of them. The
+`framework/` module contains the API framework itself. The `endpoints/` module contains code for
+each Cloudflare API endpoint, grouped by product, e.g. `endpoints/dns` or `endpoints/zones`. Check 
+the "Updating the Framework" or "Adding New Endpoints" sections below.
 
 ## Pull Requests
 
-Every PR should have a corresponding issue, and the issue number should appear in the PR's description and commit message.
+Every PR should have a corresponding issue, and the issue number should appear in the PR's 
+description and commit message.
 
 PRs should be squashed to one commit before merging.
+
+## Updating the Framework
+
+This library includes both async and blocking API clients. The `ApiClient` trait covers blocking 
+requests, and is implemented by the `HttpApiClient` struct. The `async_api::Client` struct covers
+async requests. Because Rust doesn't support async fns in traits yet, there is no trait for async
+API clients.
+
+If you want to change how the Cloudflare API client works, please remember to make the change in 
+both blocking and async clients if applicable.
 
 ## Adding New Endpoints
 
