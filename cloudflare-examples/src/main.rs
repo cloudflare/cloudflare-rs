@@ -4,7 +4,7 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use cloudflare::endpoints::{dns, workers, zone, account};
+use cloudflare::endpoints::{account, dns, workers, zone};
 use cloudflare::framework::{
     apiclient::ApiClient,
     auth::Credentials,
@@ -135,10 +135,8 @@ fn list_routes<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &
     print_response_json(response);
 }
 
-fn list_accounts<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
-    let usage = "usage: list_accounts";
-
-    let response = api_client.request(&account::ListAccounts { params: None,});
+fn list_accounts<ApiClientType: ApiClient>(_arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let response = api_client.request(&account::ListAccounts { params: None });
 
     print_response_json(response);
 }
