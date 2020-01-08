@@ -9,7 +9,12 @@ pub mod mock;
 mod reqwest_adaptors;
 pub mod response;
 
-use crate::framework::{apiclient::ApiClient, auth::AuthClient, response::map_api_response};
+use crate::framework::{
+    apiclient::ApiClient,
+    auth::AuthClient,
+    endpoint::Endpoint,
+    response::{map_api_response, ApiResult},
+};
 use reqwest_adaptors::match_reqwest_method;
 use serde::Serialize;
 use std::time::Duration;
@@ -85,18 +90,13 @@ impl HttpApiClient {
             http_client,
         })
     }
-}
 
-// TODO: This should probably just implement request for the Reqwest client itself :)
-// TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
-impl<'a> ApiClient for HttpApiClient {
-    /// Synchronously send a request to the Cloudflare API.
-    fn request<ResultType, QueryType, BodyType>(
+    fn make_request<ResultType, QueryType, BodyType>(
         &self,
         endpoint: &dyn endpoint::Endpoint<ResultType, QueryType, BodyType>,
-    ) -> response::ApiResponse<ResultType>
+    ) -> reqwest::blocking::RequestBuilder
     where
-        ResultType: response::ApiResult,
+        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize,
     {
@@ -116,8 +116,41 @@ impl<'a> ApiClient for HttpApiClient {
 
         request = request.auth(&self.credentials);
 
-        let response = request.send()?;
+        request
+    }
+}
+
+// TODO: This should probably just implement request for the Reqwest client itself :)
+// TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
+impl<'a> ApiClient for HttpApiClient {
+    /// Synchronously send a request to the Cloudflare API.
+    fn request<ResultType, QueryType, BodyType>(
+        &self,
+        endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
+    ) -> response::ApiResponse<ResultType>
+    where
+        ResultType: ApiResult,
+        QueryType: Serialize,
+        BodyType: Serialize,
+    {
+        let response = self.make_request(endpoint).send()?;
 
         map_api_response(response)
+    }
+
+    /// Synchronously send a request to the Cloudflare API, get the response as bytes.
+    fn request_raw_bytes<ResultType, QueryType, BodyType>(
+        &self,
+        endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
+    ) -> Result<Vec<u8>, reqwest::Error>
+    where
+        ResultType: ApiResult,
+        QueryType: Serialize,
+        BodyType: Serialize,
+    {
+        let mut response = self.make_request(endpoint).send()?;
+        let mut buf: Vec<u8> = vec![];
+        response.copy_to(&mut buf)?;
+        Ok(buf)
     }
 }
