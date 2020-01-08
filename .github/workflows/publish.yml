@@ -16,9 +16,7 @@ jobs:
       run: cargo login $CRATES_IO_TOKEN
       env:
         CRATES_IO_TOKEN: ${{ secrets.crates_io_token }} # https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables
-    - name: cd into the library dir
-      run: cd cloudflare
     - name: Dry run publish
-      run: cargo publish --dry-run
+      run: cargo publish --dry-run --manifest-path cloudflare/Cargo.toml
     - name: Publish
-      run: cargo publish
+      run: cargo publish --manifest-path cloudflare/Cargo.toml
