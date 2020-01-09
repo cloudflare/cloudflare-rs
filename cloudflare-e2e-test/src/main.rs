@@ -1,16 +1,24 @@
 use clap::{App, AppSettings, Arg};
-use cloudflare::framework::{async_api, auth::Credentials, Environment, HttpApiClientConfig};
+use cloudflare::framework::{
+    async_api, async_api::ApiClient, auth::Credentials, Environment, HttpApiClientConfig,
+};
 use failure::{Error, Fallible};
 use std::fmt::Display;
 use std::net::{IpAddr, Ipv4Addr};
 
-async fn tests(api_client: &async_api::Client, account_id: &str) -> Fallible<()> {
-    test_lb_pool(&api_client, &account_id).await?;
+async fn tests<ApiClientType: ApiClient>(
+    api_client: &ApiClientType,
+    account_id: &str,
+) -> Fallible<()> {
+    test_lb_pool(api_client, &account_id).await?;
     println!("Tests passed");
     Ok(())
 }
 
-async fn test_lb_pool(api_client: &async_api::Client, account_identifier: &str) -> Fallible<()> {
+async fn test_lb_pool<ApiClientType: ApiClient>(
+    api_client: &ApiClientType,
+    account_identifier: &str,
+) -> Fallible<()> {
     use cloudflare::endpoints::load_balancing::*;
 
     // Create a pool

@@ -1,3 +1,4 @@
+//! This module contains the synchronous (blocking) API client.
 use crate::framework::{
     endpoint::Endpoint,
     response::{ApiResponse, ApiResult},
