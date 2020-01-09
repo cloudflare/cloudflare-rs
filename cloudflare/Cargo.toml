@@ -9,6 +9,7 @@ categories = ["api-bindings", "web-programming::http-client"]
 license = "BSD-3-Clause"
 
 [dependencies]
+async-trait = "0.1.22"
 chrono = { version = "0.4", features = ["serde"] }
 http = "0.1.18"
 reqwest = { version = "0.10", features = ["json", "blocking"] }

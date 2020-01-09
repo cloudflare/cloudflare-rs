@@ -7,8 +7,21 @@ use crate::framework::{
     response::{ApiResponse, ApiResult},
     Environment, HttpApiClientConfig,
 };
+use async_trait::async_trait;
 use reqwest;
 use serde::Serialize;
+
+#[async_trait]
+pub trait ApiClient {
+    async fn request<ResultType, QueryType, BodyType>(
+        &self,
+        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
+    ) -> ApiResponse<ResultType>
+    where
+        ResultType: ApiResult,
+        QueryType: Serialize,
+        BodyType: Serialize;
+}
 
 /// A Cloudflare API client that makes requests asynchronously.
 pub struct Client {
@@ -42,12 +55,13 @@ impl Client {
             http_client,
         })
     }
+}
 
-    // Currently, futures/async fns aren't supported in traits, and won't be for a while.
-    // So unlike ApiClient/HttpApiClient, there's no trait with the request method.
-    pub async fn request<ResultType, QueryType, BodyType>(
+#[async_trait]
+impl ApiClient for Client {
+    async fn request<ResultType, QueryType, BodyType>(
         &self,
-        endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
+        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
     ) -> ApiResponse<ResultType>
     where
         ResultType: ApiResult,
