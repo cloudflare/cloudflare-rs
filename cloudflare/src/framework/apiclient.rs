@@ -1,6 +1,6 @@
 //! This module contains the synchronous (blocking) API client.
 use crate::framework::{
-    endpoint::Endpoint,
+    endpoint::{Binary, Endpoint},
     response::{ApiResponse, ApiResult},
 };
 use serde::Serialize;
@@ -18,12 +18,12 @@ pub trait ApiClient {
         BodyType: Serialize;
 
     /// Block and send a request to the Cloudflare API, get the response as bytes.
-    fn request_raw_bytes<ResultType, QueryType, BodyType>(
+    ///
+    fn request_binary<QueryType, BodyType>(
         &self,
-        endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
+        endpoint: &dyn Endpoint<Binary, QueryType, BodyType>,
     ) -> Result<Vec<u8>, reqwest::Error>
     where
-        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize;
 }

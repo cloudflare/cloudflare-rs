@@ -1,7 +1,9 @@
-use crate::framework::apiclient::ApiClient;
-use crate::framework::async_api;
-use crate::framework::endpoint::{Endpoint, Method};
-use crate::framework::response::{ApiError, ApiErrors, ApiFailure, ApiResponse, ApiResult};
+use crate::framework::{
+    apiclient::ApiClient,
+    async_api,
+    endpoint::{Binary, Endpoint, Method},
+    response::{ApiError, ApiErrors, ApiFailure, ApiResponse, ApiResult},
+};
 use async_trait::async_trait;
 use bytes::Bytes;
 use reqwest;
@@ -48,9 +50,9 @@ impl ApiClient for MockApiClient {
         Err(mock_response())
     }
 
-    fn request_raw_bytes<ResultType, QueryType, BodyType>(
+    fn request_binary<QueryType, BodyType>(
         &self,
-        _endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
+        _endpoint: &dyn Endpoint<Binary, QueryType, BodyType>,
     ) -> Result<Vec<u8>, reqwest::Error>
     where
         QueryType: Serialize,
@@ -70,12 +72,11 @@ impl async_api::ApiClient for MockApiClient {
     }
 
     /// Send a request to the Cloudflare API, get the response as bytes.
-    async fn request_raw_bytes<ResultType, QueryType, BodyType>(
+    async fn request_binary<QueryType, BodyType>(
         &self,
-        _endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
+        _endpoint: &(dyn Endpoint<Binary, QueryType, BodyType> + Send + Sync),
     ) -> Result<Bytes, reqwest::Error>
     where
-        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize,
     {

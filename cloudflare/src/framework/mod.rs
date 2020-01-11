@@ -12,7 +12,7 @@ pub mod response;
 use crate::framework::{
     apiclient::ApiClient,
     auth::AuthClient,
-    endpoint::Endpoint,
+    endpoint::{Binary, Endpoint},
     response::{map_api_response, ApiResult},
 };
 use reqwest_adaptors::match_reqwest_method;
@@ -96,7 +96,6 @@ impl HttpApiClient {
         endpoint: &dyn endpoint::Endpoint<ResultType, QueryType, BodyType>,
     ) -> reqwest::blocking::RequestBuilder
     where
-        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize,
     {
@@ -139,12 +138,11 @@ impl<'a> ApiClient for HttpApiClient {
     }
 
     /// Synchronously send a request to the Cloudflare API, get the response as bytes.
-    fn request_raw_bytes<ResultType, QueryType, BodyType>(
+    fn request_binary<QueryType, BodyType>(
         &self,
-        endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
+        endpoint: &dyn Endpoint<Binary, QueryType, BodyType>,
     ) -> Result<Vec<u8>, reqwest::Error>
     where
-        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize,
     {

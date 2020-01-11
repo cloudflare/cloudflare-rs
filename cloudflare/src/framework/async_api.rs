@@ -1,7 +1,7 @@
 use crate::framework::{
     auth,
     auth::{AuthClient, Credentials},
-    endpoint::Endpoint,
+    endpoint::{Binary, Endpoint},
     reqwest_adaptors::match_reqwest_method,
     response::{ApiErrors, ApiFailure, ApiSuccess},
     response::{ApiResponse, ApiResult},
@@ -26,12 +26,11 @@ pub trait ApiClient {
         BodyType: Serialize;
 
     /// Send a request to a particular Cloudflare API endpoint, get the response as bytes.
-    async fn request_raw_bytes<ResultType, QueryType, BodyType>(
+    async fn request_binary<QueryType, BodyType>(
         &self,
-        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
+        endpoint: &(dyn Endpoint<Binary, QueryType, BodyType> + Send + Sync),
     ) -> Result<Bytes, reqwest::Error>
     where
-        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize;
 }
@@ -74,7 +73,6 @@ impl Client {
         endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
     ) -> reqwest::RequestBuilder
     where
-        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize,
     {
@@ -114,12 +112,11 @@ impl ApiClient for Client {
     }
 
     /// Send a request to a particular Cloudflare API endpoint, get the response as bytes.
-    async fn request_raw_bytes<ResultType, QueryType, BodyType>(
+    async fn request_binary<QueryType, BodyType>(
         &self,
-        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
+        endpoint: &(dyn Endpoint<Binary, QueryType, BodyType> + Send + Sync),
     ) -> Result<Bytes, reqwest::Error>
     where
-        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize,
     {
