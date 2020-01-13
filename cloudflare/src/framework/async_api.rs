@@ -1,24 +1,36 @@
 use crate::framework::{
     auth,
     auth::{AuthClient, Credentials},
-    endpoint::Endpoint,
+    endpoint::{Binary, Endpoint},
     reqwest_adaptors::match_reqwest_method,
     response::{ApiErrors, ApiFailure, ApiSuccess},
     response::{ApiResponse, ApiResult},
     Environment, HttpApiClientConfig,
 };
 use async_trait::async_trait;
+use bytes::Bytes;
 use reqwest;
 use serde::Serialize;
 
+/// Sends requests to the Cloudflare API.
 #[async_trait]
 pub trait ApiClient {
+    /// Send a request to a particular Cloudflare API endpoint, deserialize the JSON response.
     async fn request<ResultType, QueryType, BodyType>(
         &self,
         endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
     ) -> ApiResponse<ResultType>
     where
         ResultType: ApiResult,
+        QueryType: Serialize,
+        BodyType: Serialize;
+
+    /// Send a request to a particular Cloudflare API endpoint, get the response as bytes.
+    async fn request_binary<QueryType, BodyType>(
+        &self,
+        endpoint: &(dyn Endpoint<Binary, QueryType, BodyType> + Send + Sync),
+    ) -> Result<Bytes, reqwest::Error>
+    where
         QueryType: Serialize,
         BodyType: Serialize;
 }
@@ -55,20 +67,15 @@ impl Client {
             http_client,
         })
     }
-}
 
-#[async_trait]
-impl ApiClient for Client {
-    async fn request<ResultType, QueryType, BodyType>(
+    fn make_request<ResultType, QueryType, BodyType>(
         &self,
         endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
-    ) -> ApiResponse<ResultType>
+    ) -> reqwest::RequestBuilder
     where
-        ResultType: ApiResult,
         QueryType: Serialize,
         BodyType: Serialize,
     {
-        // Build the request
         let mut request = self
             .http_client
             .request(
@@ -83,8 +90,37 @@ impl ApiClient for Client {
         }
 
         request = request.auth(&self.credentials);
-        let response = request.send().await?;
+
+        request
+    }
+}
+
+#[async_trait]
+impl ApiClient for Client {
+    /// Send a request to a particular Cloudflare API endpoint, deserialize the JSON response.
+    async fn request<ResultType, QueryType, BodyType>(
+        &self,
+        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
+    ) -> ApiResponse<ResultType>
+    where
+        ResultType: ApiResult,
+        QueryType: Serialize,
+        BodyType: Serialize,
+    {
+        let response = self.make_request(endpoint).send().await?;
         map_api_response(response).await
+    }
+
+    /// Send a request to a particular Cloudflare API endpoint, get the response as bytes.
+    async fn request_binary<QueryType, BodyType>(
+        &self,
+        endpoint: &(dyn Endpoint<Binary, QueryType, BodyType> + Send + Sync),
+    ) -> Result<Bytes, reqwest::Error>
+    where
+        QueryType: Serialize,
+        BodyType: Serialize,
+    {
+        self.make_request(endpoint).send().await?.bytes().await
     }
 }
 
