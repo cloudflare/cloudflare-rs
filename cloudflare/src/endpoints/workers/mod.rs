@@ -3,7 +3,9 @@ use crate::framework::response::ApiResult;
 use serde::Deserialize;
 
 mod create_route;
+pub mod create_secret;
 mod delete_route;
+pub mod delete_secret;
 mod list_routes;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
@@ -37,3 +39,16 @@ pub struct WorkersRouteIdOnly {
 }
 
 impl ApiResult for WorkersRouteIdOnly {}
+
+/// Secrets attach to a single script to be readable in only the script
+/// https://api.cloudflare.com/#worker-secrets-properties
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct WorkersSecret {
+  /// TODO these fields depend on the API and may be wrong
+  pub name: String,
+  pub modified_on: String,
+  pub script_id: String,
+}
+
+impl ApiResult for WorkersSecret {}
+impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
