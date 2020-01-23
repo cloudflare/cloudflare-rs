@@ -10,6 +10,7 @@ mod reqwest_adaptors;
 pub mod response;
 
 use crate::framework::{apiclient::ApiClient, auth::AuthClient, response::map_api_response};
+use failure::Fallible;
 use reqwest_adaptors::match_reqwest_method;
 use serde::Serialize;
 use std::time::Duration;
@@ -57,14 +58,19 @@ pub struct HttpApiClient {
     http_client: reqwest::blocking::Client,
 }
 
+/// Configuration for the API client. Allows users to customize its behaviour.
 pub struct HttpApiClientConfig {
+    /// The maximum time limit for an API request. If a request takes longer than this, it will be cancelled.
     pub http_timeout: Duration,
+    /// A default set of HTTP headers which will be sent with each API request.
+    pub default_headers: http::HeaderMap,
 }
 
 impl Default for HttpApiClientConfig {
     fn default() -> Self {
         HttpApiClientConfig {
             http_timeout: Duration::from_secs(30),
+            default_headers: http::HeaderMap::default(),
         }
     }
 }
@@ -74,9 +80,10 @@ impl HttpApiClient {
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
         environment: Environment,
-    ) -> Result<HttpApiClient, failure::Error> {
+    ) -> Fallible<HttpApiClient> {
         let http_client = reqwest::blocking::Client::builder()
             .timeout(config.http_timeout)
+            .default_headers(config.default_headers)
             .build()?;
 
         Ok(HttpApiClient {
