@@ -23,13 +23,13 @@ pub use list_secrets::ListSecrets;
 /// https://api.cloudflare.com/#worker-routes-properties
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersRoute {
-  /// Namespace identifier tag.
-  pub id: String,
-  /// The basic pattern that should map to the script
-  pub pattern: String,
-  /// Name of the script to apply when the route is matched.
-  /// The route is skipped when this is blank/missing.
-  pub script: Option<String>,
+    /// Namespace identifier tag.
+    pub id: String,
+    /// The basic pattern that should map to the script
+    pub pattern: String,
+    /// Name of the script to apply when the route is matched.
+    /// The route is skipped when this is blank/missing.
+    pub script: Option<String>,
 }
 
 impl ApiResult for WorkersRoute {}
@@ -40,8 +40,8 @@ impl ApiResult for Vec<WorkersRoute> {}
 /// but it feels wrong.
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersRouteIdOnly {
-  /// Namespace identifier tag.
-  pub id: String,
+    /// Namespace identifier tag.
+    pub id: String,
 }
 
 impl ApiResult for WorkersRouteIdOnly {}
@@ -50,12 +50,12 @@ impl ApiResult for WorkersRouteIdOnly {}
 /// https://api.cloudflare.com/#worker-secrets-properties
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersSecret {
-  /// TODO: these fields depend on the API and may be wrong since unable to test
-  pub name: String,
-  #[serde(rename = "type")]
-  pub secret_type: String,
-  pub modified_on: DateTime<Utc>,
-  pub created_on: DateTime<Utc>,
+    /// TODO: these fields depend on the API and may be wrong since unable to test
+    pub name: String,
+    #[serde(rename = "type")]
+    pub secret_type: String,
+    pub modified_on: DateTime<Utc>,
+    pub created_on: DateTime<Utc>,
 }
 
 impl ApiResult for WorkersSecret {}
