@@ -35,5 +35,6 @@ pub struct CreateSecretParams {
     /// the string value of the secret
     pub text: String,
     // type of binding (e.g.secret_text)
-    pub r#type: String,
+    #[serde(rename = "type")]
+    pub secret_type: String,
 }

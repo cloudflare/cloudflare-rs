@@ -9,12 +9,14 @@ mod create_secret;
 mod delete_route;
 mod delete_secret;
 mod list_routes;
+mod list_secrets;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
 pub use create_secret::{CreateSecret, CreateSecretParams};
 pub use delete_route::DeleteRoute;
 pub use delete_secret::DeleteSecret;
 pub use list_routes::ListRoutes;
+pub use list_secrets::ListSecrets;
 
 /// Workers KV Route
 /// Routes are basic patterns used to enable or disable workers that match requests.
@@ -50,7 +52,8 @@ impl ApiResult for WorkersRouteIdOnly {}
 pub struct WorkersSecret {
   /// TODO: these fields depend on the API and may be wrong since unable to test
   pub name: String,
-  pub r#type: String,
+  #[serde(rename = "type")]
+  pub secret_type: String,
   pub modified_on: DateTime<Utc>,
   pub created_on: DateTime<Utc>,
 }
