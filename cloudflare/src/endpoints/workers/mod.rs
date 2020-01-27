@@ -1,15 +1,19 @@
 use crate::framework::response::ApiResult;
 
+use chrono::offset::Utc;
+use chrono::DateTime;
 use serde::Deserialize;
 
 mod create_route;
-pub mod create_secret;
+mod create_secret;
 mod delete_route;
-pub mod delete_secret;
+mod delete_secret;
 mod list_routes;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
+pub use create_secret::{CreateSecret, CreateSecretParams};
 pub use delete_route::DeleteRoute;
+pub use delete_secret::DeleteSecret;
 pub use list_routes::ListRoutes;
 
 /// Workers KV Route
@@ -17,13 +21,13 @@ pub use list_routes::ListRoutes;
 /// https://api.cloudflare.com/#worker-routes-properties
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersRoute {
-    /// Namespace identifier tag.
-    pub id: String,
-    /// The basic pattern that should map to the script
-    pub pattern: String,
-    /// Name of the script to apply when the route is matched.
-    /// The route is skipped when this is blank/missing.
-    pub script: Option<String>,
+  /// Namespace identifier tag.
+  pub id: String,
+  /// The basic pattern that should map to the script
+  pub pattern: String,
+  /// Name of the script to apply when the route is matched.
+  /// The route is skipped when this is blank/missing.
+  pub script: Option<String>,
 }
 
 impl ApiResult for WorkersRoute {}
@@ -34,8 +38,8 @@ impl ApiResult for Vec<WorkersRoute> {}
 /// but it feels wrong.
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersRouteIdOnly {
-    /// Namespace identifier tag.
-    pub id: String,
+  /// Namespace identifier tag.
+  pub id: String,
 }
 
 impl ApiResult for WorkersRouteIdOnly {}
@@ -44,10 +48,11 @@ impl ApiResult for WorkersRouteIdOnly {}
 /// https://api.cloudflare.com/#worker-secrets-properties
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersSecret {
-  /// TODO these fields depend on the API and may be wrong
+  /// TODO: these fields depend on the API and may be wrong since unable to test
   pub name: String,
-  pub modified_on: String,
-  pub script_id: String,
+  pub r#type: String,
+  pub modified_on: DateTime<Utc>,
+  pub created_on: DateTime<Utc>,
 }
 
 impl ApiResult for WorkersSecret {}

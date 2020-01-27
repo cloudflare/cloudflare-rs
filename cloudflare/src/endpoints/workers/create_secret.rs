@@ -33,5 +33,7 @@ pub struct CreateSecretParams {
     /// the variable name of the secret that will be bound to the script
     pub name: String,
     /// the string value of the secret
-    pub value: String,
+    pub text: String,
+    // type of binding (e.g.secret_text)
+    pub r#type: String,
 }
