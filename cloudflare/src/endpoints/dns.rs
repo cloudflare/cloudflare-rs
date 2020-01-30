@@ -80,6 +80,40 @@ impl<'a> Endpoint<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
     }
 }
 
+/// Update DNS Record
+/// https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record
+pub struct UpdateDnsRecord<'a> {
+    pub zone_identifier: &'a str,
+    pub identifier: &'a str,
+    pub params: UpdateDnsRecordParams<'a>,
+}
+
+impl<'a> Endpoint<DnsRecord, (), UpdateDnsRecordParams<'a>> for UpdateDnsRecord<'a> {
+    fn method(&self) -> Method {
+        Method::Put
+    }
+    fn path(&self) -> String {
+        format!("zones/{}/dns_records/{}", self.zone_identifier, self.identifier)
+    }
+    fn body(&self) -> Option<UpdateDnsRecordParams<'a>> {
+        Some(self.params.clone())
+    }
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Serialize, Clone, Debug)]
+pub struct UpdateDnsRecordParams<'a> {
+    /// Time to live for DNS record. Value of 1 is 'automatic'
+    pub ttl: Option<u32>,
+    /// Whether the record is receiving the performance and security benefits of Cloudflare
+    pub proxied: Option<bool>,
+    /// DNS record name
+    pub name: &'a str,
+    /// Type of the DNS record that also holds the record value
+    #[serde(flatten)]
+    pub content: DnsContent,
+}
+
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum ListDnsRecordsOrder {
