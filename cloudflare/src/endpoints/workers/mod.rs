@@ -1,14 +1,22 @@
 use crate::framework::response::ApiResult;
 
+use chrono::offset::Utc;
+use chrono::DateTime;
 use serde::Deserialize;
 
 mod create_route;
+mod create_secret;
 mod delete_route;
+mod delete_secret;
 mod list_routes;
+mod list_secrets;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
+pub use create_secret::{CreateSecret, CreateSecretParams};
 pub use delete_route::DeleteRoute;
+pub use delete_secret::DeleteSecret;
 pub use list_routes::ListRoutes;
+pub use list_secrets::ListSecrets;
 
 /// Workers KV Route
 /// Routes are basic patterns used to enable or disable workers that match requests.
@@ -37,3 +45,18 @@ pub struct WorkersRouteIdOnly {
 }
 
 impl ApiResult for WorkersRouteIdOnly {}
+
+/// Secrets attach to a single script to be readable in only the script
+/// https://api.cloudflare.com/#worker-secrets-properties
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct WorkersSecret {
+    /// TODO: these fields depend on the API and may be wrong since unable to test
+    pub name: String,
+    #[serde(rename = "type")]
+    pub secret_type: String,
+    pub modified_on: DateTime<Utc>,
+    pub created_on: DateTime<Utc>,
+}
+
+impl ApiResult for WorkersSecret {}
+impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
