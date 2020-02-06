@@ -1,7 +1,5 @@
 use crate::framework::response::ApiResult;
 
-use chrono::offset::Utc;
-use chrono::DateTime;
 use serde::Deserialize;
 
 mod create_route;
@@ -50,12 +48,9 @@ impl ApiResult for WorkersRouteIdOnly {}
 /// https://api.cloudflare.com/#worker-secrets-properties
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersSecret {
-    /// TODO: these fields depend on the API and may be wrong since unable to test
     pub name: String,
     #[serde(rename = "type")]
     pub secret_type: String,
-    pub modified_on: DateTime<Utc>,
-    pub created_on: DateTime<Utc>,
 }
 
 impl ApiResult for WorkersSecret {}
