@@ -22,7 +22,7 @@ pub fn map_api_response<ResultType: ApiResult>(
     resp: reqwest::blocking::Response,
 ) -> ApiResponse<ResultType> {
     let status = resp.status();
-    if status == reqwest::StatusCode::OK {
+    if status.is_success() {
         let parsed: Result<ApiSuccess<ResultType>, reqwest::Error> = resp.json();
         match parsed {
             Ok(api_resp) => Ok(api_resp),
