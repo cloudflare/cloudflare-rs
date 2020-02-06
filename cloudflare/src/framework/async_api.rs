@@ -90,14 +90,14 @@ impl ApiClient for Client {
     }
 }
 
-// If the response is 200 and parses, return Success.
-// If the response is 200 and doesn't parse, return Invalid.
-// If the response isn't 200, return Failure, with API errors if they were included.
+// If the response is 2XX and parses, return Success.
+// If the response is 2XX and doesn't parse, return Invalid.
+// If the response isn't 2XX, return Failure, with API errors if they were included.
 async fn map_api_response<ResultType: ApiResult>(
     resp: reqwest::Response,
 ) -> ApiResponse<ResultType> {
     let status = resp.status();
-    if status == reqwest::StatusCode::OK {
+    if status.is_success() {
         let parsed: Result<ApiSuccess<ResultType>, reqwest::Error> = resp.json().await;
         match parsed {
             Ok(api_resp) => Ok(api_resp),
