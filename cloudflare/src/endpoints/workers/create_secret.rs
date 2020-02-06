@@ -5,11 +5,11 @@ use crate::framework::endpoint::{Endpoint, Method};
 /// Create Secret
 /// https://api.cloudflare.com/#worker-create-secret
 pub struct CreateSecret<'a> {
-    /// account id of owner of the script
+    /// Account ID of script owner
     pub account_identifier: &'a str,
-    /// the name of the script to attach the secret to
+    /// The name of the script to attach the secret to
     pub script_name: &'a str,
-    /// secert's contents
+    /// The contents of the secret
     pub params: CreateSecretParams,
 }
 

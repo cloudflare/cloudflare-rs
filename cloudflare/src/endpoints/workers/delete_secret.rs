@@ -1,5 +1,3 @@
-use super::WorkersSecret;
-
 use crate::framework::endpoint::{Endpoint, Method};
 
 /// Delete Secret
@@ -13,7 +11,7 @@ pub struct DeleteSecret<'a> {
     pub secret_name: &'a str,
 }
 
-impl<'a> Endpoint<WorkersSecret> for DeleteSecret<'a> {
+impl<'a> Endpoint<(), (), ()> for DeleteSecret<'a> {
     fn method(&self) -> Method {
         Method::Delete
     }
