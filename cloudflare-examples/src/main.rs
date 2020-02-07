@@ -4,7 +4,7 @@ extern crate clap;
 extern crate cloudflare;
 
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use cloudflare::endpoints::{account, dns, workers, zone};
+use cloudflare::endpoints::{account, dns, workers, zone, user};
 use cloudflare::framework::{
     apiclient::ApiClient,
     auth::Credentials,
@@ -195,6 +195,32 @@ fn mock_api<ApiClientType: ApiClient>(_args: &ArgMatches, _api: &ApiClientType) 
     println!("Ran mock API")
 }
 
+fn user_user_details<ApiClientType: ApiClient>(_arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let response = api_client.request(&user::GetUserDetails { });
+
+    print_response_json(response);
+}
+
+fn user_edit_user<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let first_name = arg_matches.value_of("first_name");
+    let last_name = arg_matches.value_of("last_name");
+    let telephone = arg_matches.value_of("telephone");
+    let country = arg_matches.value_of("country");
+    let zipcode = arg_matches.value_of("zipcode");
+
+    let response = api_client.request(&user::EditUserDetails {
+        params: user::EditUserDetailsParams {
+            first_name: first_name.map(|n| n.to_string()),
+            last_name: last_name.map(|n| n.to_string()),
+            telephone: telephone.map(|n| n.to_string()),
+            country: country.map(|n| n.to_string()),
+            zipcode: zipcode.map(|n| n.to_string()),
+        },
+    });
+
+    print_response_json(response);
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sections = hashmap! {
         "zone" => Section{
@@ -249,6 +275,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ],
             description: "Activate a Worker on a Route",
             function: delete_route
+        },
+        "user_user_details" => Section{
+            args: vec![],
+            description: "Get user details",
+            function: user_user_details
+        },
+        "user_edit_user" => Section{
+            args: vec![
+                Arg::with_name("first_name"),
+                Arg::with_name("last_name"),
+                Arg::with_name("telephone"),
+                Arg::with_name("country"), // ISO 3166-1 alpha-2 country code
+                Arg::with_name("zipcode"),
+            ],
+            description: "Edit part of your user details",
+            function: user_edit_user
         },
     };
 
