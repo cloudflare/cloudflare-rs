@@ -116,8 +116,8 @@ impl<'a> ApiClient for HttpApiClient {
             )
             .query(&endpoint.query());
 
-        if let Some(body) = endpoint.body() {
-            request = request.body(serde_json::to_string(&body).unwrap());
+        if let Some(body) = endpoint.serialized_body() {
+            request = request.body(body);
             request = request.header(reqwest::header::CONTENT_TYPE, endpoint.content_type());
         }
 

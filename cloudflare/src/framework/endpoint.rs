@@ -25,6 +25,12 @@ where
     fn body(&self) -> Option<BodyType> {
         None
     }
+    fn serialized_body(&self) -> Option<String> {
+        match self.body() {
+            Some(body) => Some(serde_json::to_string(&body).unwrap()),
+            None => None
+        }
+    }
     fn url(&self, environment: &Environment) -> Url {
         Url::from(environment).join(&self.path()).unwrap()
     }
