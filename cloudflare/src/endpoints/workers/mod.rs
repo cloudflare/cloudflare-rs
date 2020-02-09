@@ -6,17 +6,21 @@ use serde::Deserialize;
 
 mod create_route;
 mod create_secret;
+mod create_script;
 mod delete_route;
 mod delete_secret;
 mod list_routes;
 mod list_secrets;
+mod list_scripts;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
 pub use create_secret::{CreateSecret, CreateSecretParams};
+pub use create_script::{CreateScript};
 pub use delete_route::DeleteRoute;
 pub use delete_secret::DeleteSecret;
 pub use list_routes::ListRoutes;
 pub use list_secrets::ListSecrets;
+pub use list_scripts::ListScripts;
 
 /// Workers KV Route
 /// Routes are basic patterns used to enable or disable workers that match requests.
@@ -60,3 +64,15 @@ pub struct WorkersSecret {
 
 impl ApiResult for WorkersSecret {}
 impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
+
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct WorkersScript {
+    pub id: String,
+    pub etag: String,
+    pub script: Option<String>,
+    pub size: Option<u32>,
+    pub created_on: Option<DateTime<Utc>>,
+    pub modified_on: DateTime<Utc>,
+}
+impl ApiResult for WorkersScript {}
+impl ApiResult for Vec<WorkersScript> {}
