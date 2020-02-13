@@ -135,6 +135,44 @@ fn list_routes<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &
     print_response_json(response);
 }
 
+fn list_scripts<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let usage = "usage: list_scripts ACCOUNT_ID";
+
+    let account_id_missing = format!("missing '{}': {}", "ACCOUNT_ID", usage);
+    let account_identifier = arg_matches
+        .value_of("account_identifier")
+        .expect(&account_id_missing);
+
+    let response = api_client.request(&workers::ListScripts { account_identifier });
+
+    print_response_json(response);
+}
+
+
+fn create_script<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+    let usage = "usage: create_script ACCOUNT_ID SCRIPT_NAME";
+
+    let script_name_missing = format!("missing '{}': {}", "SCRIPT_NAME", usage);
+    let script_name = arg_matches
+    .value_of("script_name")
+    .expect(&script_name_missing);
+
+    let script_content = String::from("addEventListener('fetch', event => { event.respondWith(fetch(event.request)) })");
+
+    let account_id_missing = format!("missing '{}': {}", "ACCOUNT_ID", usage);
+    let account_identifier = arg_matches
+    .value_of("account_identifier")
+    .expect(&account_id_missing);
+
+    let response = api_client.request(&workers::CreateScript {
+        account_identifier,
+        script_name,
+        script_content,
+    });
+
+    print_response_json(response);
+}
+
 fn list_accounts<ApiClientType: ApiClient>(_arg_matches: &ArgMatches, api_client: &ApiClientType) {
     let response = api_client.request(&account::ListAccounts { params: None });
 
@@ -227,6 +265,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ],
             description: "Activate a Worker on a Route",
             function: list_routes
+        },
+        "list_scripts" => Section{
+            args: vec![
+                Arg::with_name("account_identifier").required(true),
+            ],
+            description: "List Workers on an account",
+            function: list_scripts
+        },
+        "create_script" => Section{
+            args: vec![
+                Arg::with_name("account_identifier").required(true),
+                Arg::with_name("script_name").required(true),
+            ],
+            description: "Create or update a Worker",
+            function: create_script
         },
         "list_accounts" => Section{
             args: vec![],
