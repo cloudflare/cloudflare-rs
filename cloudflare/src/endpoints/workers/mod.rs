@@ -4,17 +4,25 @@ use serde::Deserialize;
 
 mod create_route;
 mod create_secret;
+mod create_tail;
+mod create_tail_heartbeat;
 mod delete_route;
 mod delete_secret;
+mod delete_tail;
 mod list_routes;
 mod list_secrets;
+mod list_tails;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
 pub use create_secret::{CreateSecret, CreateSecretParams};
+pub use create_tail::{CreateTail, CreateTailParams};
+pub use create_tail_heartbeat::{CreateTailHeartbeat};
 pub use delete_route::DeleteRoute;
 pub use delete_secret::DeleteSecret;
+pub use delete_tail::DeleteTail;
 pub use list_routes::ListRoutes;
 pub use list_secrets::ListSecrets;
+pub use list_tails::ListTails;
 
 /// Workers KV Route
 /// Routes are basic patterns used to enable or disable workers that match requests.
@@ -55,3 +63,15 @@ pub struct WorkersSecret {
 
 impl ApiResult for WorkersSecret {}
 impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
+
+/// A Tail is attached to a single Worker and is impermanent
+/// https://api.cloudflare.com/#worker-tail-properties
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct WorkersTail {
+    pub id: String,
+    pub url: String,
+    pub expires_at: DateTime<Utc>,
+}
+
+impl ApiResult for WorkersTail {}
+impl ApiResult for Vec<WorkersTail> {}
