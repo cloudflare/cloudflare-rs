@@ -2,14 +2,14 @@ use super::WorkersTail;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
-/// Create Tail
-/// https://api.cloudflare.com/#worker-create-tail
+/// Send Tail Heartbeat
+/// https://api.cloudflare.com/#worker-tail-heartbeat
 pub struct CreateTailHeartbeat<'a> {
     /// Account ID of owner of the script
     pub account_identifier: &'a str,
     /// The name of the script to tail
     pub script_name: &'a str,
-    /// The unique identifier of the Tail session
+    /// The unique identifier of the tail session
     pub tail_id: &'a str,
 }
 

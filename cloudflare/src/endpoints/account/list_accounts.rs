@@ -1,7 +1,7 @@
 use super::Account;
 
-use crate::framework::OrderDirection;
 use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::OrderDirection;
 
 /// List Accounts
 /// List all accounts you have ownership or verified access to
@@ -27,5 +27,5 @@ impl Endpoint<Vec<Account>, ListAccountsParams> for ListAccounts {
 pub struct ListAccountsParams {
     pub page: Option<u32>,
     pub per_page: Option<u32>,
-    pub direction: Option<OrderDirection>
+    pub direction: Option<OrderDirection>,
 }

@@ -93,7 +93,10 @@ impl<'a> Endpoint<DnsRecord, (), UpdateDnsRecordParams<'a>> for UpdateDnsRecord<
         Method::Put
     }
     fn path(&self) -> String {
-        format!("zones/{}/dns_records/{}", self.zone_identifier, self.identifier)
+        format!(
+            "zones/{}/dns_records/{}",
+            self.zone_identifier, self.identifier
+        )
     }
     fn body(&self) -> Option<UpdateDnsRecordParams<'a>> {
         Some(self.params.clone())
