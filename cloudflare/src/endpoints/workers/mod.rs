@@ -1,5 +1,6 @@
 use crate::framework::response::ApiResult;
 
+use chrono::{DateTime, Utc};
 use serde::Deserialize;
 
 mod create_route;
@@ -16,7 +17,7 @@ mod list_tails;
 pub use create_route::{CreateRoute, CreateRouteParams};
 pub use create_secret::{CreateSecret, CreateSecretParams};
 pub use create_tail::{CreateTail, CreateTailParams};
-pub use create_tail_heartbeat::{CreateTailHeartbeat};
+pub use create_tail_heartbeat::CreateTailHeartbeat;
 pub use delete_route::DeleteRoute;
 pub use delete_secret::DeleteSecret;
 pub use delete_tail::DeleteTail;
