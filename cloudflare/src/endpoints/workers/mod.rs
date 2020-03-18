@@ -6,24 +6,24 @@ use serde::Deserialize;
 mod create_route;
 mod create_secret;
 mod create_tail;
-mod create_tail_heartbeat;
 mod delete_route;
 mod delete_secret;
 mod delete_tail;
 mod list_routes;
 mod list_secrets;
 mod list_tails;
+mod send_tail_heartbeat;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
 pub use create_secret::{CreateSecret, CreateSecretParams};
 pub use create_tail::{CreateTail, CreateTailParams};
-pub use create_tail_heartbeat::CreateTailHeartbeat;
 pub use delete_route::DeleteRoute;
 pub use delete_secret::DeleteSecret;
 pub use delete_tail::DeleteTail;
 pub use list_routes::ListRoutes;
 pub use list_secrets::ListSecrets;
 pub use list_tails::ListTails;
+pub use send_tail_heartbeat::SendTailHeartbeat;
 
 /// Workers KV Route
 /// Routes are basic patterns used to enable or disable workers that match requests.
