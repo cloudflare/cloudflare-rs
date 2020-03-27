@@ -1,4 +1,4 @@
-use crate::endpoints::{account::Account, plan::Plan};
+use crate::endpoints::{account::AccountDetails, plan::Plan};
 use crate::framework::{
     endpoint::{Endpoint, Method},
     response::ApiResult,
@@ -117,7 +117,7 @@ pub struct Zone {
     /// The domain name
     pub name: String,
     /// Information about the account the zone belongs to
-    pub account: Account,
+    pub account: AccountDetails,
     /// A list of beta features in which the zone is participating
     pub betas: Option<Vec<String>>,
     /// When the zone was created
