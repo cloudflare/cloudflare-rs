@@ -152,9 +152,6 @@ pub struct Zone {
     pub plan_pending: Option<Plan>,
     /// Status of the zone
     pub status: Status,
-    /// An array of domains used for custom name servers. This is only available for Business and
-    /// Enterprise plans.
-    pub vanity_name_servers: Vec<String>,
     /// A full zone implies that DNS is hosted with Cloudflare. A partial zone is typically a
     /// partner-hosted zone or a CNAME setup.
     #[serde(rename = "type")]
