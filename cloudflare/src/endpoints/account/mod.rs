@@ -28,5 +28,16 @@ pub struct Settings {
     enforce_twofactor: bool,
 }
 
+/// Cloudflare Accounts Details
+/// An Account is the root object which owns other resources such as zones, load balancers and billing details.
+/// https://api.cloudflare.com/#accounts-properties
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct AccountDetails {
+    /// Account identifier tag.
+    pub id: String,
+    /// Account name
+    pub name: String,
+}
+
 impl ApiResult for Account {}
 impl ApiResult for Vec<Account> {}
