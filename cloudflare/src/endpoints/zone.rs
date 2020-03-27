@@ -124,7 +124,7 @@ pub struct Zone {
     /// The interval (in seconds) from when development mode expires (positive integer) or last
     /// expired (negative integer) for the domain. If development mode has never been enabled, this
     /// value is 0.
-    pub development_mode: u8,
+    pub development_mode: i32,
     /// Hosting partner information, if the zone signed up via a Cloudflare hosting partner
     pub host: Option<HostingPartner>,
     /// Metadata about the domain.
