@@ -10,15 +10,19 @@ use chrono::DateTime;
 /// List Zones
 /// List, search, sort, and filter your zones
 /// https://api.cloudflare.com/#zone-list-zones
-pub struct ListZones<'a> {
-    pub identifier: &'a str,
+pub struct ListZones {
+    pub params: ListZonesParams,
 }
-impl<'a> Endpoint<Vec<Zone>, ListZonesParams> for ListZones<'a> {
+
+impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
     fn method(&self) -> Method {
         Method::Get
     }
     fn path(&self) -> String {
         "zones".to_string()
+    }
+    fn query(&self) -> Option<ListZonesParams> {
+        Some(self.params.clone())
     }
 }
 
