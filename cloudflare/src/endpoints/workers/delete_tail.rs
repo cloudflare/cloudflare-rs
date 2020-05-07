@@ -1,5 +1,3 @@
-use super::WorkersTail;
-
 use crate::framework::endpoint::{Endpoint, Method};
 
 /// Delete Tail
@@ -13,7 +11,7 @@ pub struct DeleteTail<'a> {
     pub tail_id: &'a str,
 }
 
-impl<'a> Endpoint<WorkersTail> for DeleteTail<'a> {
+impl<'a> Endpoint<()> for DeleteTail<'a> {
     fn method(&self) -> Method {
         Method::Delete
     }
