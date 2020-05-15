@@ -1,6 +1,8 @@
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum Frequency {
+    #[serde(rename = "")]
+    Nil,
     Weekly,
     Monthly,
     Quarterly,

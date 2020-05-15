@@ -15,9 +15,9 @@ pub struct Account {
     /// Account name
     pub name: String,
     /// Account Settings
-    pub settings: Settings,
+    pub settings: Option<Settings>,
     /// describes when the account was created
-    pub created_on: DateTime<Utc>,
+    pub created_on: Option<DateTime<Utc>>,
 }
 
 /// Cloudflare Accounts Settings
