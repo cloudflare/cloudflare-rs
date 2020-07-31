@@ -37,6 +37,7 @@ pub enum SearchMatch {
 #[derive(Debug)]
 pub enum Environment {
     Production,
+    Staging,
     Custom(url::Url),
 }
 
@@ -45,6 +46,9 @@ impl<'a> From<&'a Environment> for url::Url {
         match environment {
             Environment::Production => {
                 url::Url::parse("https://api.cloudflare.com/client/v4/").unwrap()
+            },
+            Environment::Staging => {
+                url::Url::parse("https://api.staging.cloudflare.com/client/v4/").unwrap()
             }
             Environment::Custom(url) => url.clone(),
         }
