@@ -10,15 +10,18 @@ use chrono::DateTime;
 /// List Zones
 /// List, search, sort, and filter your zones
 /// https://api.cloudflare.com/#zone-list-zones
-pub struct ListZones<'a> {
-    pub identifier: &'a str,
+pub struct ListZones {
+    pub params: ListZonesParams,
 }
-impl<'a> Endpoint<Vec<Zone>, ListZonesParams> for ListZones<'a> {
+impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
     fn method(&self) -> Method {
         Method::Get
     }
     fn path(&self) -> String {
         "zones".to_string()
+    }
+    fn query(&self) -> Option<ListZonesParams> {
+        Some(self.params.clone())
     }
 }
 
@@ -154,7 +157,7 @@ pub struct Zone {
     pub status: Status,
     /// An array of domains used for custom name servers. This is only available for Business and
     /// Enterprise plans.
-    pub vanity_name_servers: Vec<String>,
+    pub vanity_name_servers: Option<Vec<String>>,
     /// A full zone implies that DNS is hosted with Cloudflare. A partial zone is typically a
     /// partner-hosted zone or a CNAME setup.
     #[serde(rename = "type")]
