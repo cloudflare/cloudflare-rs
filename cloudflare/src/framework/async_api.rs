@@ -8,7 +8,6 @@ use crate::framework::{
     Environment, HttpApiClientConfig,
 };
 use async_trait::async_trait;
-use failure::Fallible;
 use reqwest;
 use serde::Serialize;
 
@@ -45,7 +44,7 @@ impl Client {
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
         environment: Environment,
-    ) -> Fallible<Client> {
+    ) -> anyhow::Result<Client> {
         let http_client = reqwest::Client::builder()
             .timeout(config.http_timeout)
             .default_headers(config.default_headers)

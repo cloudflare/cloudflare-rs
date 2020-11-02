@@ -10,7 +10,6 @@ mod reqwest_adaptors;
 pub mod response;
 
 use crate::framework::{apiclient::ApiClient, auth::AuthClient, response::map_api_response};
-use failure::Fallible;
 use reqwest_adaptors::match_reqwest_method;
 use serde::Serialize;
 use std::time::Duration;
@@ -80,7 +79,7 @@ impl HttpApiClient {
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
         environment: Environment,
-    ) -> Fallible<HttpApiClient> {
+    ) -> anyhow::Result<HttpApiClient> {
         let http_client = reqwest::blocking::Client::builder()
             .timeout(config.http_timeout)
             .default_headers(config.default_headers)
