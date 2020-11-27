@@ -1,4 +1,4 @@
-use crate::endpoints::{account::Account, plan::Plan};
+use crate::endpoints::{account::AccountDetails, plan::Plan};
 use crate::framework::{
     endpoint::{Endpoint, Method},
     response::ApiResult,
@@ -13,6 +13,7 @@ use chrono::DateTime;
 pub struct ListZones {
     pub params: ListZonesParams,
 }
+
 impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
     fn method(&self) -> Method {
         Method::Get
@@ -144,7 +145,7 @@ pub struct Zone {
     /// The domain name
     pub name: String,
     /// Information about the account the zone belongs to
-    pub account: Account,
+    pub account: AccountDetails,
     /// A list of beta features in which the zone is participating
     pub betas: Option<Vec<String>>,
     /// When the zone was created
@@ -155,7 +156,7 @@ pub struct Zone {
     /// The interval (in seconds) from when development mode expires (positive integer) or last
     /// expired (negative integer) for the domain. If development mode has never been enabled, this
     /// value is 0.
-    pub development_mode: i64,
+    pub development_mode: i32,
     /// Hosting partner information, if the zone signed up via a Cloudflare hosting partner
     pub host: Option<HostingPartner>,
     /// Metadata about the domain.

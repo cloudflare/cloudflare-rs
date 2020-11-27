@@ -1,5 +1,6 @@
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
+/// Free plans won't have a Frequency, so most responses should accept Option instead.
 pub enum Frequency {
     #[serde(rename = "")]
     Nil,
@@ -20,7 +21,7 @@ pub struct Plan {
     /// The monetary unit in which pricing information is displayed
     currency: String,
     /// The frequency at which you will be billed for this plan
-    frequency: Frequency,
+    frequency: Option<Frequency>,
     /// A 'friendly' identifier to indicate to the UI what plan the object is
     legacy_id: String,
     /// If the zone is subscribed to this plan
