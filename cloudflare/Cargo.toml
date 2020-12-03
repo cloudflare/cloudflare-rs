@@ -11,6 +11,7 @@ license = "BSD-3-Clause"
 [dependencies]
 anyhow = "1.0"
 async-trait = "0.1"
+base64 = "0.13"
 chrono = { version = "0.4", features = ["serde"] }
 http = "0.2"
 percent-encoding = "1.0"
@@ -23,3 +24,4 @@ slog = "2.5"
 slog-term = "2.6"
 sloggers = "1.0"
 url = "2.2"
+uuid = { version = "0.8", features = ["serde", "v4"] }

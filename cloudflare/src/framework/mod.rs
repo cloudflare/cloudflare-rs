@@ -5,6 +5,7 @@ pub mod apiclient;
 pub mod async_api;
 pub mod auth;
 pub mod endpoint;
+pub mod json_utils;
 pub mod mock;
 mod reqwest_adaptors;
 pub mod response;
