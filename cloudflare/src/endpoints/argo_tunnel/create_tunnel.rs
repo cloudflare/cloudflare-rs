@@ -9,24 +9,24 @@ use super::Tunnel;
 /// https://api.cloudflare.com/#argo-tunnel-create-argo-tunnel
 pub struct CreateTunnel<'a> {
     pub account_identifier: &'a str,
-    pub params: CreateTunnelParams<'a>,
+    pub params: Params<'a>,
 }
 
-impl<'a> Endpoint<Tunnel, (), CreateTunnelParams<'a>> for CreateTunnel<'a> {
+impl<'a> Endpoint<Tunnel, (), Params<'a>> for CreateTunnel<'a> {
     fn method(&self) -> Method {
         Method::Post
     }
     fn path(&self) -> String {
         format!("accounts/{}/tunnels", self.account_identifier)
     }
-    fn body(&self) -> Option<CreateTunnelParams<'a>> {
+    fn body(&self) -> Option<Params<'a>> {
         Some(self.params.clone())
     }
 }
 
 /// Params for creating a Named Argo Tunnel
 #[derive(Serialize, Clone, Debug)]
-pub struct CreateTunnelParams<'a> {
+pub struct Params<'a> {
     /// The name for the Tunnel to be created. It must be unique within the account.
     pub name: &'a str,
     /// The byte array (with 32 or more bytes) representing a secret for the tunnel. This is
