@@ -51,7 +51,7 @@ impl Client {
             .default_headers(config.default_headers);
 
         cfg_if! {
-            // There are no timeouts in wasm.
+            // There are no timeouts in wasm. The property is documented as no-op in wasm32.
             if #[cfg(not(target_arch = "wasm32"))] {
                 builder = builder.timeout(config.http_timeout);
             }
@@ -95,7 +95,8 @@ impl Client {
     }
 }
 
-// The async_trait does not work nicely in wasm.
+// The async_trait does not work nicely in wasm. The mapping of Rust Futures to wasm bindgen
+// Promises does not seem to work when the async_trait macro is used: it causes compilation failures.
 #[cfg(not(target_arch = "wasm32"))]
 #[async_trait]
 impl ApiClient for Client {
