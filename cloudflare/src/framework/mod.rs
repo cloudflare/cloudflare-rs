@@ -63,7 +63,9 @@ pub struct HttpApiClient {
 
 /// Configuration for the API client. Allows users to customize its behaviour.
 pub struct HttpApiClientConfig {
-    /// The maximum time limit for an API request. If a request takes longer than this, it will be cancelled.
+    /// The maximum time limit for an API request. If a request takes longer than this, it will be
+    /// cancelled.
+    /// Note: this configuration has no effect when the target is wasm32.
     pub http_timeout: Duration,
     /// A default set of HTTP headers which will be sent with each API request.
     pub default_headers: http::HeaderMap,
