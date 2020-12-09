@@ -25,3 +25,32 @@ pub struct ActiveConnection {
 }
 
 impl ApiResult for Tunnel {}
+
+/// The result of a route request for a Named Argo Tunnel
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum RouteResult {
+    Dns(DnsRouteResult),
+    Lb(LoadBalancerRouteResult),
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct DnsRouteResult {
+    pub cname: Change,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct LoadBalancerRouteResult {
+    pub load_balancer: Change,
+    pub pool: Change,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum Change {
+    Unchanged,
+    New,
+    Updated,
+}
+
+impl ApiResult for RouteResult {}
