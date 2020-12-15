@@ -2,6 +2,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// Delete Tail
 /// https://api.cloudflare.com/#worker-delete-tail
+#[derive(Debug)]
 pub struct DeleteTail<'a> {
     /// Account id of owner of the script
     pub account_identifier: &'a str,

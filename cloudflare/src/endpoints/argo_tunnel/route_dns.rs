@@ -8,6 +8,7 @@ use uuid::Uuid;
 /// Tunnel.
 /// Note that this modifies only metadata on Cloudflare side to route traffic to the Tunnel, but
 /// it is still up to the user to run the Tunnel to receive that traffic.
+#[derive(Debug)]
 pub struct RouteTunnel<'a> {
     pub zone_tag: &'a str,
     pub tunnel_id: Uuid,

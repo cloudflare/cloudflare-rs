@@ -4,6 +4,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// Create Tail
 /// https://api.cloudflare.com/#worker-create-tail
+#[derive(Debug)]
 pub struct CreateTail<'a> {
     /// Account ID of owner of the script
     pub account_identifier: &'a str,

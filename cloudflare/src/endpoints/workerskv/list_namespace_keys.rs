@@ -4,6 +4,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// List a Namespace's Keys
 /// https://api.cloudflare.com/#workers-kv-namespace-list-a-namespace-s-keys
+#[derive(Debug)]
 pub struct ListNamespaceKeys<'a> {
     pub account_identifier: &'a str,
     pub namespace_identifier: &'a str,

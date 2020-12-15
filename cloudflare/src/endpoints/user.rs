@@ -35,6 +35,7 @@ pub struct UserDetails {
 }
 impl ApiResult for UserDetails {}
 
+#[derive(Debug)]
 pub struct GetUserDetails {}
 
 impl<'a> Endpoint<UserDetails, (), ()> for GetUserDetails {
@@ -57,6 +58,7 @@ pub struct UserTokenStatus {
 }
 impl ApiResult for UserTokenStatus {}
 
+#[derive(Debug)]
 pub struct GetUserTokenStatus {}
 
 impl<'a> Endpoint<UserTokenStatus, (), ()> for GetUserTokenStatus {

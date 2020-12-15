@@ -5,6 +5,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 /// Delete a Route
 /// Deletes a route by route id
 /// https://api.cloudflare.com/#worker-routes-delete-route
+#[derive(Debug)]
 pub struct DeleteRoute<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
