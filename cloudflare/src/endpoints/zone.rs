@@ -10,6 +10,7 @@ use chrono::DateTime;
 /// List Zones
 /// List, search, sort, and filter your zones
 /// https://api.cloudflare.com/#zone-list-zones
+#[derive(Debug)]
 pub struct ListZones {
     pub params: ListZonesParams,
 }
@@ -28,6 +29,7 @@ impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
 
 /// Zone Details
 /// https://api.cloudflare.com/#zone-zone-details
+#[derive(Debug)]
 pub struct ZoneDetails<'a> {
     pub identifier: &'a str,
 }

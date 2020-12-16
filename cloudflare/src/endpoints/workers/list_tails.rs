@@ -5,6 +5,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 /// List Tails
 /// Lists all active Tail sessions for a given Worker
 /// https://api.cloudflare.com/#worker-tails-list-tails
+#[derive(Debug)]
 pub struct ListTails<'a> {
     pub account_identifier: &'a str,
     pub script_name: &'a str,

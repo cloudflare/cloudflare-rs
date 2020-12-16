@@ -4,6 +4,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// Send Tail Heartbeat
 /// https://api.cloudflare.com/#worker-tail-heartbeat
+#[derive(Debug)]
 pub struct SendTailHeartbeat<'a> {
     /// Account ID of owner of the script
     pub account_identifier: &'a str,

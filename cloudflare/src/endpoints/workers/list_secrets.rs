@@ -5,6 +5,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 /// List Secrets
 /// Lists all secrets mappings for a given script
 /// https://api.cloudflare.com/#worker-secrets-list-secrets
+#[derive(Debug)]
 pub struct ListSecrets<'a> {
     pub account_identifier: &'a str,
     pub script_name: &'a str,

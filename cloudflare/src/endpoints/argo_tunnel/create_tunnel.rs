@@ -7,6 +7,7 @@ use super::Tunnel;
 /// This creates the Tunnel, which can then be routed and ran. Creating the Tunnel per se is only
 /// a metadata operation (i.e. no Tunnel is running at this point).
 /// https://api.cloudflare.com/#argo-tunnel-create-argo-tunnel
+#[derive(Debug)]
 pub struct CreateTunnel<'a> {
     pub account_identifier: &'a str,
     pub params: Params<'a>,

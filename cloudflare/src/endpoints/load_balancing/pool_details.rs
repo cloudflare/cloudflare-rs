@@ -3,6 +3,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// Pool Details
 /// https://api.cloudflare.com/#account-load-balancer-pools-pool-details
+#[derive(Debug)]
 pub struct PoolDetails<'a> {
     /// The Cloudflare account of this pool.
     pub account_identifier: &'a str,

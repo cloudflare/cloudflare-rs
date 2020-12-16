@@ -10,6 +10,7 @@ use std::net::{Ipv4Addr, Ipv6Addr};
 
 /// List DNS Records
 /// https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records
+#[derive(Debug)]
 pub struct ListDnsRecords<'a> {
     pub zone_identifier: &'a str,
     pub params: ListDnsRecordsParams,
@@ -28,6 +29,7 @@ impl<'a> Endpoint<Vec<DnsRecord>, ListDnsRecordsParams> for ListDnsRecords<'a> {
 
 /// Create DNS Record
 /// https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record
+#[derive(Debug)]
 pub struct CreateDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub params: CreateDnsRecordParams<'a>,
@@ -64,6 +66,7 @@ pub struct CreateDnsRecordParams<'a> {
 
 /// Delete DNS Record
 /// https://api.cloudflare.com/#dns-records-for-a-zone-delete-dns-record
+#[derive(Debug)]
 pub struct DeleteDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
@@ -82,6 +85,7 @@ impl<'a> Endpoint<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
 
 /// Update DNS Record
 /// https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record
+#[derive(Debug)]
 pub struct UpdateDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,

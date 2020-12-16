@@ -2,6 +2,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// Delete Secret
 /// https://api.cloudflare.com/#worker-delete-secret
+#[derive(Debug)]
 pub struct DeleteSecret<'a> {
     /// account id of owner of the script
     pub account_identifier: &'a str,

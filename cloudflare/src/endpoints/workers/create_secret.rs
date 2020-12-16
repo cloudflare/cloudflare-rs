@@ -4,6 +4,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// Create Secret
 /// https://api.cloudflare.com/#worker-create-secret
+#[derive(Debug)]
 pub struct CreateSecret<'a> {
     /// Account ID of script owner
     pub account_identifier: &'a str,
