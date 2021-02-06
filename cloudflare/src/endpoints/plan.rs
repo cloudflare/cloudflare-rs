@@ -2,6 +2,8 @@
 #[serde(rename_all = "lowercase")]
 /// Free plans won't have a Frequency, so most responses should accept Option instead.
 pub enum Frequency {
+    #[serde(rename = "")]
+    Nil,
     Weekly,
     Monthly,
     Quarterly,

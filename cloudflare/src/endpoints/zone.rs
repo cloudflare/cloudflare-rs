@@ -42,6 +42,34 @@ impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
     }
 }
 
+/// Add Zone
+/// https://api.cloudflare.com/#zone-create-zone
+pub struct CreateZone<'a> {
+    pub params: CreateZoneParams<'a>,
+}
+impl<'a> Endpoint<(), (), CreateZoneParams<'a>> for CreateZone<'a> {
+    fn method(&self) -> Method {
+        Method::Post
+    }
+
+    fn path(&self) -> String {
+        "zones".to_string()
+    }
+
+    fn body(&self) -> Option<CreateZoneParams<'a>> {
+        Some(self.params.clone())
+    }
+}
+
+#[derive(Serialize, Clone, Debug, Default)]
+pub struct CreateZoneParams<'a> {
+    pub name: &'a str,
+    pub account: &'a str,
+    pub jump_start: Option<bool>,
+    #[serde(rename = "type")]
+    pub zone_type: Option<Type>,
+}
+
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListZonesParams {
     pub name: Option<String>,
@@ -80,7 +108,7 @@ pub enum Owner {
     Organization { id: String, name: String },
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum Type {
     Full,
@@ -158,6 +186,9 @@ pub struct Zone {
     pub plan_pending: Option<Plan>,
     /// Status of the zone
     pub status: Status,
+    /// An array of domains used for custom name servers. This is only available for Business and
+    /// Enterprise plans.
+    pub vanity_name_servers: Option<Vec<String>>,
     /// A full zone implies that DNS is hosted with Cloudflare. A partial zone is typically a
     /// partner-hosted zone or a CNAME setup.
     #[serde(rename = "type")]
