@@ -1,7 +1,7 @@
 use serde::de;
 
 /// Serializes a vector of bytes as a base64 encoded string.
-pub fn serialize_base64_str<S>(val: &[u8], serializer: S) -> serde::export::Result<S::Ok, S::Error>
+pub fn serialize_base64_str<S>(val: &[u8], serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
@@ -22,7 +22,7 @@ where
             write!(formatter, "base64 ASCII text")
         }
 
-        fn visit_str<E>(self, v: &str) -> serde::export::Result<Self::Value, E>
+        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
         where
             E: de::Error,
         {
