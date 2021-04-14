@@ -10,7 +10,11 @@ pub struct CreateTail<'a> {
     pub account_identifier: &'a str,
     /// The name of the script to tail
     pub script_name: &'a str,
-    /// URL to which to send events
+    /// V1 of tailing involved creating a separate URL,
+    /// which is still possible.
+    ///
+    /// V2 does not involve a separate URL, so it can
+    /// be omitted.
     pub params: CreateTailParams,
 }
 
@@ -25,12 +29,16 @@ impl<'a> Endpoint<WorkersTail, (), CreateTailParams> for CreateTail<'a> {
         )
     }
     fn body(&self) -> Option<CreateTailParams> {
-        Some(self.params.clone())
+        if self.params.url.is_some() {
+            Some(self.params.clone())
+        } else {
+            None
+        }
     }
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, Default)]
 pub struct CreateTailParams {
     /// URL to which to send events
-    pub url: String,
+    pub url: Option<String>,
 }
