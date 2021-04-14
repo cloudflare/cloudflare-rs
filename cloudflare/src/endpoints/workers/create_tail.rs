@@ -37,7 +37,7 @@ impl<'a> Endpoint<WorkersTail, (), CreateTailParams> for CreateTail<'a> {
     }
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, Default)]
 pub struct CreateTailParams {
     /// URL to which to send events
     pub url: Option<String>,
