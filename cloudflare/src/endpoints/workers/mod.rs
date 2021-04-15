@@ -70,7 +70,7 @@ impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersTail {
     pub id: String,
-    pub url: String,
+    pub url: Option<String>,
     pub expires_at: DateTime<Utc>,
 }
 
