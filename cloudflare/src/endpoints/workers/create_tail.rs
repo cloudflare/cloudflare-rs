@@ -24,12 +24,16 @@ impl<'a> Endpoint<WorkersTail, (), CreateTailParams> for CreateTail<'a> {
         )
     }
     fn body(&self) -> Option<CreateTailParams> {
-        Some(self.params.clone())
+        if self.params.url.is_some() {
+            Some(self.params.clone())
+        } else {
+            None
+        }
     }
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, Default)]
 pub struct CreateTailParams {
     /// URL to which to send events
-    pub url: String,
+    pub url: Option<String>,
 }
