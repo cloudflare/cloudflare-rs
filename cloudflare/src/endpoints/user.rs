@@ -19,6 +19,7 @@ pub struct Organization {
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct UserDetails {
     pub organizations: Vec<Organization>,
+    #[serde(default)]
     pub betas: Vec<String>,
     pub telephone: Option<String>,
     pub zipcode: Option<String>,
@@ -34,6 +35,34 @@ pub struct UserDetails {
     pub email: String,
 }
 impl ApiResult for UserDetails {}
+
+#[test]
+fn handles_empty_betas_field() {
+    // note: omitted `betas` field from json data
+    const JSON_RESPONSE: &str = r#"
+    {
+        "id": "1234567890abcdef",
+        "email": "user@example.com",
+        "username": "user",
+        "first_name": null,
+        "last_name": null,
+        "telephone": null,
+        "country": null,
+        "zipcode": null,
+        "two_factor_authentication_enabled": false,
+        "two_factor_authentication_locked": false,
+        "created_on": "2015-02-24T13:03:05.255956Z",
+        "modified_on": "2018-06-10T23:50:04.029596Z",
+        "organizations": [],
+        "has_pro_zones": false,
+        "has_business_zones": false,
+        "has_enterprise_zones": false,
+        "suspended": false
+    }"#;
+
+    let user_details: UserDetails = serde_json::from_str(JSON_RESPONSE).unwrap();
+    assert!(user_details.betas.is_empty());
+}
 
 #[derive(Debug)]
 pub struct GetUserDetails {}
