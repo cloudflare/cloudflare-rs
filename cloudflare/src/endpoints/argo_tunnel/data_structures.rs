@@ -25,6 +25,7 @@ pub struct ActiveConnection {
 }
 
 impl ApiResult for Tunnel {}
+impl ApiResult for Vec<Tunnel> {}
 
 /// The result of a route request for a Named Argo Tunnel
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
