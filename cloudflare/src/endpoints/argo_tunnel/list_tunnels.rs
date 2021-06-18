@@ -26,7 +26,7 @@ impl<'a> Endpoint<Vec<Tunnel>, Params> for ListTunnels<'a> {
 
 /// Params for filtering listed tunnels
 #[serde_with::skip_serializing_none]
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, Default)]
 pub struct Params {
     pub name: Option<String>,
     pub uuid: Option<String>,
