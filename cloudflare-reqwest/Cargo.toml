@@ -1,0 +1,22 @@
+[package]
+name = "cloudflare-reqwest"
+version = "0.1.0"
+authors = ["Areg Harutyunyan <areg@cloudflare.com>"]
+edition = "2018"
+
+[features]
+default = ["blocking"]
+blocking = ["reqwest/blocking"]
+
+[dependencies]
+async-trait = "0.1"
+cloudflare = { version = "0.7", path = "../cloudflare", features = ["async-trait"] }
+reqwest = { version = "0.11", features = ["json", "multipart"] }
+serde = "1.0"
+serde_json = "1.0"
+thiserror = "1.0"
+
+[dev-dependencies]
+structopt = "0.3"
+anyhow = "1.0"
+tokio = { version = "1.7", features = ["full"] }

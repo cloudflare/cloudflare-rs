@@ -1,7 +1,5 @@
 [workspace]
-
 members = [
     "cloudflare",
-    "cloudflare-examples",
-    "cloudflare-e2e-test",
+    "cloudflare-reqwest"
 ]
