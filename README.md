@@ -7,3 +7,6 @@
 ⚠️ This library is a Work in Progress! ⚠️
 
 This library provides convenience functions that wrap the Cloudflare API.
+
+It provides an integration library through reqwest with async and blocking APIs. However, projects
+targeting `wasm32` only get the asynchronous one (as it does not make sense to block in that target).

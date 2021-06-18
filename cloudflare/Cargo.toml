@@ -9,7 +9,7 @@ categories = ["api-bindings", "web-programming::http-client"]
 license = "BSD-3-Clause"
 
 [features]
-default = ["request"]
+default = ["request", "async-trait"]
 request = ["url"]
 
 [dependencies]
