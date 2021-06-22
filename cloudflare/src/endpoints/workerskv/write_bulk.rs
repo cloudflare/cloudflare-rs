@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::framework::endpoint::{Endpoint, Method};
 
 /// Write Key-Value Pairs in Bulk
@@ -35,4 +37,6 @@ pub struct KeyValuePair {
     pub expiration: Option<i64>,
     pub expiration_ttl: Option<i64>,
     pub base64: Option<bool>,
+    // a temporary hack for basic metadata
+    pub metadata: Option<HashMap<String, String>>,
 }
