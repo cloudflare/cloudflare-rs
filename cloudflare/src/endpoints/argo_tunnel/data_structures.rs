@@ -13,6 +13,7 @@ pub struct Tunnel {
     pub deleted_at: Option<DateTime<Utc>>,
     pub name: String,
     pub connections: Vec<ActiveConnection>,
+    pub metadata: serde_json::Value,
 }
 
 /// An active connection for a Named Argo Tunnel.
