@@ -26,6 +26,7 @@ impl<'a> Endpoint<Tunnel, (), Params<'a>> for CreateTunnel<'a> {
 }
 
 /// Params for creating a Named Argo Tunnel
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug)]
 pub struct Params<'a> {
     /// The name for the Tunnel to be created. It must be unique within the account.
@@ -34,4 +35,6 @@ pub struct Params<'a> {
     /// encoded into JSON as a base64 String. This secret is necessary to run the tunnel.
     #[serde(serialize_with = "serialize_base64_str")]
     pub tunnel_secret: &'a Vec<u8>,
+    /// Arbitrary metadata for the tunnel.
+    pub metadata: Option<serde_json::Value>,
 }
