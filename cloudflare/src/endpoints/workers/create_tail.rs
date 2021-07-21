@@ -9,11 +9,9 @@ pub struct CreateTail<'a> {
     pub account_identifier: &'a str,
     /// The name of the script to tail
     pub script_name: &'a str,
-    /// URL to which to send events
-    pub params: CreateTailParams,
 }
 
-impl<'a> Endpoint<WorkersTail, (), CreateTailParams> for CreateTail<'a> {
+impl<'a> Endpoint<WorkersTail, ()> for CreateTail<'a> {
     fn method(&self) -> Method {
         Method::Post
     }
@@ -23,13 +21,4 @@ impl<'a> Endpoint<WorkersTail, (), CreateTailParams> for CreateTail<'a> {
             self.account_identifier, self.script_name
         )
     }
-    fn body(&self) -> Option<CreateTailParams> {
-        Some(self.params.clone())
-    }
-}
-
-#[derive(Serialize, Clone, Debug)]
-pub struct CreateTailParams {
-    /// URL to which to send events
-    pub url: String,
 }

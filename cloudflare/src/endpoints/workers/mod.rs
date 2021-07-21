@@ -16,7 +16,7 @@ mod send_tail_heartbeat;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
 pub use create_secret::{CreateSecret, CreateSecretParams};
-pub use create_tail::{CreateTail, CreateTailParams};
+pub use create_tail::CreateTail;
 pub use delete_route::DeleteRoute;
 pub use delete_secret::DeleteSecret;
 pub use delete_tail::DeleteTail;
