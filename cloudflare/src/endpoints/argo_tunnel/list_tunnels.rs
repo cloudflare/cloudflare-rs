@@ -34,4 +34,13 @@ pub struct Params {
     pub existed_at: Option<DateTime<Utc>>,
     pub name_prefix: Option<String>,
     pub was_inactive_at: Option<DateTime<Utc>>,
+    pub exclude_prefix: Option<String>,
+    #[serde(flatten)]
+    pub pagination_params: Option<PaginationParams>,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub struct PaginationParams {
+    pub page: u64,
+    pub per_page: u64,
 }
