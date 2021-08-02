@@ -4,16 +4,17 @@ This module controls how requests are sent to Cloudflare's API, and how response
 pub mod apiclient;
 pub mod async_api;
 pub mod auth;
-#[cfg(not(target_arch = "wasm32"))]  // There is no blocking implementation for wasm.
+#[cfg(not(target_arch = "wasm32"))] // There is no blocking implementation for wasm.
 pub mod blocking_api;
 pub mod endpoint;
 pub mod json_utils;
-#[cfg(not(target_arch = "wasm32"))]  // The mock contains a blocking implementation.
+#[cfg(not(target_arch = "wasm32"))] // The mock contains a blocking implementation.
 pub mod mock;
 mod reqwest_adaptors;
 pub mod response;
 
 use serde::Serialize;
+use std::env;
 use std::time::Duration;
 
 #[derive(Serialize, Clone, Debug)]
@@ -36,18 +37,20 @@ pub enum SearchMatch {
 }
 
 #[derive(Debug)]
-pub enum Environment {
-    Production,
-    Custom(url::Url),
+pub struct Environment {
+    pub hostname: url::Url,
 }
 
-impl<'a> From<&'a Environment> for url::Url {
-    fn from(environment: &Environment) -> Self {
-        match environment {
-            Environment::Production => {
-                url::Url::parse("https://api.cloudflare.com/client/v4/").unwrap()
-            }
-            Environment::Custom(url) => url.clone(),
+impl Environment {
+    pub fn new() -> Environment {
+        let env_key = "ENDPOINT_URL";
+        let env_hostname = match env::var(env_key) {
+            Ok(value) => url::Url::parse(&value).expect("Invalid API endpoint URL"),
+            Err(_) => url::Url::parse("https://api.cloudflare.com/client/v4/")
+                .expect("Invalid API endpoint URL"),
+        };
+        Environment {
+            hostname: env_hostname,
         }
     }
 }

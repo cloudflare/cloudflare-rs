@@ -312,7 +312,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_client = HttpApiClient::new(
         credentials,
         HttpApiClientConfig::default(),
-        Environment::Production,
+        Environment::new(),
     )?;
 
     for (section_name, section) in matched_sections {

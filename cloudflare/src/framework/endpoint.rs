@@ -26,7 +26,7 @@ where
         None
     }
     fn url(&self, environment: &Environment) -> Url {
-        Url::from(environment).join(&self.path()).unwrap()
+        environment.hostname.join(&self.path()).unwrap()
     }
     fn content_type(&self) -> String {
         "application/json".to_owned()

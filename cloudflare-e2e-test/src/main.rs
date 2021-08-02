@@ -134,7 +134,7 @@ async fn main() -> anyhow::Result<()> {
     let api_client = async_api::Client::new(
         credentials,
         HttpApiClientConfig::default(),
-        Environment::Production,
+        Environment::new(),
     )?;
 
     tests(&api_client, &account_id).await
