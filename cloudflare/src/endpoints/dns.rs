@@ -136,7 +136,7 @@ pub enum ListDnsRecordsOrder {
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListDnsRecordsParams {
     #[serde(flatten)]
-    pub record_type: Option<DnsContent>,
+    pub record_type: Option<DnsRecordTypeWithOptionalContent>,
     pub name: Option<String>,
     pub page: Option<u32>,
     pub per_page: Option<u32>,
@@ -167,6 +167,21 @@ pub enum DnsContent {
     MX { content: String, priority: u16 },
     TXT { content: String },
     SRV { content: String },
+}
+
+/// Type of the DNS record, along with a optional value
+/// Similar to [`DnsContent`], but is only used in [`ListDnsRecordsParams`]
+#[serde_with::skip_serializing_none]
+#[derive(Serialize, Clone, Debug)]
+#[serde(tag = "type")]
+pub enum DnsRecordTypeWithOptionalContent {
+    A { content: Option<Ipv4Addr> },
+    AAAA { content: Option<Ipv6Addr> },
+    CNAME { content: Option<String> },
+    NS { content: Option<String> },
+    MX { content: Option<String> },
+    TXT { content: Option<String> },
+    SRV { content: Option<String> },
 }
 
 #[derive(Deserialize, Debug)]
