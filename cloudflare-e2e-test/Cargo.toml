@@ -12,5 +12,5 @@ path = "src/main.rs"
 chrono = { version = "0.4", features = ["serde"] }
 clap = "2.33"
 cloudflare = {path = "../cloudflare"}
-failure = "0.1.5"
-tokio = { version = "0.2", features = ["macros"] }
+anyhow = "1.0.33"
+tokio = { version = "1", features = ["macros"] }

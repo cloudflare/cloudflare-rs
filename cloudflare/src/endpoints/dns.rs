@@ -10,6 +10,7 @@ use std::net::{Ipv4Addr, Ipv6Addr};
 
 /// List DNS Records
 /// https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records
+#[derive(Debug)]
 pub struct ListDnsRecords<'a> {
     pub zone_identifier: &'a str,
     pub params: ListDnsRecordsParams,
@@ -28,6 +29,7 @@ impl<'a> Endpoint<Vec<DnsRecord>, ListDnsRecordsParams> for ListDnsRecords<'a> {
 
 /// Create DNS Record
 /// https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record
+#[derive(Debug)]
 pub struct CreateDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub params: CreateDnsRecordParams<'a>,
@@ -64,6 +66,7 @@ pub struct CreateDnsRecordParams<'a> {
 
 /// Delete DNS Record
 /// https://api.cloudflare.com/#dns-records-for-a-zone-delete-dns-record
+#[derive(Debug)]
 pub struct DeleteDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
@@ -82,6 +85,7 @@ impl<'a> Endpoint<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
 
 /// Update DNS Record
 /// https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record
+#[derive(Debug)]
 pub struct UpdateDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
@@ -93,7 +97,10 @@ impl<'a> Endpoint<DnsRecord, (), UpdateDnsRecordParams<'a>> for UpdateDnsRecord<
         Method::Put
     }
     fn path(&self) -> String {
-        format!("zones/{}/dns_records/{}", self.zone_identifier, self.identifier)
+        format!(
+            "zones/{}/dns_records/{}",
+            self.zone_identifier, self.identifier
+        )
     }
     fn body(&self) -> Option<UpdateDnsRecordParams<'a>> {
         Some(self.params.clone())
@@ -127,6 +134,7 @@ pub enum ListDnsRecordsOrder {
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListDnsRecordsParams {
+    #[serde(flatten)]
     pub record_type: Option<DnsContent>,
     pub name: Option<String>,
     pub page: Option<u32>,
@@ -156,6 +164,7 @@ pub enum DnsContent {
     NS { content: String },
     MX { content: String, priority: u16 },
     TXT { content: String },
+    SRV { content: String },
 }
 
 #[derive(Deserialize, Debug)]

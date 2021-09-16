@@ -1,4 +1,4 @@
-use crate::endpoints::{account::Account, plan::Plan};
+use crate::endpoints::{account::AccountDetails, plan::Plan};
 use crate::framework::{
     endpoint::{Endpoint, Method},
     response::ApiResult,
@@ -10,9 +10,11 @@ use chrono::DateTime;
 /// List Zones
 /// List, search, sort, and filter your zones
 /// https://api.cloudflare.com/#zone-list-zones
+#[derive(Debug)]
 pub struct ListZones {
     pub params: ListZonesParams,
 }
+
 impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
     fn method(&self) -> Method {
         Method::Get
@@ -27,6 +29,7 @@ impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
 
 /// Zone Details
 /// https://api.cloudflare.com/#zone-zone-details
+#[derive(Debug)]
 pub struct ZoneDetails<'a> {
     pub identifier: &'a str,
 }
@@ -37,6 +40,34 @@ impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
     fn path(&self) -> String {
         format!("zones/{}", self.identifier)
     }
+}
+
+/// Add Zone
+/// https://api.cloudflare.com/#zone-create-zone
+pub struct CreateZone<'a> {
+    pub params: CreateZoneParams<'a>,
+}
+impl<'a> Endpoint<(), (), CreateZoneParams<'a>> for CreateZone<'a> {
+    fn method(&self) -> Method {
+        Method::Post
+    }
+
+    fn path(&self) -> String {
+        "zones".to_string()
+    }
+
+    fn body(&self) -> Option<CreateZoneParams<'a>> {
+        Some(self.params.clone())
+    }
+}
+
+#[derive(Serialize, Clone, Debug, Default)]
+pub struct CreateZoneParams<'a> {
+    pub name: &'a str,
+    pub account: &'a str,
+    pub jump_start: Option<bool>,
+    #[serde(rename = "type")]
+    pub zone_type: Option<Type>,
 }
 
 #[derive(Serialize, Clone, Debug, Default)]
@@ -77,7 +108,7 @@ pub enum Owner {
     Organization { id: String, name: String },
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum Type {
     Full,
@@ -116,7 +147,7 @@ pub struct Zone {
     /// The domain name
     pub name: String,
     /// Information about the account the zone belongs to
-    pub account: Account,
+    pub account: AccountDetails,
     /// A list of beta features in which the zone is participating
     pub betas: Option<Vec<String>>,
     /// When the zone was created
@@ -127,7 +158,7 @@ pub struct Zone {
     /// The interval (in seconds) from when development mode expires (positive integer) or last
     /// expired (negative integer) for the domain. If development mode has never been enabled, this
     /// value is 0.
-    pub development_mode: u8,
+    pub development_mode: i32,
     /// Hosting partner information, if the zone signed up via a Cloudflare hosting partner
     pub host: Option<HostingPartner>,
     /// Metadata about the domain.

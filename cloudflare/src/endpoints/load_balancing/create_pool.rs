@@ -3,6 +3,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// Create Pool
 /// https://api.cloudflare.com/#account-load-balancer-pools-create-pool
+#[derive(Debug)]
 pub struct CreatePool<'a> {
     /// The Cloudflare account to create this Pool under.
     pub account_identifier: &'a str,

@@ -15,6 +15,8 @@ pub struct ApiSuccess<ResultType> {
 
 pub type ApiResponse<ResultType> = Result<ApiSuccess<ResultType>, ApiFailure>;
 
+// There is no blocking implementation for wasm.
+#[cfg(not(target_arch = "wasm32"))]
 // If the response is 200 and parses, return Success.
 // If the response is 200 and doesn't parse, return Invalid.
 // If the response isn't 200, return Failure, with API errors if they were included.

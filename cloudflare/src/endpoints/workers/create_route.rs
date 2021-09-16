@@ -5,6 +5,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 /// Create a Route
 /// Creates a route mapping the given pattern to the given script
 /// https://api.cloudflare.com/#worker-routes-create-route
+#[derive(Debug)]
 pub struct CreateRoute<'a> {
     pub zone_identifier: &'a str,
     pub params: CreateRouteParams,

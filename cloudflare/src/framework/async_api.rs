@@ -8,9 +8,9 @@ use crate::framework::{
     Environment, HttpApiClientConfig,
 };
 use async_trait::async_trait;
-use failure::Fallible;
 use reqwest;
 use serde::Serialize;
+use cfg_if::cfg_if;
 
 #[async_trait]
 pub trait ApiClient {
@@ -45,11 +45,19 @@ impl Client {
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
         environment: Environment,
-    ) -> Fallible<Client> {
-        let http_client = reqwest::Client::builder()
-            .timeout(config.http_timeout)
-            .default_headers(config.default_headers)
-            .build()?;
+    ) -> anyhow::Result<Client> {
+        #[allow(unused_mut)]
+        let mut builder = reqwest::Client::builder()
+            .default_headers(config.default_headers);
+
+        cfg_if! {
+            // There are no timeouts in wasm. The property is documented as no-op in wasm32.
+            if #[cfg(not(target_arch = "wasm32"))] {
+                builder = builder.timeout(config.http_timeout);
+            }
+        }
+
+        let http_client = builder.build()?;
 
         Ok(Client {
             environment,
@@ -57,11 +65,8 @@ impl Client {
             http_client,
         })
     }
-}
 
-#[async_trait]
-impl ApiClient for Client {
-    async fn request<ResultType, QueryType, BodyType>(
+    pub async fn request_handle<ResultType, QueryType, BodyType>(
         &self,
         endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
     ) -> ApiResponse<ResultType>
@@ -87,6 +92,24 @@ impl ApiClient for Client {
         request = request.auth(&self.credentials);
         let response = request.send().await?;
         map_api_response(response).await
+    }
+}
+
+// The async_trait does not work nicely in wasm. The mapping of Rust Futures to wasm bindgen
+// Promises does not seem to work when the async_trait macro is used: it causes compilation failures.
+#[cfg(not(target_arch = "wasm32"))]
+#[async_trait]
+impl ApiClient for Client {
+    async fn request<ResultType, QueryType, BodyType>(
+        &self,
+        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
+    ) -> ApiResponse<ResultType>
+        where
+            ResultType: ApiResult,
+            QueryType: Serialize,
+            BodyType: Serialize,
+    {
+        self.request_handle(endpoint).await
     }
 }
 

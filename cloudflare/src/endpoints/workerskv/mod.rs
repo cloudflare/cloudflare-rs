@@ -25,6 +25,7 @@ pub struct WorkersKvNamespace {
 }
 
 impl ApiResult for WorkersKvNamespace {}
+
 impl ApiResult for Vec<WorkersKvNamespace> {}
 
 #[serde_with::skip_serializing_none]
@@ -39,8 +40,8 @@ pub struct Key {
 pub fn deserialize_option_timestamp<'de, D>(
     deserializer: D,
 ) -> Result<Option<DateTime<Utc>>, D::Error>
-where
-    D: Deserializer<'de>,
+    where
+        D: Deserializer<'de>,
 {
     let s: Option<i64> = Option::deserialize(deserializer)?;
     if let Some(s) = s {
@@ -51,6 +52,7 @@ where
 }
 
 impl ApiResult for Key {}
+
 impl ApiResult for Vec<Key> {}
 
 fn url_encode_key(key: &str) -> String {

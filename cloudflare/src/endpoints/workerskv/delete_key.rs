@@ -4,6 +4,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 /// Deletes a given key from the given namespace in Workers KV.
 /// Returns 404 if the given namespace id is not found for an account.
 /// https://api.cloudflare.com/#workers-kv-namespace-delete-key-value-pair
+#[derive(Debug)]
 pub struct DeleteKey<'a> {
     pub account_identifier: &'a str,
     pub namespace_identifier: &'a str,

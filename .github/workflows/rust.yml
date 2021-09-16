@@ -1,13 +1,13 @@
 name: Test cloudflare-rs
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         rust: [stable]
 
     steps:
