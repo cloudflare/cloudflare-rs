@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum Credentials {
     UserAuthKey { email: String, key: String },
     UserAuthToken { token: String },
