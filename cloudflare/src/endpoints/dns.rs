@@ -157,6 +157,7 @@ pub struct Meta {
 /// here as an associated, strongly typed value.
 #[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(tag = "type")]
+#[allow(clippy::upper_case_acronyms)]
 pub enum DnsContent {
     A { content: Ipv4Addr },
     AAAA { content: Ipv6Addr },

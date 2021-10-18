@@ -16,7 +16,7 @@ impl Endpoint<Vec<Account>, ListAccountsParams> for ListAccounts {
         Method::Get
     }
     fn path(&self) -> String {
-        format!("accounts")
+        "accounts".to_string()
     }
     fn query(&self) -> Option<ListAccountsParams> {
         self.params.clone()

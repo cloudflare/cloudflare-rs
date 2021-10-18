@@ -8,9 +8,8 @@ use crate::framework::{
     Environment, HttpApiClientConfig,
 };
 use async_trait::async_trait;
-use reqwest;
-use serde::Serialize;
 use cfg_if::cfg_if;
+use serde::Serialize;
 
 #[async_trait]
 pub trait ApiClient {
@@ -47,8 +46,7 @@ impl Client {
         environment: Environment,
     ) -> anyhow::Result<Client> {
         #[allow(unused_mut)]
-        let mut builder = reqwest::Client::builder()
-            .default_headers(config.default_headers);
+        let mut builder = reqwest::Client::builder().default_headers(config.default_headers);
 
         cfg_if! {
             // There are no timeouts in wasm. The property is documented as no-op in wasm32.
@@ -104,10 +102,10 @@ impl ApiClient for Client {
         &self,
         endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
     ) -> ApiResponse<ResultType>
-        where
-            ResultType: ApiResult,
-            QueryType: Serialize,
-            BodyType: Serialize,
+    where
+        ResultType: ApiResult,
+        QueryType: Serialize,
+        BodyType: Serialize,
     {
         self.request_handle(endpoint).await
     }

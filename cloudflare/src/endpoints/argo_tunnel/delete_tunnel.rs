@@ -15,6 +15,9 @@ impl<'a> Endpoint<Tunnel> for DeleteTunnel<'a> {
         Method::Delete
     }
     fn path(&self) -> String {
-        format!("accounts/{}/tunnels/{}", self.account_identifier, self.tunnel_id)
+        format!(
+            "accounts/{}/tunnels/{}",
+            self.account_identifier, self.tunnel_id
+        )
     }
 }

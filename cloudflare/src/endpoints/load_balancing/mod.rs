@@ -8,7 +8,7 @@ pub mod pool_details;
 use crate::framework::response::ApiResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::net::IpAddr;
 
@@ -80,7 +80,7 @@ pub enum SessionAffinity {
     Nil,
     None,
     Cookie,
-    IpCookie
+    IpCookie,
 }
 
 #[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
@@ -104,11 +104,10 @@ pub enum Secure {
     /// `Auto` maps to `Always` if Always Use HTTPS is set, or `Never` otherwise.
     Auto,
     Always,
-    Never
+    Never,
 }
 
 impl ApiResult for LoadBalancer {}
-
 
 /// A pool is a set of origins that requests could be routed to (e.g. each of your data centers or
 /// regions have its own pool).

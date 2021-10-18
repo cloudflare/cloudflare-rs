@@ -3,7 +3,6 @@ use crate::framework::async_api;
 use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::{ApiError, ApiErrors, ApiFailure, ApiResponse, ApiResult};
 use async_trait::async_trait;
-use reqwest;
 use std::collections::HashMap;
 
 pub struct MockApiClient {}

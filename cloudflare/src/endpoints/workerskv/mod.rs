@@ -40,8 +40,8 @@ pub struct Key {
 pub fn deserialize_option_timestamp<'de, D>(
     deserializer: D,
 ) -> Result<Option<DateTime<Utc>>, D::Error>
-    where
-        D: Deserializer<'de>,
+where
+    D: Deserializer<'de>,
 {
     let s: Option<i64> = Option::deserialize(deserializer)?;
     if let Some(s) = s {

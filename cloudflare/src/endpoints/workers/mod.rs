@@ -93,5 +93,4 @@ pub struct WorkersBinding {
 }
 
 impl ApiResult for WorkersBinding {}
-impl ApiResult for Vec<WorkersBinding>{}
-
+impl ApiResult for Vec<WorkersBinding> {}
