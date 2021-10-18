@@ -3,30 +3,38 @@ use crate::framework::response::ApiResult;
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
 
+mod add_routes_script;
 mod create_route;
+mod create_routes_script;
 mod create_secret;
 mod create_tail;
 mod delete_do;
 mod delete_route;
+mod delete_route_script;
 mod delete_script;
 mod delete_secret;
 mod delete_tail;
 mod list_bindings;
 mod list_routes;
+mod list_routes_script;
 mod list_secrets;
 mod list_tails;
 mod send_tail_heartbeat;
 
+pub use add_routes_script::AddRoutesScript;
 pub use create_route::{CreateRoute, CreateRouteParams};
+pub use create_routes_script::CreateRoutesScript;
 pub use create_secret::{CreateSecret, CreateSecretParams};
 pub use create_tail::{CreateTail, CreateTailParams};
 pub use delete_do::DeleteDurableObject;
 pub use delete_route::DeleteRoute;
+pub use delete_route_script::DeleteRouteScript;
 pub use delete_script::DeleteScript;
 pub use delete_secret::DeleteSecret;
 pub use delete_tail::DeleteTail;
 pub use list_bindings::ListBindings;
 pub use list_routes::ListRoutes;
+pub use list_routes_script::ListRoutesScript;
 pub use list_secrets::ListSecrets;
 pub use list_tails::ListTails;
 pub use send_tail_heartbeat::SendTailHeartbeat;
@@ -93,5 +101,30 @@ pub struct WorkersBinding {
 }
 
 impl ApiResult for WorkersBinding {}
-impl ApiResult for Vec<WorkersBinding>{}
+impl ApiResult for Vec<WorkersBinding> {}
 
+/// Route to be created with `CreateRoutesScript` or `AddRoutesScript`
+///
+/// * `pattern`: the zone name along with glob-style wildcards e.g. "example.net/*"
+///
+/// * `fail_open`: if set to true a request will continue to the origin without
+///     hitting the worker in case of worker request limits
+///
+/// * `disabled`: if set to true the worker will not be hit on this route
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct BulkRoute {
+    pub pattern: String,
+    pub fail_open: Option<bool>,
+    pub disabled: Option<bool>,
+}
+
+/// Created route
+#[derive(Deserialize, Serialize, Clone, Debug)]
+pub struct CreatedBulkRoute {
+    pub id: String,
+    pub pattern: String,
+    pub fail_open: Option<bool>,
+    pub disabled: Option<bool>,
+}
+
+impl ApiResult for Vec<CreatedBulkRoute> {}
