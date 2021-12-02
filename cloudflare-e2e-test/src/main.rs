@@ -9,7 +9,7 @@ async fn tests<ApiClientType: ApiClient>(
     api_client: &ApiClientType,
     account_id: &str,
 ) -> anyhow::Result<()> {
-    test_lb_pool(api_client, &account_id).await?;
+    test_lb_pool(api_client, account_id).await?;
     println!("Tests passed");
     Ok(())
 }
@@ -137,18 +137,18 @@ async fn main() -> anyhow::Result<()> {
         Environment::Production,
     )?;
 
-    tests(&api_client, &account_id).await
+    tests(&api_client, account_id).await
 }
 
 pub trait ResultExt<T, E: Display> {
     /// Convenience function for logging errors inside results.
     /// Basically just `map_err` except the closure argument doesn't return anything,
     /// and `.log_err` always returns `self`.
-    fn log_err<L: FnOnce(&E) -> ()>(self, log: L) -> Self;
+    fn log_err<L: FnOnce(&E)>(self, log: L) -> Self;
 }
 
 impl<T, E: Display> ResultExt<T, E> for Result<T, E> {
-    fn log_err<L: FnOnce(&E) -> ()>(self, log: L) -> Self {
+    fn log_err<L: FnOnce(&E)>(self, log: L) -> Self {
         if let Err(e) = &self {
             log(e)
         }

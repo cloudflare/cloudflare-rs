@@ -317,7 +317,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     for (section_name, section) in matched_sections {
         (section.function)(
-            &matches.subcommand_matches(section_name).unwrap(),
+            matches.subcommand_matches(section_name).unwrap(),
             &api_client,
         );
     }

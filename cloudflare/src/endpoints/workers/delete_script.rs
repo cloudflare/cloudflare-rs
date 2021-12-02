@@ -2,7 +2,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::ApiResult;
 
 /// Delete Workers script
-/// https://api.cloudflare.com/#worker-script-delete-worker 
+/// https://api.cloudflare.com/#worker-script-delete-worker
 #[derive(Debug)]
 pub struct DeleteScript<'a> {
     /// account id of owner of the script

@@ -1,5 +1,4 @@
 use crate::framework::endpoint::Method;
-use reqwest;
 
 pub fn match_reqwest_method(method: Method) -> reqwest::Method {
     match method {

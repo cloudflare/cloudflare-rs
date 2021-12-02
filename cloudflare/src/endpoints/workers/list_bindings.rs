@@ -1,5 +1,5 @@
+use super::WorkersBinding;
 use crate::framework::endpoint::{Endpoint, Method};
-use super::WorkersBinding; 
 
 /// List Bindings
 /// Lists all bindings for a given script
@@ -19,8 +19,7 @@ impl<'a> Endpoint<Vec<WorkersBinding>> for ListBindings<'a> {
     fn path(&self) -> String {
         format!(
             "accounts/{}/workers/scripts/{}/bindings",
-            self.account_id,
-            self.script_name
+            self.account_id, self.script_name
         )
     }
 }

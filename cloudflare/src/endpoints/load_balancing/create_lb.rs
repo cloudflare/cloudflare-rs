@@ -1,4 +1,7 @@
-use crate::endpoints::load_balancing::{LbPoolId, SteeringPolicy, SessionAffinityAttributes, LbPoolMapping, SessionAffinity, LoadBalancer};
+use crate::endpoints::load_balancing::{
+    LbPoolId, LbPoolMapping, LoadBalancer, SessionAffinity, SessionAffinityAttributes,
+    SteeringPolicy,
+};
 use crate::framework::endpoint::{Endpoint, Method};
 
 /// Create Load Balancer

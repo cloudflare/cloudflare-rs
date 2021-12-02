@@ -21,4 +21,3 @@ impl<'a> Endpoint<(), (), ()> for DeleteDurableObject<'a> {
         )
     }
 }
-

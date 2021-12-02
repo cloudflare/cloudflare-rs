@@ -4,11 +4,11 @@ This module controls how requests are sent to Cloudflare's API, and how response
 pub mod apiclient;
 pub mod async_api;
 pub mod auth;
-#[cfg(not(target_arch = "wasm32"))]  // There is no blocking implementation for wasm.
+#[cfg(not(target_arch = "wasm32"))] // There is no blocking implementation for wasm.
 pub mod blocking_api;
 pub mod endpoint;
 pub mod json_utils;
-#[cfg(not(target_arch = "wasm32"))]  // The mock contains a blocking implementation.
+#[cfg(not(target_arch = "wasm32"))] // The mock contains a blocking implementation.
 pub mod mock;
 mod reqwest_adaptors;
 pub mod response;
