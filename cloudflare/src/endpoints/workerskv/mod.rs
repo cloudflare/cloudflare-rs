@@ -9,6 +9,7 @@ pub mod delete_bulk;
 pub mod delete_key;
 pub mod list_namespace_keys;
 pub mod list_namespaces;
+pub mod read;
 pub mod remove_namespace;
 pub mod rename_namespace;
 pub mod write_bulk;
