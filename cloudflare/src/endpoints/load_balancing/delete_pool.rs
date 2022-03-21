@@ -25,6 +25,6 @@ impl<'a> Endpoint<Response, (), ()> for DeletePool<'a> {
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct Response {
-    id: String,
+    pub id: String,
 }
 impl ApiResult for Response {}

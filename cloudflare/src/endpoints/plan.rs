@@ -13,19 +13,19 @@ pub enum Frequency {
 #[derive(Deserialize, Debug)]
 pub struct Plan {
     /// Plan identifier tag
-    id: String,
+    pub id: String,
     /// The plan name
-    name: String,
+    pub name: String,
     /// The price of the subscription that will be billed, in US dollars
-    price: f64,
+    pub price: f64,
     /// The monetary unit in which pricing information is displayed
-    currency: String,
+    pub currency: String,
     /// The frequency at which you will be billed for this plan
-    frequency: Option<Frequency>,
+    pub frequency: Option<Frequency>,
     /// A 'friendly' identifier to indicate to the UI what plan the object is
-    legacy_id: String,
+    pub legacy_id: String,
     /// If the zone is subscribed to this plan
-    is_subscribed: bool,
+    pub is_subscribed: bool,
     /// If the zone is allowed to subscribe to this plan
-    can_subscribe: bool,
+    pub can_subscribe: bool,
 }
