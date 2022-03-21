@@ -129,9 +129,6 @@ pub struct Meta {
     pub custom_certificate_quota: u32,
     /// Maximum page rules that can be created.
     pub page_rule_quota: u32,
-    /// Indicates whether wildcard DNS records can receive Cloudflare security and performance
-    /// features
-    pub wildcard_proxiable: bool,
     /// Indicates if URLs on the zone have been identified as hosting phishing content.
     pub phishing_detected: bool,
     /// Indicates whether the zone is allowed to be connected to multiple Railguns at once
