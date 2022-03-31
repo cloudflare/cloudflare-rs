@@ -14,6 +14,7 @@ mod reqwest_adaptors;
 pub mod response;
 
 use serde::Serialize;
+use std::net::IpAddr;
 use std::time::Duration;
 
 #[derive(Serialize, Clone, Debug)]
@@ -69,6 +70,8 @@ pub struct HttpApiClientConfig {
     pub http_timeout: Duration,
     /// A default set of HTTP headers which will be sent with each API request.
     pub default_headers: http::HeaderMap,
+    /// A specific IP to use when establishing a connection
+    pub resolve_ip: Option<IpAddr>,
 }
 
 impl Default for HttpApiClientConfig {
@@ -76,6 +79,7 @@ impl Default for HttpApiClientConfig {
         HttpApiClientConfig {
             http_timeout: Duration::from_secs(30),
             default_headers: http::HeaderMap::default(),
+            resolve_ip: None,
         }
     }
 }

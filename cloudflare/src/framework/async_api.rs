@@ -10,6 +10,7 @@ use crate::framework::{
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use serde::Serialize;
+use std::net::SocketAddr;
 
 #[async_trait]
 pub trait ApiClient {
@@ -45,8 +46,15 @@ impl Client {
         config: HttpApiClientConfig,
         environment: Environment,
     ) -> anyhow::Result<Client> {
-        #[allow(unused_mut)]
         let mut builder = reqwest::Client::builder().default_headers(config.default_headers);
+        if let Some(address) = config.resolve_ip {
+            let url = url::Url::from(&environment);
+            builder = builder.resolve(
+                url.host_str()
+                    .expect("Environment url should have a hostname"),
+                SocketAddr::new(address, 443),
+            );
+        }
 
         cfg_if! {
             // There are no timeouts in wasm. The property is documented as no-op in wasm32.

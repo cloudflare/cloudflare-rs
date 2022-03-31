@@ -1,5 +1,6 @@
 use reqwest::blocking::RequestBuilder;
 use serde::Serialize;
+use std::net::SocketAddr;
 
 use crate::framework::auth::Credentials;
 use crate::framework::reqwest_adaptors::match_reqwest_method;
@@ -14,10 +15,19 @@ impl HttpApiClient {
         config: HttpApiClientConfig,
         environment: Environment,
     ) -> anyhow::Result<HttpApiClient> {
-        let http_client = reqwest::blocking::Client::builder()
+        let mut builder = reqwest::blocking::Client::builder()
             .timeout(config.http_timeout)
-            .default_headers(config.default_headers)
-            .build()?;
+            .default_headers(config.default_headers);
+
+        if let Some(address) = config.resolve_ip {
+            let url = url::Url::from(&environment);
+            builder = builder.resolve(
+                url.host_str()
+                    .expect("Environment url should have a hostname"),
+                SocketAddr::new(address, 443),
+            );
+        }
+        let http_client = builder.build()?;
 
         Ok(HttpApiClient {
             environment,
