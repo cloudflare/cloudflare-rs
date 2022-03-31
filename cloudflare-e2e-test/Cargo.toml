@@ -9,7 +9,6 @@ name = "cloudflare-e2e-test"
 path = "src/main.rs"
 
 [dependencies]
-chrono = { version = "0.4", features = ["serde"] }
 clap = "2.33"
 cloudflare = {path = "../cloudflare"}
 anyhow = "1.0.33"
