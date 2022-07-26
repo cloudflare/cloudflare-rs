@@ -5,6 +5,7 @@ use std::error::Error;
 
 use std::fmt;
 use std::fmt::Debug;
+use std::fmt::Write as _;
 /// Note that APIError's `eq` implementation only compares `code` and `message`.
 /// It does NOT compare the `other` values.
 #[derive(Deserialize, Debug)]
@@ -73,16 +74,12 @@ impl fmt::Display for ApiFailure {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             ApiFailure::Error(status, api_errors) => {
-                let mut output = "".to_owned();
-                output.push_str(&format!("HTTP {}", status));
+                let mut output = format!("HTTP {}", status);
                 for err in &api_errors.errors {
-                    output.push_str(&format!(
-                        "\n{}: {} ({:?})",
-                        err.code, err.message, err.other
-                    ));
+                    let _ = write!(output, "\n{}: {} ({:?})", err.code, err.message, err.other);
                 }
                 for (k, v) in &api_errors.other {
-                    output.push_str(&format!("\n{}: {}", k, v));
+                    let _ = write!(output, "\n{}: {}", k, v);
                 }
                 write!(f, "{}", output)
             }

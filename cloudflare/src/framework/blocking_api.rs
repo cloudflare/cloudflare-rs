@@ -39,7 +39,7 @@ impl HttpApiClient {
 
 // TODO: This should probably just implement request for the Reqwest client itself :)
 // TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
-impl<'a> ApiClient for HttpApiClient {
+impl ApiClient for HttpApiClient {
     /// Synchronously send a request to the Cloudflare API.
     fn request<ResultType, QueryType, BodyType>(
         &self,
