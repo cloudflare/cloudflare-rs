@@ -67,7 +67,7 @@ fn handles_empty_betas_field() {
 #[derive(Debug)]
 pub struct GetUserDetails {}
 
-impl<'a> Endpoint<UserDetails, (), ()> for GetUserDetails {
+impl Endpoint<UserDetails, (), ()> for GetUserDetails {
     fn method(&self) -> Method {
         Method::Get
     }
@@ -90,7 +90,7 @@ impl ApiResult for UserTokenStatus {}
 #[derive(Debug)]
 pub struct GetUserTokenStatus {}
 
-impl<'a> Endpoint<UserTokenStatus, (), ()> for GetUserTokenStatus {
+impl Endpoint<UserTokenStatus, (), ()> for GetUserTokenStatus {
     fn method(&self) -> Method {
         Method::Get
     }
