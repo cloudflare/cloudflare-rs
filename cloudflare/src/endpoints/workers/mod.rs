@@ -4,7 +4,6 @@ use chrono::{DateTime, Utc};
 use serde::Deserialize;
 
 mod create_route;
-mod create_secret;
 mod create_tail;
 mod delete_do;
 mod delete_route;
@@ -18,7 +17,6 @@ mod list_tails;
 mod send_tail_heartbeat;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
-pub use create_secret::{CreateSecret, CreateSecretParams};
 pub use create_tail::{CreateTail, CreateTailParams};
 pub use delete_do::DeleteDurableObject;
 pub use delete_route::DeleteRoute;
