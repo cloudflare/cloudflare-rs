@@ -71,6 +71,7 @@ pub struct HttpApiClientConfig {
     /// A default set of HTTP headers which will be sent with each API request.
     pub default_headers: http::HeaderMap,
     /// A specific IP to use when establishing a connection
+    /// Note: this configuration has no effect when the target is wasm32.
     pub resolve_ip: Option<IpAddr>,
 }
 

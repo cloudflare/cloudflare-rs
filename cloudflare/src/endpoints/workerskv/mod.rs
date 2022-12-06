@@ -70,7 +70,7 @@ where
 {
     let s: Option<i64> = Option::deserialize(deserializer)?;
     if let Some(s) = s {
-        return Ok(Some(Utc.timestamp(s, 0)));
+        return Ok(Utc.timestamp_opt(s, 0).single());
     }
 
     Ok(None)
