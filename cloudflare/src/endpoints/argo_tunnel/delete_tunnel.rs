@@ -8,6 +8,8 @@ use super::Tunnel;
 pub struct DeleteTunnel<'a> {
     pub account_identifier: &'a str,
     pub tunnel_id: &'a str,
+    // should delete tunnel connections if any exists
+    pub cascade: bool,
 }
 
 impl<'a> Endpoint<Tunnel> for DeleteTunnel<'a> {
@@ -16,8 +18,8 @@ impl<'a> Endpoint<Tunnel> for DeleteTunnel<'a> {
     }
     fn path(&self) -> String {
         format!(
-            "accounts/{}/tunnels/{}",
-            self.account_identifier, self.tunnel_id
+            "accounts/{}/tunnels/{}?cascade={}",
+            self.account_identifier, self.tunnel_id, self.cascade
         )
     }
 }
