@@ -47,18 +47,20 @@ impl Client {
         environment: Environment,
     ) -> anyhow::Result<Client> {
         let mut builder = reqwest::Client::builder().default_headers(config.default_headers);
-        if let Some(address) = config.resolve_ip {
-            let url = url::Url::from(&environment);
-            builder = builder.resolve(
-                url.host_str()
-                    .expect("Environment url should have a hostname"),
-                SocketAddr::new(address, 443),
-            );
-        }
 
         cfg_if! {
-            // There are no timeouts in wasm. The property is documented as no-op in wasm32.
             if #[cfg(not(target_arch = "wasm32"))] {
+                // There is no resolve method in wasm.
+                if let Some(address) = config.resolve_ip {
+                    let url = url::Url::from(&environment);
+                    builder = builder.resolve(
+                        url.host_str()
+                            .expect("Environment url should have a hostname"),
+                        SocketAddr::new(address, 443),
+                    );
+                }
+
+                // There are no timeouts in wasm. The property is documented as no-op in wasm32.
                 builder = builder.timeout(config.http_timeout);
             }
         }
