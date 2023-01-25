@@ -1,4 +1,4 @@
-use chrono::{offset::Utc, DateTime};
+use time::OffsetDateTime;
 use uuid::Uuid;
 
 use crate::framework::response::ApiResult;
@@ -9,8 +9,8 @@ use crate::framework::response::ApiResult;
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Tunnel {
     pub id: Uuid,
-    pub created_at: DateTime<Utc>,
-    pub deleted_at: Option<DateTime<Utc>>,
+    pub created_at: OffsetDateTime,
+    pub deleted_at: Option<OffsetDateTime>,
     pub name: String,
     pub connections: Vec<ActiveConnection>,
     pub metadata: serde_json::Value,

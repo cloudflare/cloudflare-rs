@@ -1,7 +1,7 @@
 use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::ApiResult;
 
-use chrono::{DateTime, Utc};
+use time::OffsetDateTime;
 
 /// Get User Details
 /// Gets information about a user
@@ -24,9 +24,9 @@ pub struct UserDetails {
     pub telephone: Option<String>,
     pub zipcode: Option<String>,
     pub last_name: Option<String>,
-    pub modified_on: DateTime<Utc>,
+    pub modified_on: OffsetDateTime,
     pub username: String,
-    pub created_on: DateTime<Utc>,
+    pub created_on: OffsetDateTime,
     pub country: Option<String>,
     pub two_factor_authentication_enabled: bool,
     pub first_name: Option<String>,

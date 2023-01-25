@@ -1,6 +1,6 @@
 use crate::framework::response::ApiResult;
-use chrono::{DateTime, Utc};
 use serde::Deserialize;
+use time::OffsetDateTime;
 
 pub mod list_accounts;
 pub use list_accounts::ListAccounts;
@@ -17,7 +17,7 @@ pub struct Account {
     /// Account Settings
     pub settings: Option<Settings>,
     /// describes when the account was created
-    pub created_on: Option<DateTime<Utc>>,
+    pub created_on: Option<OffsetDateTime>,
 }
 
 /// Cloudflare Accounts Settings

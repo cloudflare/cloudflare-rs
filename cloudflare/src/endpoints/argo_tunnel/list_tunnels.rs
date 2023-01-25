@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use time::OffsetDateTime;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
@@ -31,9 +31,9 @@ pub struct Params {
     pub name: Option<String>,
     pub uuid: Option<String>,
     pub is_deleted: Option<bool>,
-    pub existed_at: Option<DateTime<Utc>>,
+    pub existed_at: Option<OffsetDateTime>,
     pub name_prefix: Option<String>,
-    pub was_inactive_at: Option<DateTime<Utc>>,
+    pub was_inactive_at: Option<OffsetDateTime>,
     pub exclude_prefix: Option<String>,
     #[serde(flatten)]
     pub pagination_params: Option<PaginationParams>,

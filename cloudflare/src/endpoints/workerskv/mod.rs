@@ -1,8 +1,7 @@
 use crate::framework::response::ApiResult;
-use chrono::DateTime;
-use chrono::{TimeZone, Utc};
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use serde::{Deserialize, Deserializer};
+use time::OffsetDateTime;
 
 pub mod create_namespace;
 pub mod delete_bulk;
@@ -59,18 +58,18 @@ pub struct Key {
     pub name: String,
     #[serde(default)]
     #[serde(deserialize_with = "deserialize_option_timestamp")]
-    pub expiration: Option<DateTime<Utc>>,
+    pub expiration: Option<OffsetDateTime>,
 }
 
 pub fn deserialize_option_timestamp<'de, D>(
     deserializer: D,
-) -> Result<Option<DateTime<Utc>>, D::Error>
+) -> Result<Option<OffsetDateTime>, D::Error>
 where
     D: Deserializer<'de>,
 {
     let s: Option<i64> = Option::deserialize(deserializer)?;
     if let Some(s) = s {
-        return Ok(Utc.timestamp_opt(s, 0).single());
+        return Ok(OffsetDateTime::from_unix_timestamp(s).ok());
     }
 
     Ok(None)

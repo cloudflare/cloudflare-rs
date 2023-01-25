@@ -1,11 +1,11 @@
+use time::OffsetDateTime;
+
 use crate::framework::{
     endpoint::{Endpoint, Method},
     response::ApiResult,
 };
 /// https://api.cloudflare.com/#dns-records-for-a-zone-properties
 use crate::framework::{OrderDirection, SearchMatch};
-use chrono::offset::Utc;
-use chrono::DateTime;
 use std::net::{Ipv4Addr, Ipv6Addr};
 
 /// List DNS Records
@@ -187,9 +187,9 @@ pub struct DnsRecord {
     /// Zone identifier tag
     pub zone_id: String,
     /// When the record was last modified
-    pub modified_on: DateTime<Utc>,
+    pub modified_on: OffsetDateTime,
     /// When the record was created
-    pub created_on: DateTime<Utc>,
+    pub created_on: OffsetDateTime,
     /// Whether this record can be modified/deleted (true means it's managed by Cloudflare)
     pub proxiable: bool,
     /// Type of the DNS record that also holds the record value

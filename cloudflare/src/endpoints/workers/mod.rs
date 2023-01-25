@@ -1,7 +1,7 @@
 use crate::framework::response::ApiResult;
 
-use chrono::{DateTime, Utc};
 use serde::Deserialize;
+use time::OffsetDateTime;
 
 mod create_route;
 mod create_secret;
@@ -77,7 +77,7 @@ impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
 pub struct WorkersTail {
     pub id: String,
     pub url: Option<String>,
-    pub expires_at: DateTime<Utc>,
+    pub expires_at: OffsetDateTime,
 }
 
 impl ApiResult for WorkersTail {}

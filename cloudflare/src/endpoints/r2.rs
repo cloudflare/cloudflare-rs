@@ -1,7 +1,6 @@
-use chrono::offset::Utc;
-use chrono::DateTime;
 use serde::Deserialize;
 use std::collections::HashMap;
+use time::OffsetDateTime;
 
 use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::ApiResult;
@@ -12,7 +11,7 @@ pub struct Bucket {
     /// Bucket name
     pub name: String,
     /// Creation date of the bucket
-    pub creation_date: DateTime<Utc>,
+    pub creation_date: OffsetDateTime,
 }
 
 /// ListBucketsResult contains a list of buckets in an account.

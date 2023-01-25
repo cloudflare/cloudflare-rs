@@ -6,17 +6,16 @@ pub mod list_lb;
 pub mod pool_details;
 
 use crate::framework::response::ApiResult;
-use chrono::offset::Utc;
-use chrono::DateTime;
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::net::IpAddr;
+use time::OffsetDateTime;
 
 #[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
 pub struct LoadBalancer {
     pub id: String,
-    pub created_on: DateTime<Utc>,
-    pub modified_on: DateTime<Utc>,
+    pub created_on: OffsetDateTime,
+    pub modified_on: OffsetDateTime,
     pub description: String,
     /// The DNS hostname to associate with your Load Balancer. If this hostname already exists as a
     /// DNS record in Cloudflare's DNS, the Load Balancer will take precedence and the DNS record
@@ -122,8 +121,8 @@ impl ApiResult for LoadBalancer {}
 #[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
 pub struct Pool {
     pub id: String,
-    pub created_on: DateTime<Utc>,
-    pub modified_on: DateTime<Utc>,
+    pub created_on: OffsetDateTime,
+    pub modified_on: OffsetDateTime,
     /// A human-readable description of the pool.
     /// e.g. "Primary data center - Provider XYZ"
     pub description: String,

@@ -4,8 +4,7 @@ use crate::framework::{
     response::ApiResult,
 };
 use crate::framework::{OrderDirection, SearchMatch};
-use chrono::offset::Utc;
-use chrono::DateTime;
+use time::OffsetDateTime;
 
 /// List Zones
 /// List, search, sort, and filter your zones
@@ -148,7 +147,7 @@ pub struct Zone {
     /// A list of beta features in which the zone is participating
     pub betas: Option<Vec<String>>,
     /// When the zone was created
-    pub created_on: DateTime<Utc>,
+    pub created_on: OffsetDateTime,
     /// Exists only with a deactivated status and indicates the reason the zone is not resolving on
     /// the Cloudflare network.
     pub deactivation_reason: Option<String>,
@@ -161,7 +160,7 @@ pub struct Zone {
     /// Metadata about the domain.
     pub meta: Meta,
     /// When the zone was last modified
-    pub modified_on: DateTime<Utc>,
+    pub modified_on: OffsetDateTime,
     /// Cloudflare-assigned name servers. This is only populated for zones that use Cloudflare DNS
     pub name_servers: Vec<String>,
     /// DNS host at the time of switching to Cloudflare
