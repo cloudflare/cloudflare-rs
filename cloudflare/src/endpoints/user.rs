@@ -24,8 +24,10 @@ pub struct UserDetails {
     pub telephone: Option<String>,
     pub zipcode: Option<String>,
     pub last_name: Option<String>,
+    #[serde(with = "time::serde::rfc3339")]
     pub modified_on: OffsetDateTime,
     pub username: String,
+    #[serde(with = "time::serde::rfc3339")]
     pub created_on: OffsetDateTime,
     pub country: Option<String>,
     pub two_factor_authentication_enabled: bool,

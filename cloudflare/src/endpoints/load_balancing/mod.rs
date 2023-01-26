@@ -14,7 +14,9 @@ use time::OffsetDateTime;
 #[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
 pub struct LoadBalancer {
     pub id: String,
+    #[serde(with = "time::serde::rfc3339")]
     pub created_on: OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339")]
     pub modified_on: OffsetDateTime,
     pub description: String,
     /// The DNS hostname to associate with your Load Balancer. If this hostname already exists as a
@@ -121,7 +123,9 @@ impl ApiResult for LoadBalancer {}
 #[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
 pub struct Pool {
     pub id: String,
+    #[serde(with = "time::serde::rfc3339")]
     pub created_on: OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339")]
     pub modified_on: OffsetDateTime,
     /// A human-readable description of the pool.
     /// e.g. "Primary data center - Provider XYZ"

@@ -1,3 +1,4 @@
+use serde_with::serde_as;
 use time::OffsetDateTime;
 
 use crate::framework::endpoint::{Endpoint, Method};
@@ -25,14 +26,17 @@ impl<'a> Endpoint<Vec<Tunnel>, Params> for ListTunnels<'a> {
 }
 
 /// Params for filtering listed tunnels
+#[serde_as]
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct Params {
     pub name: Option<String>,
     pub uuid: Option<String>,
     pub is_deleted: Option<bool>,
+    #[serde_as(as = "Option<time::format_description::well_known::Rfc3339>")]
     pub existed_at: Option<OffsetDateTime>,
     pub name_prefix: Option<String>,
+    #[serde_as(as = "Option<time::format_description::well_known::Rfc3339>")]
     pub was_inactive_at: Option<OffsetDateTime>,
     pub exclude_prefix: Option<String>,
     #[serde(flatten)]

@@ -187,8 +187,10 @@ pub struct DnsRecord {
     /// Zone identifier tag
     pub zone_id: String,
     /// When the record was last modified
+    #[serde(with = "time::serde::rfc3339")]
     pub modified_on: OffsetDateTime,
     /// When the record was created
+    #[serde(with = "time::serde::rfc3339")]
     pub created_on: OffsetDateTime,
     /// Whether this record can be modified/deleted (true means it's managed by Cloudflare)
     pub proxiable: bool,

@@ -11,6 +11,7 @@ pub struct Bucket {
     /// Bucket name
     pub name: String,
     /// Creation date of the bucket
+    #[serde(with = "time::serde::rfc3339")]
     pub creation_date: OffsetDateTime,
 }
 

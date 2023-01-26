@@ -147,6 +147,7 @@ pub struct Zone {
     /// A list of beta features in which the zone is participating
     pub betas: Option<Vec<String>>,
     /// When the zone was created
+    #[serde(with = "time::serde::rfc3339")]
     pub created_on: OffsetDateTime,
     /// Exists only with a deactivated status and indicates the reason the zone is not resolving on
     /// the Cloudflare network.
@@ -160,6 +161,7 @@ pub struct Zone {
     /// Metadata about the domain.
     pub meta: Meta,
     /// When the zone was last modified
+    #[serde(with = "time::serde::rfc3339")]
     pub modified_on: OffsetDateTime,
     /// Cloudflare-assigned name servers. This is only populated for zones that use Cloudflare DNS
     pub name_servers: Vec<String>,

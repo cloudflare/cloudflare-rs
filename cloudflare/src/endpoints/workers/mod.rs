@@ -77,6 +77,7 @@ impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
 pub struct WorkersTail {
     pub id: String,
     pub url: Option<String>,
+    #[serde(with = "time::serde::rfc3339")]
     pub expires_at: OffsetDateTime,
 }
 

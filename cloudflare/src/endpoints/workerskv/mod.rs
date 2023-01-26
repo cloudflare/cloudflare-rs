@@ -1,6 +1,7 @@
 use crate::framework::response::ApiResult;
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
-use serde::{Deserialize, Deserializer};
+use serde::Deserialize;
+use serde_with::{serde_as, TimestampSeconds};
 use time::OffsetDateTime;
 
 pub mod create_namespace;
@@ -52,27 +53,13 @@ impl ApiResult for WorkersKvNamespace {}
 
 impl ApiResult for Vec<WorkersKvNamespace> {}
 
+#[serde_as]
 #[serde_with::skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Key {
     pub name: String,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_option_timestamp")]
+    #[serde_as(as = "Option<TimestampSeconds<i64>>")]
     pub expiration: Option<OffsetDateTime>,
-}
-
-pub fn deserialize_option_timestamp<'de, D>(
-    deserializer: D,
-) -> Result<Option<OffsetDateTime>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let s: Option<i64> = Option::deserialize(deserializer)?;
-    if let Some(s) = s {
-        return Ok(OffsetDateTime::from_unix_timestamp(s).ok());
-    }
-
-    Ok(None)
 }
 
 impl ApiResult for Key {}

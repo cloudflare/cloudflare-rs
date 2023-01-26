@@ -1,3 +1,4 @@
+use serde_with::serde_as;
 use time::OffsetDateTime;
 use uuid::Uuid;
 
@@ -6,10 +7,13 @@ use crate::framework::response::ApiResult;
 /// A Named Argo Tunnel
 /// This is an Argo Tunnel that has been created. It can be used for routing and subsequent running.
 /// https://api.cloudflare.com/#argo-tunnel-properties
+#[serde_as]
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Tunnel {
     pub id: Uuid,
+    #[serde_as(as = "time::format_description::well_known::Rfc3339")]
     pub created_at: OffsetDateTime,
+    #[serde_as(as = "Option<time::format_description::well_known::Rfc3339>")]
     pub deleted_at: Option<OffsetDateTime>,
     pub name: String,
     pub connections: Vec<ActiveConnection>,
