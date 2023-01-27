@@ -17,7 +17,7 @@ rustls-tls = ["reqwest/rustls-tls"]
 anyhow = "1.0"
 async-trait = "0.1"
 base64 = "0.13"
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4", default-features = false, features = ["serde", "clock", "std", "wasmbind"] }
 cfg-if = "1.0"
 http = "0.2"
 percent-encoding = "2.1.0"
