@@ -74,16 +74,16 @@ impl fmt::Display for ApiFailure {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             ApiFailure::Error(status, api_errors) => {
-                let mut output = format!("HTTP {}", status);
+                let mut output = format!("HTTP {status}");
                 for err in &api_errors.errors {
                     let _ = write!(output, "\n{}: {} ({:?})", err.code, err.message, err.other);
                 }
                 for (k, v) in &api_errors.other {
-                    let _ = write!(output, "\n{}: {}", k, v);
+                    let _ = write!(output, "\n{k}: {v}");
                 }
-                write!(f, "{}", output)
+                write!(f, "{output}")
             }
-            ApiFailure::Invalid(err) => write!(f, "{}", err),
+            ApiFailure::Invalid(err) => write!(f, "{err}"),
         }
     }
 }

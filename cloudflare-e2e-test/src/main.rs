@@ -51,7 +51,7 @@ async fn test_lb_pool<ApiClientType: ApiClient>(
             },
         })
         .await
-        .log_err(|e| println!("Error in CreatePool: {}", e))?
+        .log_err(|e| println!("Error in CreatePool: {e}"))?
         .result;
 
     // Get the details, but wait until after we delete the pool to validate it.
@@ -61,7 +61,7 @@ async fn test_lb_pool<ApiClientType: ApiClient>(
             identifier: &pool.id,
         })
         .await
-        .log_err(|e| println!("Error in PoolDetails: {}", e));
+        .log_err(|e| println!("Error in PoolDetails: {e}"));
 
     // Delete the pool
     let _ = api_client
@@ -70,7 +70,7 @@ async fn test_lb_pool<ApiClientType: ApiClient>(
             identifier: &pool.id,
         })
         .await
-        .log_err(|e| println!("Error in DeletePool: {}", e))?;
+        .log_err(|e| println!("Error in DeletePool: {e}"))?;
 
     // Validate the pool we got was the same as the pool we sent
     let pool_details = pool_details?.result;

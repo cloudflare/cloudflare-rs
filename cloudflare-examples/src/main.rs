@@ -24,21 +24,21 @@ struct Section<'a, ApiClientType: ApiClient> {
 
 fn print_response<T: ApiResult>(response: ApiResponse<T>) {
     match response {
-        Ok(success) => println!("Success: {:#?}", success),
+        Ok(success) => println!("Success: {success:#?}"),
         Err(e) => match e {
             ApiFailure::Error(status, errors) => {
-                println!("HTTP {}:", status);
+                println!("HTTP {status}:");
                 for err in errors.errors {
                     println!("Error {}: {}", err.code, err.message);
                     for (k, v) in err.other {
-                        println!("{}: {}", k, v);
+                        println!("{k}: {v}");
                     }
                 }
                 for (k, v) in errors.other {
-                    println!("{}: {}", k, v);
+                    println!("{k}: {v}");
                 }
             }
-            ApiFailure::Invalid(reqwest_err) => println!("Error: {}", reqwest_err),
+            ApiFailure::Invalid(reqwest_err) => println!("Error: {reqwest_err}"),
         },
     }
 }
@@ -52,18 +52,18 @@ where
         Ok(success) => println!("{}", serde_json::to_string(&success.result).unwrap()),
         Err(e) => match e {
             ApiFailure::Error(status, errors) => {
-                println!("HTTP {}:", status);
+                println!("HTTP {status}:");
                 for err in errors.errors {
                     println!("Error {}: {}", err.code, err.message);
                     for (k, v) in err.other {
-                        println!("{}: {}", k, v);
+                        println!("{k}: {v}");
                     }
                 }
                 for (k, v) in errors.other {
-                    println!("{}: {}", k, v);
+                    println!("{k}: {v}");
                 }
             }
-            ApiFailure::Invalid(reqwest_err) => println!("Error: {}", reqwest_err),
+            ApiFailure::Invalid(reqwest_err) => println!("Error: {reqwest_err}"),
         },
     }
 }
