@@ -3,7 +3,7 @@ extern crate maplit;
 extern crate clap;
 extern crate cloudflare;
 
-use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
+use clap::{Arg, ArgMatches, Command};
 use cloudflare::endpoints::{account, dns, workers, zone};
 use cloudflare::framework::{
     apiclient::ApiClient,
@@ -17,7 +17,7 @@ use serde::Serialize;
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 
 struct Section<'a, ApiClientType: ApiClient> {
-    args: Vec<Arg<'a, 'a>>,
+    args: Vec<Arg>,
     description: &'a str,
     function: SectionFunction<ApiClientType>,
 }
@@ -69,15 +69,15 @@ where
 }
 
 fn zone<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
-    let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
+    let zone_identifier = arg_matches.get_one::<String>("zone_identifier");
     let response = api_client.request(&zone::ZoneDetails {
-        identifier: zone_identifier,
+        identifier: zone_identifier.unwrap(),
     });
     print_response(response)
 }
 
 fn dns<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
-    let zone_identifier = arg_matches.value_of("zone_identifier").unwrap();
+    let zone_identifier = arg_matches.get_one::<String>("zone_identifier").unwrap();
     let response = api_client.request(&dns::ListDnsRecords {
         zone_identifier,
         params: dns::ListDnsRecordsParams {
@@ -97,14 +97,16 @@ fn create_txt_record<ApiClientType: ApiClient>(
 
     let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
     let zone_identifier = arg_matches
-        .value_of("zone_identifier")
+        .get_one::<String>("zone_identifier")
         .expect(&zone_id_missing);
 
     let name_missing = format!("missing '{}': {}", "NAME", usage);
-    let name = arg_matches.value_of("name").expect(&name_missing);
+    let name = arg_matches.get_one::<String>("name").expect(&name_missing);
 
     let content_missing = format!("missing '{}': {}", "CONTENT", usage);
-    let content = arg_matches.value_of("content").expect(&content_missing);
+    let content = arg_matches
+        .get_one::<String>("content")
+        .expect(&content_missing);
 
     let response = api_client.request(&dns::CreateDnsRecord {
         zone_identifier,
@@ -127,7 +129,7 @@ fn list_routes<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &
 
     let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
     let zone_identifier = arg_matches
-        .value_of("zone_identifier")
+        .get_one::<String>("zone_identifier")
         .expect(&zone_id_missing);
 
     let response = api_client.request(&workers::ListRoutes { zone_identifier });
@@ -146,15 +148,15 @@ fn create_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: 
 
     let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
     let zone_identifier = arg_matches
-        .value_of("zone_identifier")
+        .get_one::<String>("zone_identifier")
         .expect(&zone_id_missing);
 
     let route_pattern_missing = format!("missing '{}': {}", "ROUTE_PATTERN", usage);
     let route_pattern = arg_matches
-        .value_of("route_pattern")
+        .get_one::<String>("route_pattern")
         .expect(&route_pattern_missing);
 
-    let script_name = arg_matches.value_of("script_name");
+    let script_name = arg_matches.get_one::<String>("script_name");
 
     let response = api_client.request(&workers::CreateRoute {
         zone_identifier,
@@ -172,12 +174,12 @@ fn delete_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: 
 
     let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
     let zone_identifier = arg_matches
-        .value_of("zone_identifier")
+        .get_one::<String>("zone_identifier")
         .expect(&zone_id_missing);
 
     let route_id_missing = format!("missing '{}': {}", "ROUTE_PATTERN", usage);
     let route_id = arg_matches
-        .value_of("route_identifier")
+        .get_one::<String>("route_identifier")
         .expect(&route_id_missing);
 
     let response = api_client.request(&workers::DeleteRoute {
@@ -198,20 +200,20 @@ fn mock_api<ApiClientType: ApiClient>(_args: &ArgMatches, _api: &ApiClientType) 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sections = hashmap! {
         "zone" => Section{
-            args: vec![Arg::with_name("zone_identifier").required(true)],
+            args: vec![Arg::new("zone_identifier").required(true)],
             description: "A Zone is a domain name along with its subdomains and other identities",
             function: zone
         },
         "dns" => Section{
-            args: vec![Arg::with_name("zone_identifier").required(true)],
+            args: vec![Arg::new("zone_identifier").required(true)],
             description: "DNS Records for a Zone",
             function: dns
         },
         "create_txt_record" => Section{
             args: vec![
-                Arg::with_name("zone_identifier").required(true),
-                Arg::with_name("name").required(true),
-                Arg::with_name("content").required(true),
+                Arg::new("zone_identifier").required(true),
+                Arg::new("name").required(true),
+                Arg::new("content").required(true),
                 ],
             description: "Create a TXT record for a zone",
             function: create_txt_record
@@ -223,7 +225,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         "list_routes" => Section{
             args: vec![
-                Arg::with_name("zone_identifier").required(true),
+                Arg::new("zone_identifier").required(true),
             ],
             description: "Activate a Worker on a Route",
             function: list_routes
@@ -235,48 +237,45 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
         "create_route" => Section{
             args: vec![
-                Arg::with_name("zone_identifier").required(true),
-                Arg::with_name("route_pattern").required(true),
-                Arg::with_name("script_name").required(false),
+                Arg::new("zone_identifier").required(true),
+                Arg::new("route_pattern").required(true),
+                Arg::new("script_name").required(false),
             ],
             description: "Activate a Worker on a Route",
             function: create_route
         },
         "delete_route" => Section{
             args: vec![
-                Arg::with_name("zone_identifier").required(true),
-                Arg::with_name("route_identifier").required(true),
+                Arg::new("zone_identifier").required(true),
+                Arg::new("route_identifier").required(true),
             ],
             description: "Activate a Worker on a Route",
             function: delete_route
         },
     };
 
-    let mut cli = App::new("cloudflare-rust")
+    let mut cli = Command::new("cloudflare-rust")
         .version("0.0")
         .author("Argo Tunnel team <argo-tunnel-team@cloudflare.com>")
         .about("Issues example requests to the Cloudflare API using the cloudflare-rust client library")
-        .arg(Arg::with_name("email")
+        .arg(Arg::new("email")
             .long("email")
             .help("Email address associated with your account")
-            .takes_value(true)
             .requires("auth-key"))
-        .arg(Arg::with_name("auth-key")
+        .arg(Arg::new("auth-key")
             .long("auth-key")
             .env("CF_RS_AUTH_KEY")
             .help("API key generated on the \"My Account\" page")
-            .takes_value(true)
             .requires("email"))
-        .arg(Arg::with_name("auth-token")
+        .arg(Arg::new("auth-token")
             .long("auth-token")
             .env("CF_RS_AUTH_TOKEN")
             .help("API token generated on the \"My Account\" page")
-            .takes_value(true)
-            .conflicts_with_all(&["email", "auth-key"]))
-        .setting(AppSettings::ArgRequiredElseHelp);
+            .conflicts_with_all(["email", "auth-key"]))
+        .arg_required_else_help(true);
 
     for (section_name, section) in sections.iter() {
-        let mut subcommand = SubCommand::with_name(section_name).about(section.description);
+        let mut subcommand = Command::new(*section_name).about(section.description);
 
         for arg in &section.args {
             subcommand = subcommand.arg(arg);
@@ -284,7 +283,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         cli = cli.subcommand(subcommand);
     }
 
-    let matches = cli.get_matches();
+    let mut matches = cli.get_matches();
+    let email = matches.remove_one("email").unwrap();
+    let key = matches.remove_one("auth-key");
+    let token = matches.remove_one("auth-token");
+
     let matched_sections =
         sections
             .iter()
@@ -292,19 +295,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 matches.subcommand_matches(section_name).is_some()
             });
 
-    let email = matches.value_of("email");
-    let key = matches.value_of("auth-key");
-    let token = matches.value_of("auth-token");
-
     let credentials: Credentials = if let Some(key) = key {
-        Credentials::UserAuthKey {
-            email: email.unwrap().to_string(),
-            key: key.to_string(),
-        }
+        Credentials::UserAuthKey { email, key }
     } else if let Some(token) = token {
-        Credentials::UserAuthToken {
-            token: token.to_string(),
-        }
+        Credentials::UserAuthToken { token }
     } else {
         panic!("Either API token or API key + email pair must be provided")
     };
