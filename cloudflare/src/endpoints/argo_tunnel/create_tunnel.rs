@@ -1,5 +1,10 @@
+use serde_with::{
+    base64::{Base64, Standard},
+    formats::Padded,
+    serde_as,
+};
+
 use crate::framework::endpoint::{Endpoint, Method};
-use crate::framework::json_utils::serialize_base64_str;
 
 use super::Tunnel;
 
@@ -26,6 +31,7 @@ impl<'a> Endpoint<Tunnel, (), Params<'a>> for CreateTunnel<'a> {
 }
 
 /// Params for creating a Named Argo Tunnel
+#[serde_as]
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug)]
 pub struct Params<'a> {
@@ -33,7 +39,7 @@ pub struct Params<'a> {
     pub name: &'a str,
     /// The byte array (with 32 or more bytes) representing a secret for the tunnel. This is
     /// encoded into JSON as a base64 String. This secret is necessary to run the tunnel.
-    #[serde(serialize_with = "serialize_base64_str")]
+    #[serde_as(as = "Base64<Standard, Padded>")]
     pub tunnel_secret: &'a Vec<u8>,
     /// Arbitrary metadata for the tunnel.
     pub metadata: Option<serde_json::Value>,
