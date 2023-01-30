@@ -7,7 +7,6 @@ pub mod auth;
 #[cfg(not(target_arch = "wasm32"))] // There is no blocking implementation for wasm.
 pub mod blocking_api;
 pub mod endpoint;
-pub mod json_utils;
 #[cfg(not(target_arch = "wasm32"))] // The mock contains a blocking implementation.
 pub mod mock;
 mod reqwest_adaptors;
