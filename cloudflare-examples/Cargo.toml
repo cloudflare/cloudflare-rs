@@ -9,7 +9,7 @@ name = "cloudflare-examples"
 path = "src/main.rs"
 
 [dependencies]
-clap = "2.33"
+clap = { version = "4.1.4", features = ["env"] }
 cloudflare = {path = "../cloudflare"}
 maplit = "1.0"
 serde = { version = "1.0" }

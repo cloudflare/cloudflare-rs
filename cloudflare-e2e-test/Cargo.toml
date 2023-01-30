@@ -9,7 +9,7 @@ name = "cloudflare-e2e-test"
 path = "src/main.rs"
 
 [dependencies]
-clap = "2.33"
+clap = { version = "4.1", features = ["env"] }
 cloudflare = {path = "../cloudflare"}
 anyhow = "1.0.33"
 tokio = { version = "1", features = ["macros"] }
