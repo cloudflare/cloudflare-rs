@@ -8,7 +8,6 @@ use crate::framework::{
     Environment, HttpApiClientConfig,
 };
 use async_trait::async_trait;
-use cfg_if::cfg_if;
 use serde::Serialize;
 use std::net::SocketAddr;
 
@@ -48,21 +47,20 @@ impl Client {
     ) -> anyhow::Result<Client> {
         let mut builder = reqwest::Client::builder().default_headers(config.default_headers);
 
-        cfg_if! {
-            if #[cfg(not(target_arch = "wasm32"))] {
-                // There is no resolve method in wasm.
-                if let Some(address) = config.resolve_ip {
-                    let url = url::Url::from(&environment);
-                    builder = builder.resolve(
-                        url.host_str()
-                            .expect("Environment url should have a hostname"),
-                        SocketAddr::new(address, 443),
-                    );
-                }
-
-                // There are no timeouts in wasm. The property is documented as no-op in wasm32.
-                builder = builder.timeout(config.http_timeout);
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            // There is no resolve method in wasm.
+            if let Some(address) = config.resolve_ip {
+                let url = url::Url::from(&environment);
+                builder = builder.resolve(
+                    url.host_str()
+                        .expect("Environment url should have a hostname"),
+                    SocketAddr::new(address, 443),
+                );
             }
+
+            // There are no timeouts in wasm. The property is documented as no-op in wasm32.
+            builder = builder.timeout(config.http_timeout);
         }
 
         let http_client = builder.build()?;
