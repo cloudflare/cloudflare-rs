@@ -16,6 +16,14 @@ use serde::Serialize;
 use std::net::IpAddr;
 use std::time::Duration;
 
+#[derive(thiserror::Error, Debug)]
+/// Errors encountered while trying to connect to the Cloudflare API
+pub enum Error {
+    /// An error via the `reqwest` crate
+    #[error("Reqwest returned an error when connecting to the Cloudflare API: {0}")]
+    ReqwestError(#[from] reqwest::Error),
+}
+
 #[derive(Serialize, Clone, Debug)]
 pub enum OrderDirection {
     #[serde(rename = "asc")]

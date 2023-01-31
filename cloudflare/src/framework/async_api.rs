@@ -44,7 +44,7 @@ impl Client {
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
         environment: Environment,
-    ) -> anyhow::Result<Client> {
+    ) -> Result<Client, crate::framework::Error> {
         let mut builder = reqwest::Client::builder().default_headers(config.default_headers);
 
         #[cfg(not(target_arch = "wasm32"))]
