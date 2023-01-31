@@ -14,7 +14,7 @@ impl HttpApiClient {
         credentials: auth::Credentials,
         config: HttpApiClientConfig,
         environment: Environment,
-    ) -> anyhow::Result<HttpApiClient> {
+    ) -> Result<HttpApiClient, crate::framework::Error> {
         let mut builder = reqwest::blocking::Client::builder()
             .timeout(config.http_timeout)
             .default_headers(config.default_headers);
