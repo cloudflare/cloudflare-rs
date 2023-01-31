@@ -2,7 +2,7 @@ use crate::framework::{
     endpoint::{Endpoint, Method},
     response::ApiResult,
 };
-/// https://api.cloudflare.com/#dns-records-for-a-zone-properties
+/// <https://api.cloudflare.com/#dns-records-for-a-zone-properties>
 use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::net::{Ipv4Addr, Ipv6Addr};
 
 /// List DNS Records
-/// https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records
+/// <https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records>
 #[derive(Debug)]
 pub struct ListDnsRecords<'a> {
     pub zone_identifier: &'a str,
@@ -29,7 +29,7 @@ impl<'a> Endpoint<Vec<DnsRecord>, ListDnsRecordsParams> for ListDnsRecords<'a> {
 }
 
 /// Create DNS Record
-/// https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record
+/// <https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record>
 #[derive(Debug)]
 pub struct CreateDnsRecord<'a> {
     pub zone_identifier: &'a str,
@@ -66,7 +66,7 @@ pub struct CreateDnsRecordParams<'a> {
 }
 
 /// Delete DNS Record
-/// https://api.cloudflare.com/#dns-records-for-a-zone-delete-dns-record
+/// <https://api.cloudflare.com/#dns-records-for-a-zone-delete-dns-record>
 #[derive(Debug)]
 pub struct DeleteDnsRecord<'a> {
     pub zone_identifier: &'a str,
@@ -85,7 +85,7 @@ impl<'a> Endpoint<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
 }
 
 /// Update DNS Record
-/// https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record
+/// <https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record>
 #[derive(Debug)]
 pub struct UpdateDnsRecord<'a> {
     pub zone_identifier: &'a str,

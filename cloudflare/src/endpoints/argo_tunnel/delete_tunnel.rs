@@ -3,7 +3,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 use super::Tunnel;
 
 /// Delete a tunnel
-/// https://api.cloudflare.com/#argo-tunnel-delete-argo-tunnel
+/// <https://api.cloudflare.com/#argo-tunnel-delete-argo-tunnel>
 #[derive(Debug)]
 pub struct DeleteTunnel<'a> {
     pub account_identifier: &'a str,

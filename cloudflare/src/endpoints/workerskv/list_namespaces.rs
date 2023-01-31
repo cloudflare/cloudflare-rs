@@ -6,7 +6,7 @@ use serde::Serialize;
 
 /// List Namespaces
 /// Returns the namespaces owned by an account
-/// https://api.cloudflare.com/#workers-kv-namespace-list-namespaces
+/// <https://api.cloudflare.com/#workers-kv-namespace-list-namespaces>
 #[derive(Debug)]
 pub struct ListNamespaces<'a> {
     pub account_identifier: &'a str,

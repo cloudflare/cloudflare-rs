@@ -4,7 +4,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 use serde::Serialize;
 
 /// Create Pool
-/// https://api.cloudflare.com/#account-load-balancer-pools-create-pool
+/// <https://api.cloudflare.com/#account-load-balancer-pools-create-pool>
 #[derive(Debug)]
 pub struct CreatePool<'a> {
     /// The Cloudflare account to create this Pool under.

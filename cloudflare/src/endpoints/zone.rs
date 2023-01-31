@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 /// List Zones
 /// List, search, sort, and filter your zones
-/// https://api.cloudflare.com/#zone-list-zones
+/// <https://api.cloudflare.com/#zone-list-zones>
 #[derive(Debug)]
 pub struct ListZones {
     pub params: ListZonesParams,
@@ -29,7 +29,7 @@ impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
 }
 
 /// Zone Details
-/// https://api.cloudflare.com/#zone-zone-details
+/// <https://api.cloudflare.com/#zone-zone-details>
 #[derive(Debug)]
 pub struct ZoneDetails<'a> {
     pub identifier: &'a str,
@@ -44,7 +44,7 @@ impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
 }
 
 /// Add Zone
-/// https://api.cloudflare.com/#zone-create-zone
+/// <https://api.cloudflare.com/#zone-create-zone>
 pub struct CreateZone<'a> {
     pub params: CreateZoneParams<'a>,
 }
@@ -137,7 +137,7 @@ pub struct Meta {
 }
 
 /// A Zone is a domain name along with its subdomains and other identities
-/// https://api.cloudflare.com/#zone-properties
+/// <https://api.cloudflare.com/#zone-properties>
 #[derive(Deserialize, Debug)]
 pub struct Zone {
     /// Zone identifier tag
