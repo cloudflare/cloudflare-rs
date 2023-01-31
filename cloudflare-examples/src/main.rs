@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use clap::{Arg, ArgMatches, Command};
 use cloudflare::endpoints::{account, dns, workers, zone};
 use cloudflare::framework::{
@@ -7,7 +9,6 @@ use cloudflare::framework::{
     response::{ApiFailure, ApiResponse, ApiResult},
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
-use maplit::hashmap;
 use serde::Serialize;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
@@ -194,61 +195,84 @@ fn mock_api<ApiClientType: ApiClient>(_args: &ArgMatches, _api: &ApiClientType) 
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let sections = hashmap! {
-        "zone" => Section{
-            args: vec![Arg::new("zone_identifier").required(true)],
-            description: "A Zone is a domain name along with its subdomains and other identities",
-            function: zone
-        },
-        "dns" => Section{
-            args: vec![Arg::new("zone_identifier").required(true)],
-            description: "DNS Records for a Zone",
-            function: dns
-        },
-        "create_txt_record" => Section{
-            args: vec![
-                Arg::new("zone_identifier").required(true),
-                Arg::new("name").required(true),
-                Arg::new("content").required(true),
+    let sections = HashMap::from([
+        (
+            "zone",
+            Section {
+                args: vec![Arg::new("zone_identifier").required(true)],
+                description:
+                    "A Zone is a domain name along with its subdomains and other identities",
+                function: zone,
+            },
+        ),
+        (
+            "dns",
+            Section {
+                args: vec![Arg::new("zone_identifier").required(true)],
+                description: "DNS Records for a Zone",
+                function: dns,
+            },
+        ),
+        (
+            "create_txt_record",
+            Section {
+                args: vec![
+                    Arg::new("zone_identifier").required(true),
+                    Arg::new("name").required(true),
+                    Arg::new("content").required(true),
                 ],
-            description: "Create a TXT record for a zone",
-            function: create_txt_record
-        },
-        "mock_api" => Section{
-            args: vec![],
-            description: "Run a mock API request",
-            function: mock_api
-        },
-        "list_routes" => Section{
-            args: vec![
-                Arg::new("zone_identifier").required(true),
-            ],
-            description: "Activate a Worker on a Route",
-            function: list_routes
-        },
-        "list_accounts" => Section{
-            args: vec![],
-            description: "List accounts",
-            function: list_accounts
-        },
-        "create_route" => Section{
-            args: vec![
-                Arg::new("zone_identifier").required(true),
-                Arg::new("route_pattern").required(true),
-                Arg::new("script_name").required(false),
-            ],
-            description: "Activate a Worker on a Route",
-            function: create_route
-        },
-        "delete_route" => Section{
-            args: vec![
-                Arg::new("zone_identifier").required(true),
-                Arg::new("route_identifier").required(true),
-            ],
-            description: "Activate a Worker on a Route",
-            function: delete_route
-        },
-    };
+                description: "Create a TXT record for a zone",
+                function: create_txt_record,
+            },
+        ),
+        (
+            "mock_api",
+            Section {
+                args: vec![],
+                description: "Run a mock API request",
+                function: mock_api,
+            },
+        ),
+        (
+            "list_routes",
+            Section {
+                args: vec![Arg::new("zone_identifier").required(true)],
+                description: "Activate a Worker on a Route",
+                function: list_routes,
+            },
+        ),
+        (
+            "list_accounts",
+            Section {
+                args: vec![],
+                description: "List accounts",
+                function: list_accounts,
+            },
+        ),
+        (
+            "create_route",
+            Section {
+                args: vec![
+                    Arg::new("zone_identifier").required(true),
+                    Arg::new("route_pattern").required(true),
+                    Arg::new("script_name").required(false),
+                ],
+                description: "Activate a Worker on a Route",
+                function: create_route,
+            },
+        ),
+        (
+            "delete_route",
+            Section {
+                args: vec![
+                    Arg::new("zone_identifier").required(true),
+                    Arg::new("route_identifier").required(true),
+                ],
+                description: "Activate a Worker on a Route",
+                function: delete_route,
+            },
+        ),
+    ]);
 
     let mut cli = Command::new("cloudflare-rust")
         .version("0.0")
