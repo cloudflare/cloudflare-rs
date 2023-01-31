@@ -1,6 +1,6 @@
 use chrono::offset::Utc;
 use chrono::DateTime;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::framework::endpoint::{Endpoint, Method};

@@ -2,6 +2,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::ApiResult;
 
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
 /// Get User Details
 /// Gets information about a user

@@ -6,6 +6,7 @@ use crate::framework::{
 use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
+use serde::{Deserialize, Serialize};
 
 /// List Zones
 /// List, search, sort, and filter your zones

@@ -1,6 +1,7 @@
 use crate::framework::endpoint::{Endpoint, Method};
 
 use super::RouteResult;
+use serde::Serialize;
 use uuid::Uuid;
 
 /// Route for a Named Argo Tunnel

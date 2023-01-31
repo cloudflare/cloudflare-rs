@@ -1,5 +1,7 @@
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::{Deserialize, Serialize};
+
 /// Write Key-Value Pairs in Bulk
 /// Writes multiple key-value pairs to Workers KV at once.
 /// A 404 is returned if a write action is for a namespace ID the account doesn't have.

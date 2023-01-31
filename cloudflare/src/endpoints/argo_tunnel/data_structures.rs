@@ -1,4 +1,5 @@
 use chrono::{offset::Utc, DateTime};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::framework::response::ApiResult;

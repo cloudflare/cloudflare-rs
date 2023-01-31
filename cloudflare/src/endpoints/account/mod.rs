@@ -1,6 +1,6 @@
 use crate::framework::response::ApiResult;
 use chrono::{DateTime, Utc};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 pub mod list_accounts;
 pub use list_accounts::ListAccounts;

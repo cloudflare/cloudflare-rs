@@ -2,6 +2,8 @@ use super::WorkersKvNamespace;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::Serialize;
+
 /// List Namespaces
 /// Returns the namespaces owned by an account
 /// https://api.cloudflare.com/#workers-kv-namespace-list-namespaces

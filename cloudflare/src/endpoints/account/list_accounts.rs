@@ -3,6 +3,8 @@ use super::Account;
 use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::OrderDirection;
 
+use serde::Serialize;
+
 /// List Accounts
 /// List all accounts you have ownership or verified access to
 /// https://api.cloudflare.com/#accounts-list-accounts

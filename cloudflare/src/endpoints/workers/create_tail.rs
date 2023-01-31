@@ -2,6 +2,8 @@ use super::WorkersTail;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::Serialize;
+
 /// Create Tail
 /// https://api.cloudflare.com/#worker-create-tail
 #[derive(Debug)]

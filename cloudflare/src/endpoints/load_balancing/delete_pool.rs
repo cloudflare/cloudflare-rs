@@ -1,6 +1,8 @@
 use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::ApiResult;
 
+use serde::Deserialize;
+
 /// Delete Pool
 /// https://api.cloudflare.com/#account-load-balancer-pools-delete-pool
 #[derive(Debug)]

@@ -2,6 +2,8 @@ use super::WorkersKvNamespace;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::Serialize;
+
 /// Create a Namespace
 /// Creates a namespace under the given title.
 /// A 400 is returned if the account already owns a namespace with this title.
