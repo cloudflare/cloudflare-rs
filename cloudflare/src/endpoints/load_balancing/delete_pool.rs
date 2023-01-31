@@ -4,7 +4,7 @@ use crate::framework::response::ApiResult;
 use serde::Deserialize;
 
 /// Delete Pool
-/// https://api.cloudflare.com/#account-load-balancer-pools-delete-pool
+/// <https://api.cloudflare.com/#account-load-balancer-pools-delete-pool>
 #[derive(Debug)]
 pub struct DeletePool<'a> {
     /// The Cloudflare account of this pool.

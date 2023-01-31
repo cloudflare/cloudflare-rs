@@ -3,7 +3,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::ApiResult;
 
 /// List Load Balancers
-/// https://api.cloudflare.com/#load-balancers-list-load-balancers
+/// <https://api.cloudflare.com/#load-balancers-list-load-balancers>
 #[derive(Debug)]
 pub struct ListLoadBalancers<'a> {
     /// The Zone to list Load Balancers from.

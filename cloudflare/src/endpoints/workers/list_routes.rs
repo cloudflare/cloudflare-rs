@@ -4,7 +4,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 
 /// List Routes
 /// Lists all route mappings for a given zone
-/// https://api.cloudflare.com/#worker-routes-list-routes
+/// <https://api.cloudflare.com/#worker-routes-list-routes>
 #[derive(Debug)]
 pub struct ListRoutes<'a> {
     pub zone_identifier: &'a str,

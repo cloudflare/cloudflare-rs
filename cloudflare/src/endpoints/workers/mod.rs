@@ -33,7 +33,7 @@ pub use send_tail_heartbeat::SendTailHeartbeat;
 
 /// Workers KV Route
 /// Routes are basic patterns used to enable or disable workers that match requests.
-/// https://api.cloudflare.com/#worker-routes-properties
+/// <https://api.cloudflare.com/#worker-routes-properties>
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersRoute {
     /// Namespace identifier tag.
@@ -60,7 +60,7 @@ pub struct WorkersRouteIdOnly {
 impl ApiResult for WorkersRouteIdOnly {}
 
 /// Secrets attach to a single script to be readable in only the script
-/// https://api.cloudflare.com/#worker-secrets-properties
+/// <https://api.cloudflare.com/#worker-secrets-properties>
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersSecret {
     pub name: String,
@@ -72,7 +72,7 @@ impl ApiResult for WorkersSecret {}
 impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
 
 /// A Tail is attached to a single Worker and is impermanent
-/// https://api.cloudflare.com/#worker-tail-properties
+/// <https://api.cloudflare.com/#worker-tail-properties>
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersTail {
     pub id: String,

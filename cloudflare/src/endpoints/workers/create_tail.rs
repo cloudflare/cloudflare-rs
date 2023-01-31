@@ -5,7 +5,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 use serde::Serialize;
 
 /// Create Tail
-/// https://api.cloudflare.com/#worker-create-tail
+/// <https://api.cloudflare.com/#worker-create-tail>
 #[derive(Debug)]
 pub struct CreateTail<'a> {
     /// Account ID of owner of the script

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 /// Write Key-Value Pairs in Bulk
 /// Writes multiple key-value pairs to Workers KV at once.
 /// A 404 is returned if a write action is for a namespace ID the account doesn't have.
-/// https://api.cloudflare.com/#workers-kv-namespace-write-multiple-key-value-pairs
+/// <https://api.cloudflare.com/#workers-kv-namespace-write-multiple-key-value-pairs>
 #[derive(Debug)]
 pub struct WriteBulk<'a> {
     pub account_identifier: &'a str,

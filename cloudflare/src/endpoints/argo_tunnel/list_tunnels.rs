@@ -6,7 +6,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 use super::Tunnel;
 
 /// List/search tunnels in an account.
-/// https://api.cloudflare.com/#argo-tunnel-list-argo-tunnels
+/// <https://api.cloudflare.com/#argo-tunnel-list-argo-tunnels>
 #[derive(Debug)]
 pub struct ListTunnels<'a> {
     pub account_identifier: &'a str,

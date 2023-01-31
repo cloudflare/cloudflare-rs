@@ -7,7 +7,7 @@ use crate::framework::endpoint::{Endpoint, Method};
 use serde::Serialize;
 
 /// Create Load Balancer
-/// https://api.cloudflare.com/#load-balancers-create-load-balancer
+/// <https://api.cloudflare.com/#load-balancers-create-load-balancer>
 #[derive(Debug)]
 pub struct CreateLoadBalancer<'a> {
     /// The Zone to which this Load Balancer shall belong.

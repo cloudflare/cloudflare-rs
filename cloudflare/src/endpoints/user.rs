@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 /// Get User Details
 /// Gets information about a user
-/// https://api.cloudflare.com/#user-user-details
+/// <https://api.cloudflare.com/#user-user-details>
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Organization {
@@ -79,7 +79,7 @@ impl Endpoint<UserDetails, (), ()> for GetUserDetails {
 
 /// Validate User Token
 /// Returns whether a given token is valid or not.
-/// https://blog.cloudflare.com/api-tokens-general-availability/
+/// <https://blog.cloudflare.com/api-tokens-general-availability/>
 ///
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct UserTokenStatus {

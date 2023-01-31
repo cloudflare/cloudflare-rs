@@ -6,7 +6,7 @@ use crate::framework::response::ApiResult;
 
 /// A Named Argo Tunnel
 /// This is an Argo Tunnel that has been created. It can be used for routing and subsequent running.
-/// https://api.cloudflare.com/#argo-tunnel-properties
+/// <https://api.cloudflare.com/#argo-tunnel-properties>
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Tunnel {
     pub id: Uuid,
@@ -18,7 +18,7 @@ pub struct Tunnel {
 }
 
 /// An active connection for a Named Argo Tunnel.
-/// https://api.cloudflare.com/#argo-tunnel-properties
+/// <https://api.cloudflare.com/#argo-tunnel-properties>
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct ActiveConnection {
     pub colo_name: String,

@@ -4,7 +4,7 @@ use serde::Serialize;
 
 /// Rename a Namespace
 /// Modifies a namespace's title.
-/// https://api.cloudflare.com/#workers-kv-namespace-rename-a-namespace
+/// <https://api.cloudflare.com/#workers-kv-namespace-rename-a-namespace>
 #[derive(Debug)]
 pub struct RenameNamespace<'a> {
     pub account_identifier: &'a str,
