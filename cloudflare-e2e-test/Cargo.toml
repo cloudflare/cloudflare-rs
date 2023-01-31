@@ -3,13 +3,14 @@ name = "cloudflare-e2e-test"
 version = "0.5.0"
 edition = "2018"
 description = "End-to-end tests of the Cloudflare Rust API client"
+license = "BSD-3-Clause"
 
 [[bin]]
 name = "cloudflare-e2e-test"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "4.1", features = ["env"] }
-cloudflare = {path = "../cloudflare"}
 anyhow = "1.0.33"
-tokio = { version = "1", features = ["macros"] }
+clap = { version = "4.1", features = ["env"] }
+cloudflare = { path = "../cloudflare" }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
