@@ -1,7 +1,7 @@
 use crate::framework::response::ApiResult;
 
 use chrono::{DateTime, Utc};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 mod create_route;
 mod create_secret;

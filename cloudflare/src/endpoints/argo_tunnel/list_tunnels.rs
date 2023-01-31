@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use serde::Serialize;
 
 use crate::framework::endpoint::{Endpoint, Method};
 

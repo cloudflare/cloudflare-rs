@@ -1,6 +1,8 @@
 use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::ApiResult;
 
+use serde::Deserialize;
+
 /// Delete Load Balancer
 /// https://api.cloudflare.com/#load-balancers-delete-load-balancer
 #[derive(Debug)]

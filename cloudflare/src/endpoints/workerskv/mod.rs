@@ -2,7 +2,7 @@ use crate::framework::response::ApiResult;
 use chrono::DateTime;
 use chrono::{TimeZone, Utc};
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
-use serde::{Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize};
 
 pub mod create_namespace;
 pub mod delete_bulk;

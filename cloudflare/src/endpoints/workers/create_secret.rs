@@ -2,6 +2,8 @@ use super::WorkersSecret;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::Serialize;
+
 /// Create Secret
 /// https://api.cloudflare.com/#worker-create-secret
 #[derive(Debug)]

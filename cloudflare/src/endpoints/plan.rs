@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 /// Free plans won't have a Frequency, so most responses should accept Option instead.

@@ -1,6 +1,8 @@
 use crate::framework::endpoint::{Endpoint, Method};
 use crate::framework::response::ApiResult;
 
+use serde::{Deserialize, Serialize};
+
 /// Delete Workers script
 /// https://api.cloudflare.com/#worker-script-delete-worker
 #[derive(Debug)]

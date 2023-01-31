@@ -1,11 +1,9 @@
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Deserialize};
 use serde_json::value::Value as JValue;
 use std::collections::HashMap;
 use std::error::Error;
+use std::fmt::{self, Debug, Write as _};
 
-use std::fmt;
-use std::fmt::Debug;
-use std::fmt::Write as _;
 /// Note that APIError's `eq` implementation only compares `code` and `message`.
 /// It does NOT compare the `other` values.
 #[derive(Deserialize, Debug)]
@@ -42,7 +40,7 @@ impl Eq for ApiErrors {}
 impl Error for ApiError {}
 
 impl fmt::Display for ApiError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Error {}: {}", self.code, self.message)
     }
 }
@@ -71,7 +69,7 @@ impl PartialEq for ApiFailure {
 impl Eq for ApiFailure {}
 
 impl fmt::Display for ApiFailure {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ApiFailure::Error(status, api_errors) => {
                 let mut output = format!("HTTP {status}");

@@ -2,6 +2,8 @@ use super::Key;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::Serialize;
+
 /// List a Namespace's Keys
 /// https://api.cloudflare.com/#workers-kv-namespace-list-a-namespace-s-keys
 #[derive(Debug)]

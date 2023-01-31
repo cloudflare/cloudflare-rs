@@ -2,6 +2,8 @@ use super::WorkersRouteIdOnly;
 
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::Serialize;
+
 /// Create a Route
 /// Creates a route mapping the given pattern to the given script
 /// https://api.cloudflare.com/#worker-routes-create-route

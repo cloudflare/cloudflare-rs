@@ -1,5 +1,7 @@
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::Serialize;
+
 /// Rename a Namespace
 /// Modifies a namespace's title.
 /// https://api.cloudflare.com/#workers-kv-namespace-rename-a-namespace

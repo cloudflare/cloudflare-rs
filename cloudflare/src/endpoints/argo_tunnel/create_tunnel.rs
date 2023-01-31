@@ -1,3 +1,4 @@
+use serde::Serialize;
 use serde_with::{
     base64::{Base64, Standard},
     formats::Padded,

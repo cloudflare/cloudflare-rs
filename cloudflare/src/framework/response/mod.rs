@@ -1,8 +1,7 @@
-extern crate reqwest;
-extern crate serde_json;
 mod apifail;
 
 pub use apifail::*;
+use serde::Deserialize;
 use serde_json::value::Value as JsonValue;
 
 #[derive(Deserialize, Debug, Eq, PartialEq)]

@@ -1,8 +1,3 @@
-#[macro_use]
-extern crate maplit;
-extern crate clap;
-extern crate cloudflare;
-
 use clap::{Arg, ArgMatches, Command};
 use cloudflare::endpoints::{account, dns, workers, zone};
 use cloudflare::framework::{
@@ -12,6 +7,7 @@ use cloudflare::framework::{
     response::{ApiFailure, ApiResponse, ApiResult},
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
+use maplit::hashmap;
 use serde::Serialize;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
@@ -288,12 +284,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let key = matches.remove_one("auth-key");
     let token = matches.remove_one("auth-token");
 
-    let matched_sections =
-        sections
-            .iter()
-            .filter(|&(section_name, _): &(&&str, &Section<HttpApiClient>)| {
-                matches.subcommand_matches(section_name).is_some()
-            });
+    let matched_sections = sections.iter().filter(
+        |&(section_name, _): &(&&str, &Section<'_, HttpApiClient>)| {
+            matches.subcommand_matches(section_name).is_some()
+        },
+    );
 
     let credentials: Credentials = if let Some(key) = key {
         Credentials::UserAuthKey { email, key }

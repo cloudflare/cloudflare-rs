@@ -4,6 +4,8 @@ use crate::endpoints::load_balancing::{
 };
 use crate::framework::endpoint::{Endpoint, Method};
 
+use serde::Serialize;
+
 /// Create Load Balancer
 /// https://api.cloudflare.com/#load-balancers-create-load-balancer
 #[derive(Debug)]
