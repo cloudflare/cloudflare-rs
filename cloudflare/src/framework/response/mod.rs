@@ -42,7 +42,7 @@ pub fn map_api_response<ResultType: ApiResult>(
 /// Some endpoints return nothing. That's OK.
 impl ApiResult for () {}
 
-#[cfg(test)]
+#[cfg(all(test, feature = "blocking", not(target_arch = "wasm32")))]
 mod tests {
     use super::*;
     use std::collections::HashMap;
