@@ -4,7 +4,8 @@ This module controls how requests are sent to Cloudflare's API, and how response
 pub mod apiclient;
 pub mod async_api;
 pub mod auth;
-#[cfg(not(target_arch = "wasm32"))] // There is no blocking implementation for wasm.
+// There is no blocking implementation for wasm.
+#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 pub mod blocking_api;
 pub mod endpoint;
 #[cfg(not(target_arch = "wasm32"))] // The mock contains a blocking implementation.
@@ -61,7 +62,7 @@ impl<'a> From<&'a Environment> for url::Url {
 }
 
 // There is no blocking support for wasm.
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 /// Synchronous Cloudflare API client.
 pub struct HttpApiClient {
     environment: Environment,
