@@ -74,6 +74,7 @@ pub struct HttpApiClient {
     http_client: reqwest::blocking::Client,
 }
 
+#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 impl HttpApiClient {
     #[cfg(feature = "mockito")]
     pub fn is_mock(&self) -> bool {
