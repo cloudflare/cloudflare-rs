@@ -215,12 +215,9 @@ fn delete_route(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
 }
 
 /// Add and leak a mock (so it runs for 'static)
-fn add_static_mock<ResultType, QueryType, BodyType>(
-    endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
-) where
+fn add_static_mock<ResultType>(endpoint: &dyn Endpoint<ResultType>)
+where
     ResultType: ApiResult,
-    QueryType: Serialize,
-    BodyType: Serialize,
 {
     let body = ApiErrors {
         errors: vec![ApiError {

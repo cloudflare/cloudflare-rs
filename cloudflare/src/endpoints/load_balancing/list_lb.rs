@@ -1,5 +1,5 @@
 use crate::endpoints::load_balancing::LoadBalancer;
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::ApiResult;
 
 /// List Load Balancers
@@ -10,7 +10,7 @@ pub struct ListLoadBalancers<'a> {
     pub zone_identifier: &'a str,
 }
 
-impl<'a> Endpoint<Vec<LoadBalancer>, ()> for ListLoadBalancers<'a> {
+impl<'a> EndpointSpec<Vec<LoadBalancer>> for ListLoadBalancers<'a> {
     fn method(&self) -> Method {
         Method::GET
     }

@@ -1,6 +1,6 @@
 use super::WorkersTail;
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Send Tail Heartbeat
 /// <https://api.cloudflare.com/#worker-tail-heartbeat>
@@ -14,7 +14,7 @@ pub struct SendTailHeartbeat<'a> {
     pub tail_id: &'a str,
 }
 
-impl<'a> Endpoint<WorkersTail> for SendTailHeartbeat<'a> {
+impl<'a> EndpointSpec<WorkersTail> for SendTailHeartbeat<'a> {
     fn method(&self) -> Method {
         Method::POST
     }

@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Delete Tail
 /// <https://api.cloudflare.com/#worker-delete-tail>
@@ -12,7 +12,7 @@ pub struct DeleteTail<'a> {
     pub tail_id: &'a str,
 }
 
-impl<'a> Endpoint<()> for DeleteTail<'a> {
+impl<'a> EndpointSpec<()> for DeleteTail<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }

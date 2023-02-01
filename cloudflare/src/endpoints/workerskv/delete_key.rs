@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Delete a key-value pair from Workers KV
 /// Deletes a given key from the given namespace in Workers KV.
@@ -11,7 +11,7 @@ pub struct DeleteKey<'a> {
     pub key: &'a str,
 }
 
-impl<'a> Endpoint<(), (), ()> for DeleteKey<'a> {
+impl<'a> EndpointSpec<()> for DeleteKey<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }

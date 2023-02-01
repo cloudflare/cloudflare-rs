@@ -1,6 +1,6 @@
 use super::Key;
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 
 use serde::Serialize;
 
@@ -13,7 +13,7 @@ pub struct ListNamespaceKeys<'a> {
     pub params: ListNamespaceKeysParams,
 }
 
-impl<'a> Endpoint<Vec<Key>, ListNamespaceKeysParams> for ListNamespaceKeys<'a> {
+impl<'a> EndpointSpec<Vec<Key>> for ListNamespaceKeys<'a> {
     fn method(&self) -> Method {
         Method::GET
     }
@@ -23,8 +23,9 @@ impl<'a> Endpoint<Vec<Key>, ListNamespaceKeysParams> for ListNamespaceKeys<'a> {
             self.account_identifier, self.namespace_identifier
         )
     }
-    fn query(&self) -> Option<ListNamespaceKeysParams> {
-        Some(self.params.clone())
+    #[inline]
+    fn query(&self) -> Option<String> {
+        serialize_query(&self.params)
     }
 }
 

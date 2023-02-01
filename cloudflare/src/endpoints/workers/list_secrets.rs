@@ -1,6 +1,6 @@
 use super::WorkersSecret;
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// List Secrets
 /// Lists all secrets mappings for a given script
@@ -11,7 +11,7 @@ pub struct ListSecrets<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> Endpoint<Vec<WorkersSecret>> for ListSecrets<'a> {
+impl<'a> EndpointSpec<Vec<WorkersSecret>> for ListSecrets<'a> {
     fn method(&self) -> Method {
         Method::GET
     }

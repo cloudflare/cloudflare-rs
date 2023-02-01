@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 use super::RouteResult;
 use serde::Serialize;
@@ -16,15 +16,17 @@ pub struct RouteTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> Endpoint<RouteResult, (), Params<'a>> for RouteTunnel<'a> {
+impl<'a> EndpointSpec<RouteResult> for RouteTunnel<'a> {
     fn method(&self) -> Method {
         Method::PUT
     }
     fn path(&self) -> String {
         format!("zones/{}/tunnels/{}/routes", self.zone_tag, self.tunnel_id)
     }
-    fn body(&self) -> Option<Params<'a>> {
-        Some(self.params.clone())
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.params).unwrap();
+        Some(body)
     }
 }
 

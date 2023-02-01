@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Delete a Durable Object namespace
 #[derive(Debug)]
@@ -9,7 +9,7 @@ pub struct DeleteDurableObject<'a> {
     pub namespace_id: &'a str,
 }
 
-impl<'a> Endpoint<(), (), ()> for DeleteDurableObject<'a> {
+impl<'a> EndpointSpec<()> for DeleteDurableObject<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }

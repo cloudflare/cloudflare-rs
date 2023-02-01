@@ -1,6 +1,6 @@
 use super::WorkersKvNamespace;
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 
 use serde::Serialize;
 
@@ -13,15 +13,16 @@ pub struct ListNamespaces<'a> {
     pub params: ListNamespacesParams,
 }
 
-impl<'a> Endpoint<Vec<WorkersKvNamespace>, ListNamespacesParams> for ListNamespaces<'a> {
+impl<'a> EndpointSpec<Vec<WorkersKvNamespace>> for ListNamespaces<'a> {
     fn method(&self) -> Method {
         Method::GET
     }
     fn path(&self) -> String {
         format!("accounts/{}/storage/kv/namespaces", self.account_identifier)
     }
-    fn query(&self) -> Option<ListNamespacesParams> {
-        Some(self.params.clone())
+    #[inline]
+    fn query(&self) -> Option<String> {
+        serialize_query(&self.params)
     }
 }
 

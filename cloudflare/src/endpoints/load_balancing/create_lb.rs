@@ -2,7 +2,7 @@ use crate::endpoints::load_balancing::{
     LbPoolId, LbPoolMapping, LoadBalancer, SessionAffinity, SessionAffinityAttributes,
     SteeringPolicy,
 };
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 use serde::Serialize;
 
@@ -55,14 +55,16 @@ pub struct OptionalParams<'a> {
     pub session_affinity_ttl: Option<u32>,
 }
 
-impl<'a> Endpoint<LoadBalancer, (), Params<'a>> for CreateLoadBalancer<'a> {
+impl<'a> EndpointSpec<LoadBalancer> for CreateLoadBalancer<'a> {
     fn method(&self) -> Method {
         Method::POST
     }
     fn path(&self) -> String {
         format!("zones/{}/load_balancers", self.zone_identifier)
     }
-    fn body(&self) -> Option<Params<'a>> {
-        Some(self.params.clone())
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.params).unwrap();
+        Some(body)
     }
 }
