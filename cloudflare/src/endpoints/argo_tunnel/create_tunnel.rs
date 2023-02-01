@@ -5,7 +5,7 @@ use serde_with::{
     serde_as,
 };
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 use super::Tunnel;
 
@@ -19,15 +19,17 @@ pub struct CreateTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> Endpoint<Tunnel, (), Params<'a>> for CreateTunnel<'a> {
+impl<'a> EndpointSpec<Tunnel> for CreateTunnel<'a> {
     fn method(&self) -> Method {
         Method::POST
     }
     fn path(&self) -> String {
         format!("accounts/{}/tunnels", self.account_identifier)
     }
-    fn body(&self) -> Option<Params<'a>> {
-        Some(self.params.clone())
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.params).unwrap();
+        Some(body)
     }
 }
 

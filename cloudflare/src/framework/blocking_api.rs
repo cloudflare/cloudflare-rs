@@ -1,5 +1,4 @@
 use reqwest::blocking::RequestBuilder;
-use serde::Serialize;
 use std::net::SocketAddr;
 
 use crate::framework::auth::Credentials;
@@ -38,24 +37,24 @@ impl HttpApiClient {
     // TODO: This should probably just implement request for the Reqwest client itself :)
     // TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
     /// Synchronously send a request to the Cloudflare API.
-    pub fn request<ResultType, QueryType, BodyType>(
+    pub fn request<ResultType>(
         &self,
-        endpoint: &dyn endpoint::Endpoint<ResultType, QueryType, BodyType>,
+        endpoint: &dyn endpoint::Endpoint<ResultType>,
     ) -> response::ApiResponse<ResultType>
     where
         ResultType: response::ApiResult,
-        QueryType: Serialize,
-        BodyType: Serialize,
     {
         // Build the request
         let mut request = self
             .http_client
-            .request(endpoint.method(), endpoint.url(&self.environment))
-            .query(&endpoint.query());
+            .request(endpoint.method(), endpoint.url(&self.environment));
 
         if let Some(body) = endpoint.body() {
-            request = request.body(serde_json::to_string(&body).unwrap());
-            request = request.header(reqwest::header::CONTENT_TYPE, endpoint.content_type());
+            request = request.body(body);
+            request = request.header(
+                reqwest::header::CONTENT_TYPE,
+                endpoint.content_type().as_ref(),
+            );
         }
 
         request = request.auth(&self.credentials);

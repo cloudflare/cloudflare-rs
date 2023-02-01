@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +13,7 @@ pub struct WriteBulk<'a> {
     pub bulk_key_value_pairs: Vec<KeyValuePair>,
 }
 
-impl<'a> Endpoint<(), (), Vec<KeyValuePair>> for WriteBulk<'a> {
+impl<'a> EndpointSpec<()> for WriteBulk<'a> {
     fn method(&self) -> Method {
         Method::PUT
     }
@@ -23,8 +23,11 @@ impl<'a> Endpoint<(), (), Vec<KeyValuePair>> for WriteBulk<'a> {
             self.account_identifier, self.namespace_identifier
         )
     }
-    fn body(&self) -> Option<Vec<KeyValuePair>> {
-        Some(self.bulk_key_value_pairs.clone())
+
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.bulk_key_value_pairs).unwrap();
+        Some(body)
     }
     // default content-type is already application/json
 }

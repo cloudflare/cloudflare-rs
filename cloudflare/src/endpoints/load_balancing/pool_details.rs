@@ -1,5 +1,5 @@
 use crate::endpoints::load_balancing::Pool;
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Pool Details
 /// <https://api.cloudflare.com/#account-load-balancer-pools-pool-details>
@@ -11,7 +11,7 @@ pub struct PoolDetails<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> Endpoint<Pool, (), ()> for PoolDetails<'a> {
+impl<'a> EndpointSpec<Pool> for PoolDetails<'a> {
     fn method(&self) -> Method {
         Method::GET
     }

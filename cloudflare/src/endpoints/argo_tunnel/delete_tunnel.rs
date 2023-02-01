@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 use super::Tunnel;
 
@@ -12,7 +12,7 @@ pub struct DeleteTunnel<'a> {
     pub cascade: bool,
 }
 
-impl<'a> Endpoint<Tunnel> for DeleteTunnel<'a> {
+impl<'a> EndpointSpec<Tunnel> for DeleteTunnel<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }

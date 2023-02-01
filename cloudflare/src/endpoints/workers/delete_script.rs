@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::ApiResult;
 
 use serde::{Deserialize, Serialize};
@@ -13,7 +13,7 @@ pub struct DeleteScript<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> Endpoint<ScriptDeleteID, (), ()> for DeleteScript<'a> {
+impl<'a> EndpointSpec<ScriptDeleteID> for DeleteScript<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }

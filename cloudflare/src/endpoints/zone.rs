@@ -1,6 +1,7 @@
 use crate::endpoints::{account::AccountDetails, plan::Plan};
+use crate::framework::endpoint::serialize_query;
 use crate::framework::{
-    endpoint::{Endpoint, Method},
+    endpoint::{EndpointSpec, Method},
     response::ApiResult,
 };
 use crate::framework::{OrderDirection, SearchMatch};
@@ -16,15 +17,16 @@ pub struct ListZones {
     pub params: ListZonesParams,
 }
 
-impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
+impl EndpointSpec<Vec<Zone>> for ListZones {
     fn method(&self) -> Method {
         Method::GET
     }
     fn path(&self) -> String {
         "zones".to_string()
     }
-    fn query(&self) -> Option<ListZonesParams> {
-        Some(self.params.clone())
+    #[inline]
+    fn query(&self) -> Option<String> {
+        serialize_query(&self.params)
     }
 }
 
@@ -34,7 +36,7 @@ impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
 pub struct ZoneDetails<'a> {
     pub identifier: &'a str,
 }
-impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
+impl<'a> EndpointSpec<Zone> for ZoneDetails<'a> {
     fn method(&self) -> Method {
         Method::GET
     }
@@ -48,7 +50,7 @@ impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
 pub struct CreateZone<'a> {
     pub params: CreateZoneParams<'a>,
 }
-impl<'a> Endpoint<(), (), CreateZoneParams<'a>> for CreateZone<'a> {
+impl<'a> EndpointSpec<()> for CreateZone<'a> {
     fn method(&self) -> Method {
         Method::POST
     }
@@ -57,8 +59,10 @@ impl<'a> Endpoint<(), (), CreateZoneParams<'a>> for CreateZone<'a> {
         "zones".to_string()
     }
 
-    fn body(&self) -> Option<CreateZoneParams<'a>> {
-        Some(self.params.clone())
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.params).unwrap();
+        Some(body)
     }
 }
 

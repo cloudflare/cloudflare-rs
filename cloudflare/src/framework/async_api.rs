@@ -6,7 +6,6 @@ use crate::framework::{
     response::{ApiResponse, ApiResult},
     Environment, HttpApiClientConfig,
 };
-use serde::Serialize;
 use std::net::SocketAddr;
 
 /// A Cloudflare API client that makes requests asynchronously.
@@ -59,24 +58,24 @@ impl Client {
     }
 
     /// Issue an API request of the given type.
-    pub async fn request<ResultType, QueryType, BodyType>(
+    pub async fn request<ResultType>(
         &self,
-        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType>),
+        endpoint: &(dyn Endpoint<ResultType>),
     ) -> ApiResponse<ResultType>
     where
         ResultType: ApiResult,
-        QueryType: Serialize,
-        BodyType: Serialize,
     {
         // Build the request
         let mut request = self
             .http_client
-            .request(endpoint.method(), endpoint.url(&self.environment))
-            .query(&endpoint.query());
+            .request(endpoint.method(), endpoint.url(&self.environment));
 
         if let Some(body) = endpoint.body() {
-            request = request.body(serde_json::to_string(&body).unwrap());
-            request = request.header(reqwest::header::CONTENT_TYPE, endpoint.content_type());
+            request = request.body(body);
+            request = request.header(
+                reqwest::header::CONTENT_TYPE,
+                endpoint.content_type().as_ref(),
+            );
         }
 
         request = request.auth(&self.credentials);

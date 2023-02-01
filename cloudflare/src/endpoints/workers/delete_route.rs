@@ -1,6 +1,6 @@
 use super::WorkersRouteIdOnly;
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Delete a Route
 /// Deletes a route by route id
@@ -11,7 +11,7 @@ pub struct DeleteRoute<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> Endpoint<WorkersRouteIdOnly> for DeleteRoute<'a> {
+impl<'a> EndpointSpec<WorkersRouteIdOnly> for DeleteRoute<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }

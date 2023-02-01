@@ -1,5 +1,5 @@
 use super::WorkersBinding;
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// List Bindings
 /// Lists all bindings for a given script
@@ -11,7 +11,7 @@ pub struct ListBindings<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> Endpoint<Vec<WorkersBinding>> for ListBindings<'a> {
+impl<'a> EndpointSpec<Vec<WorkersBinding>> for ListBindings<'a> {
     fn method(&self) -> Method {
         Method::GET
     }

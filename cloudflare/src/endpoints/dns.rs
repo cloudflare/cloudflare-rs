@@ -1,5 +1,5 @@
 use crate::framework::{
-    endpoint::{Endpoint, Method},
+    endpoint::{serialize_query, EndpointSpec, Method},
     response::ApiResult,
 };
 /// <https://api.cloudflare.com/#dns-records-for-a-zone-properties>
@@ -16,15 +16,16 @@ pub struct ListDnsRecords<'a> {
     pub zone_identifier: &'a str,
     pub params: ListDnsRecordsParams,
 }
-impl<'a> Endpoint<Vec<DnsRecord>, ListDnsRecordsParams> for ListDnsRecords<'a> {
+impl<'a> EndpointSpec<Vec<DnsRecord>> for ListDnsRecords<'a> {
     fn method(&self) -> Method {
         Method::GET
     }
     fn path(&self) -> String {
         format!("zones/{}/dns_records", self.zone_identifier)
     }
-    fn query(&self) -> Option<ListDnsRecordsParams> {
-        Some(self.params.clone())
+    #[inline]
+    fn query(&self) -> Option<String> {
+        serialize_query(&self.params)
     }
 }
 
@@ -36,15 +37,17 @@ pub struct CreateDnsRecord<'a> {
     pub params: CreateDnsRecordParams<'a>,
 }
 
-impl<'a> Endpoint<DnsRecord, (), CreateDnsRecordParams<'a>> for CreateDnsRecord<'a> {
+impl<'a> EndpointSpec<DnsRecord> for CreateDnsRecord<'a> {
     fn method(&self) -> Method {
         Method::POST
     }
     fn path(&self) -> String {
         format!("zones/{}/dns_records", self.zone_identifier)
     }
-    fn body(&self) -> Option<CreateDnsRecordParams<'a>> {
-        Some(self.params.clone())
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.params).unwrap();
+        Some(body)
     }
 }
 
@@ -72,7 +75,7 @@ pub struct DeleteDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
 }
-impl<'a> Endpoint<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
+impl<'a> EndpointSpec<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }
@@ -93,7 +96,7 @@ pub struct UpdateDnsRecord<'a> {
     pub params: UpdateDnsRecordParams<'a>,
 }
 
-impl<'a> Endpoint<DnsRecord, (), UpdateDnsRecordParams<'a>> for UpdateDnsRecord<'a> {
+impl<'a> EndpointSpec<DnsRecord> for UpdateDnsRecord<'a> {
     fn method(&self) -> Method {
         Method::PUT
     }
@@ -103,8 +106,10 @@ impl<'a> Endpoint<DnsRecord, (), UpdateDnsRecordParams<'a>> for UpdateDnsRecord<
             self.zone_identifier, self.identifier
         )
     }
-    fn body(&self) -> Option<UpdateDnsRecordParams<'a>> {
-        Some(self.params.clone())
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.params).unwrap();
+        Some(body)
     }
 }
 

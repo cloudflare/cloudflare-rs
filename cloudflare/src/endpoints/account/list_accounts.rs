@@ -1,6 +1,6 @@
 use super::Account;
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 use crate::framework::OrderDirection;
 
 use serde::Serialize;
@@ -13,15 +13,16 @@ pub struct ListAccounts {
     pub params: Option<ListAccountsParams>,
 }
 
-impl Endpoint<Vec<Account>, ListAccountsParams> for ListAccounts {
+impl EndpointSpec<Vec<Account>> for ListAccounts {
     fn method(&self) -> Method {
         Method::GET
     }
     fn path(&self) -> String {
         "accounts".to_string()
     }
-    fn query(&self) -> Option<ListAccountsParams> {
-        self.params.clone()
+    #[inline]
+    fn query(&self) -> Option<String> {
+        serialize_query(&self.params)
     }
 }
 

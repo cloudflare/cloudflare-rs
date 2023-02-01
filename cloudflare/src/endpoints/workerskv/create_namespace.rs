@@ -1,6 +1,6 @@
 use super::WorkersKvNamespace;
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 use serde::Serialize;
 
@@ -15,15 +15,17 @@ pub struct CreateNamespace<'a> {
     pub params: CreateNamespaceParams,
 }
 
-impl<'a> Endpoint<WorkersKvNamespace, (), CreateNamespaceParams> for CreateNamespace<'a> {
+impl<'a> EndpointSpec<WorkersKvNamespace> for CreateNamespace<'a> {
     fn method(&self) -> Method {
         Method::POST
     }
     fn path(&self) -> String {
         format!("accounts/{}/storage/kv/namespaces", self.account_identifier)
     }
-    fn body(&self) -> Option<CreateNamespaceParams> {
-        Some(self.params.clone())
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.params).unwrap();
+        Some(body)
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Delete Key-Value Pairs in Bulk
 /// Deletes multiple key-value pairs from Workers KV at once.
@@ -11,7 +11,7 @@ pub struct DeleteBulk<'a> {
     pub bulk_keys: Vec<String>,
 }
 
-impl<'a> Endpoint<(), (), Vec<String>> for DeleteBulk<'a> {
+impl<'a> EndpointSpec<()> for DeleteBulk<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }
@@ -21,8 +21,10 @@ impl<'a> Endpoint<(), (), Vec<String>> for DeleteBulk<'a> {
             self.account_identifier, self.namespace_identifier
         )
     }
-    fn body(&self) -> Option<Vec<String>> {
-        Some(self.bulk_keys.clone())
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.bulk_keys).unwrap();
+        Some(body)
     }
     // default content-type is already application/json
 }

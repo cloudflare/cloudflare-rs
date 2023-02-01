@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::ApiResult;
 
 use chrono::{DateTime, Utc};
@@ -68,7 +68,7 @@ fn handles_empty_betas_field() {
 #[derive(Debug)]
 pub struct GetUserDetails {}
 
-impl Endpoint<UserDetails, (), ()> for GetUserDetails {
+impl EndpointSpec<UserDetails> for GetUserDetails {
     fn method(&self) -> Method {
         Method::GET
     }
@@ -91,7 +91,7 @@ impl ApiResult for UserTokenStatus {}
 #[derive(Debug)]
 pub struct GetUserTokenStatus {}
 
-impl Endpoint<UserTokenStatus, (), ()> for GetUserTokenStatus {
+impl EndpointSpec<UserTokenStatus> for GetUserTokenStatus {
     fn method(&self) -> Method {
         Method::GET
     }

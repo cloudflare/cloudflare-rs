@@ -1,6 +1,6 @@
 use super::WorkersTail;
 
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// List Tails
 /// Lists all active Tail sessions for a given Worker
@@ -11,7 +11,7 @@ pub struct ListTails<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> Endpoint<Vec<WorkersTail>> for ListTails<'a> {
+impl<'a> EndpointSpec<Vec<WorkersTail>> for ListTails<'a> {
     fn method(&self) -> Method {
         Method::GET
     }

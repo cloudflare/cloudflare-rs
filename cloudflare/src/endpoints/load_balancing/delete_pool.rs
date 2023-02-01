@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{Endpoint, Method};
+use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::ApiResult;
 
 use serde::Deserialize;
@@ -13,7 +13,7 @@ pub struct DeletePool<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> Endpoint<Response, (), ()> for DeletePool<'a> {
+impl<'a> EndpointSpec<Response> for DeletePool<'a> {
     fn method(&self) -> Method {
         Method::DELETE
     }
