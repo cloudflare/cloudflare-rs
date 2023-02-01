@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use clap::{Arg, ArgMatches, Command};
+use clap::{Arg, ArgGroup, ArgMatches, Command};
 use cloudflare::endpoints::{account, dns, workers, zone};
 use cloudflare::framework::{
     apiclient::ApiClient,
@@ -292,6 +292,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .env("CF_RS_AUTH_TOKEN")
             .help("API token generated on the \"My Account\" page")
             .conflicts_with_all(["email", "auth-key"]))
+        .group(ArgGroup::new("auth")
+            .args(["email", "auth-key", "auth-token"])
+            .multiple(true)
+            .required(true))
         .arg_required_else_help(true);
 
     for (section_name, section) in sections.iter() {
@@ -304,7 +308,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let mut matches = cli.get_matches();
-    let email = matches.remove_one("email").unwrap();
+    let email = matches.remove_one("email");
     let key = matches.remove_one("auth-key");
     let token = matches.remove_one("auth-token");
 
@@ -315,7 +319,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
 
     let credentials: Credentials = if let Some(key) = key {
-        Credentials::UserAuthKey { email, key }
+        Credentials::UserAuthKey {
+            email: email.unwrap(),
+            key,
+        }
     } else if let Some(token) = token {
         Credentials::UserAuthToken { token }
     } else {
