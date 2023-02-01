@@ -15,7 +15,6 @@ default-tls = ["reqwest/default-tls"]
 rustls-tls = ["reqwest/rustls-tls"]
 
 [dependencies]
-async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = [
     "clock",
     "serde",
@@ -23,6 +22,7 @@ chrono = { version = "0.4", default-features = false, features = [
     "wasmbind",
 ] }
 http = "0.2"
+mockito = { version = "0.31", optional = true }
 percent-encoding = "2.1.0"
 reqwest = { version = "0.11.4", default-features = false, features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }

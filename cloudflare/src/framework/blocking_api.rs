@@ -4,8 +4,8 @@ use std::net::SocketAddr;
 
 use crate::framework::auth::Credentials;
 use crate::framework::{
-    apiclient::ApiClient, auth, auth::AuthClient, endpoint, response, response::map_api_response,
-    Environment, HttpApiClient, HttpApiClientConfig,
+    auth, auth::AuthClient, endpoint, response, response::map_api_response, Environment,
+    HttpApiClient, HttpApiClientConfig,
 };
 
 impl HttpApiClient {
@@ -34,13 +34,11 @@ impl HttpApiClient {
             http_client,
         })
     }
-}
 
-// TODO: This should probably just implement request for the Reqwest client itself :)
-// TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
-impl ApiClient for HttpApiClient {
+    // TODO: This should probably just implement request for the Reqwest client itself :)
+    // TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
     /// Synchronously send a request to the Cloudflare API.
-    fn request<ResultType, QueryType, BodyType>(
+    pub fn request<ResultType, QueryType, BodyType>(
         &self,
         endpoint: &dyn endpoint::Endpoint<ResultType, QueryType, BodyType>,
     ) -> response::ApiResponse<ResultType>

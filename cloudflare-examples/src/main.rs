@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
-use clap::{Arg, ArgGroup, ArgMatches, Command};
+use clap::{Arg, ArgAction, ArgGroup, ArgMatches, Command};
 use cloudflare::endpoints::{account, dns, workers, zone};
+use cloudflare::framework::endpoint::Endpoint;
+use cloudflare::framework::response::{ApiError, ApiErrors};
 use cloudflare::framework::{
-    apiclient::ApiClient,
     auth::Credentials,
-    mock::{MockApiClient, NoopEndpoint},
     response::{ApiFailure, ApiResponse, ApiResult},
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
@@ -13,10 +13,10 @@ use serde::Serialize;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 
-struct Section<'a, ApiClientType: ApiClient> {
+struct Section<'a> {
     args: Vec<Arg>,
     description: &'a str,
-    function: SectionFunction<ApiClientType>,
+    function: SectionFunction<HttpApiClient>,
 }
 
 fn print_response<T: ApiResult>(response: ApiResponse<T>) {
@@ -65,31 +65,36 @@ where
     }
 }
 
-fn zone<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+fn zone(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
     let zone_identifier = arg_matches.get_one::<String>("zone_identifier");
-    let response = api_client.request(&zone::ZoneDetails {
+    let endpoint = zone::ZoneDetails {
         identifier: zone_identifier.unwrap(),
-    });
+    };
+    if api_client.is_mock() {
+        add_static_mock(&endpoint);
+    }
+    let response = api_client.request(&endpoint);
     print_response(response)
 }
 
-fn dns<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+fn dns(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
     let zone_identifier = arg_matches.get_one::<String>("zone_identifier").unwrap();
-    let response = api_client.request(&dns::ListDnsRecords {
+    let endpoint = dns::ListDnsRecords {
         zone_identifier,
         params: dns::ListDnsRecordsParams {
             direction: Some(OrderDirection::Ascending),
             ..Default::default()
         },
-    });
+    };
+    if api_client.is_mock() {
+        add_static_mock(&endpoint);
+    }
+    let response = api_client.request(&endpoint);
 
     print_response(response);
 }
 
-fn create_txt_record<ApiClientType: ApiClient>(
-    arg_matches: &ArgMatches,
-    api_client: &ApiClientType,
-) {
+fn create_txt_record(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
     let usage = "usage: create_txt_record ZONE_ID NAME CONTENT";
 
     let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
@@ -105,7 +110,7 @@ fn create_txt_record<ApiClientType: ApiClient>(
         .get_one::<String>("content")
         .expect(&content_missing);
 
-    let response = api_client.request(&dns::CreateDnsRecord {
+    let endpoint = dns::CreateDnsRecord {
         zone_identifier,
         params: dns::CreateDnsRecordParams {
             name,
@@ -116,12 +121,16 @@ fn create_txt_record<ApiClientType: ApiClient>(
             proxied: None,
             ttl: None,
         },
-    });
+    };
+    if api_client.is_mock() {
+        add_static_mock(&endpoint);
+    }
+    let response = api_client.request(&endpoint);
 
     print_response(response);
 }
 
-fn list_routes<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+fn list_routes(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
     let usage = "usage: list_routes ZONE_ID";
 
     let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
@@ -129,18 +138,26 @@ fn list_routes<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &
         .get_one::<String>("zone_identifier")
         .expect(&zone_id_missing);
 
-    let response = api_client.request(&workers::ListRoutes { zone_identifier });
+    let endpoint = workers::ListRoutes { zone_identifier };
+    if api_client.is_mock() {
+        add_static_mock(&endpoint);
+    }
+    let response = api_client.request(&endpoint);
 
     print_response_json(response);
 }
 
-fn list_accounts<ApiClientType: ApiClient>(_arg_matches: &ArgMatches, api_client: &ApiClientType) {
-    let response = api_client.request(&account::ListAccounts { params: None });
+fn list_accounts(_arg_matches: &ArgMatches, api_client: &HttpApiClient) {
+    let endpoint = account::ListAccounts { params: None };
+    if api_client.is_mock() {
+        add_static_mock(&endpoint);
+    }
+    let response = api_client.request(&endpoint);
 
     print_response_json(response);
 }
 
-fn create_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+fn create_route(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
     let usage = "usage: create_route ZONE_ID SCRIPT_NAME ROUTE_PATTERN";
 
     let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
@@ -155,18 +172,22 @@ fn create_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: 
 
     let script_name = arg_matches.get_one::<String>("script_name");
 
-    let response = api_client.request(&workers::CreateRoute {
+    let endpoint = workers::CreateRoute {
         zone_identifier,
         params: workers::CreateRouteParams {
             pattern: route_pattern.to_string(),
             script: script_name.map(|n| n.to_string()),
         },
-    });
+    };
+    if api_client.is_mock() {
+        add_static_mock(&endpoint);
+    }
+    let response = api_client.request(&endpoint);
 
     print_response_json(response);
 }
 
-fn delete_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: &ApiClientType) {
+fn delete_route(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
     let usage = "usage: delete_route ZONE_ID ROUTE_ID";
 
     let zone_id_missing = format!("missing '{}': {}", "ZONE_ID", usage);
@@ -179,19 +200,45 @@ fn delete_route<ApiClientType: ApiClient>(arg_matches: &ArgMatches, api_client: 
         .get_one::<String>("route_identifier")
         .expect(&route_id_missing);
 
-    let response = api_client.request(&workers::DeleteRoute {
+    let endpoint = workers::DeleteRoute {
         zone_identifier,
         identifier: route_id,
-    });
+    };
+    if api_client.is_mock() {
+        add_static_mock(&endpoint);
+    }
+    let response = api_client.request(&endpoint);
 
     print_response_json(response);
 }
 
-fn mock_api<ApiClientType: ApiClient>(_args: &ArgMatches, _api: &ApiClientType) {
-    let mock_api = MockApiClient {};
-    let endpoint = NoopEndpoint {};
-    let _ = mock_api.request(&endpoint);
-    println!("Ran mock API")
+/// Add and leak a mock (so it runs for 'static)
+fn add_static_mock<ResultType, QueryType, BodyType>(
+    endpoint: &dyn Endpoint<ResultType, QueryType, BodyType>,
+) where
+    ResultType: ApiResult,
+    QueryType: Serialize,
+    BodyType: Serialize,
+{
+    let body = ApiErrors {
+        errors: vec![ApiError {
+            code: 9999,
+            message: "This is a mocked failure response".to_owned(),
+            other: HashMap::new(),
+        }],
+        other: HashMap::new(),
+    };
+
+    let m = Box::new(
+        mockito::mock(
+            endpoint.method().as_str(),
+            format!("/{}", endpoint.path()).as_str(),
+        )
+        .with_status(500)
+        .with_body(serde_json::to_string(&body).unwrap())
+        .create(),
+    );
+    Box::leak(m);
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -223,14 +270,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 ],
                 description: "Create a TXT record for a zone",
                 function: create_txt_record,
-            },
-        ),
-        (
-            "mock_api",
-            Section {
-                args: vec![],
-                description: "Run a mock API request",
-                function: mock_api,
             },
         ),
         (
@@ -292,6 +331,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .env("CF_RS_AUTH_TOKEN")
             .help("API token generated on the \"My Account\" page")
             .conflicts_with_all(["email", "auth-key"]))
+        .arg(Arg::new("mock")
+            .long("mock")
+            .help("Run this request against the mock API endpoint")
+            .action(ArgAction::SetTrue))
         .group(ArgGroup::new("auth")
             .args(["email", "auth-key", "auth-token"])
             .multiple(true)
@@ -311,12 +354,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let email = matches.remove_one("email");
     let key = matches.remove_one("auth-key");
     let token = matches.remove_one("auth-token");
+    let environment = if matches.get_flag("mock") {
+        Environment::Mockito
+    } else {
+        Environment::Production
+    };
 
-    let matched_sections = sections.iter().filter(
-        |&(section_name, _): &(&&str, &Section<'_, HttpApiClient>)| {
+    let matched_sections = sections
+        .iter()
+        .filter(|&(section_name, _): &(&&str, &Section<'_>)| {
             matches.subcommand_matches(section_name).is_some()
-        },
-    );
+        });
 
     let credentials: Credentials = if let Some(key) = key {
         Credentials::UserAuthKey {
@@ -329,11 +377,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("Either API token or API key + email pair must be provided")
     };
 
-    let api_client = HttpApiClient::new(
-        credentials,
-        HttpApiClientConfig::default(),
-        Environment::Production,
-    )?;
+    let api_client = HttpApiClient::new(credentials, HttpApiClientConfig::default(), environment)?;
 
     for (section_name, section) in matched_sections {
         (section.function)(

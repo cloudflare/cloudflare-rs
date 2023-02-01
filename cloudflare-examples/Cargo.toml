@@ -12,6 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4.1.4", features = ["env"] }
-cloudflare = { path = "../cloudflare", features = ["blocking"] }
+cloudflare = { path = "../cloudflare", features = ["blocking", "mockito"] }
+mockito = "0.31"
 serde = { version = "1.0" }
 serde_json = "1.0"

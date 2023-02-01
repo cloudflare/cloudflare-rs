@@ -1,4 +1,4 @@
-use serde::{de::DeserializeOwned, Deserialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::value::Value as JValue;
 use std::collections::HashMap;
 use std::error::Error;
@@ -6,7 +6,7 @@ use std::fmt::{self, Debug, Write as _};
 
 /// Note that APIError's `eq` implementation only compares `code` and `message`.
 /// It does NOT compare the `other` values.
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct ApiError {
     pub code: u16,
     pub message: String,
@@ -16,7 +16,7 @@ pub struct ApiError {
 
 /// Note that APIErrors's `eq` implementation only compares `code` and `message`.
 /// It does NOT compare the `other` values.
-#[derive(Deserialize, Debug, Default)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct ApiErrors {
     #[serde(flatten)]
     pub other: HashMap<String, JValue>,
