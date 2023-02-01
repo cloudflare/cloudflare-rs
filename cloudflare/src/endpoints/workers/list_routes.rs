@@ -12,7 +12,7 @@ pub struct ListRoutes<'a> {
 
 impl<'a> Endpoint<Vec<WorkersRoute>> for ListRoutes<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!("zones/{}/workers/routes", self.zone_identifier)

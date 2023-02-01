@@ -18,7 +18,7 @@ pub struct ListZones {
 
 impl Endpoint<Vec<Zone>, ListZonesParams> for ListZones {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         "zones".to_string()
@@ -36,7 +36,7 @@ pub struct ZoneDetails<'a> {
 }
 impl<'a> Endpoint<Zone> for ZoneDetails<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!("zones/{}", self.identifier)
@@ -50,7 +50,7 @@ pub struct CreateZone<'a> {
 }
 impl<'a> Endpoint<(), (), CreateZoneParams<'a>> for CreateZone<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
 
     fn path(&self) -> String {

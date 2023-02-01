@@ -18,7 +18,7 @@ pub struct CreateSecret<'a> {
 
 impl<'a> Endpoint<WorkersSecret, (), CreateSecretParams> for CreateSecret<'a> {
     fn method(&self) -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(&self) -> String {
         format!(

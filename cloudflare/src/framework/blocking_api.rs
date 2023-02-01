@@ -3,7 +3,6 @@ use serde::Serialize;
 use std::net::SocketAddr;
 
 use crate::framework::auth::Credentials;
-use crate::framework::reqwest_adaptors::match_reqwest_method;
 use crate::framework::{
     apiclient::ApiClient, auth, auth::AuthClient, endpoint, response, response::map_api_response,
     Environment, HttpApiClient, HttpApiClientConfig,
@@ -53,10 +52,7 @@ impl ApiClient for HttpApiClient {
         // Build the request
         let mut request = self
             .http_client
-            .request(
-                match_reqwest_method(endpoint.method()),
-                endpoint.url(&self.environment),
-            )
+            .request(endpoint.method(), endpoint.url(&self.environment))
             .query(&endpoint.query());
 
         if let Some(body) = endpoint.body() {

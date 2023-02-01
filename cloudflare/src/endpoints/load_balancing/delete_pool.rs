@@ -15,7 +15,7 @@ pub struct DeletePool<'a> {
 
 impl<'a> Endpoint<Response, (), ()> for DeletePool<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

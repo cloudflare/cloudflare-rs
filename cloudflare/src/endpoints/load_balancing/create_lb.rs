@@ -57,7 +57,7 @@ pub struct OptionalParams<'a> {
 
 impl<'a> Endpoint<LoadBalancer, (), Params<'a>> for CreateLoadBalancer<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(&self) -> String {
         format!("zones/{}/load_balancers", self.zone_identifier)

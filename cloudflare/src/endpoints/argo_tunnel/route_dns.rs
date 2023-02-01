@@ -18,7 +18,7 @@ pub struct RouteTunnel<'a> {
 
 impl<'a> Endpoint<RouteResult, (), Params<'a>> for RouteTunnel<'a> {
     fn method(&self) -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(&self) -> String {
         format!("zones/{}/tunnels/{}/routes", self.zone_tag, self.tunnel_id)

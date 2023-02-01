@@ -21,7 +21,7 @@ pub struct CreateTunnel<'a> {
 
 impl<'a> Endpoint<Tunnel, (), Params<'a>> for CreateTunnel<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(&self) -> String {
         format!("accounts/{}/tunnels", self.account_identifier)

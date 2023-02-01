@@ -14,7 +14,7 @@ pub struct DeleteSecret<'a> {
 
 impl<'a> Endpoint<(), (), ()> for DeleteSecret<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

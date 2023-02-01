@@ -15,7 +15,7 @@ pub struct CreateRoute<'a> {
 
 impl<'a> Endpoint<WorkersRouteIdOnly, (), CreateRouteParams> for CreateRoute<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(&self) -> String {
         format!("zones/{}/workers/routes", self.zone_identifier)

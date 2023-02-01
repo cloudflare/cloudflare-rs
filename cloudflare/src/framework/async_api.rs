@@ -2,7 +2,6 @@ use crate::framework::{
     auth,
     auth::{AuthClient, Credentials},
     endpoint::Endpoint,
-    reqwest_adaptors::match_reqwest_method,
     response::{ApiErrors, ApiFailure, ApiSuccess},
     response::{ApiResponse, ApiResult},
     Environment, HttpApiClientConfig,
@@ -84,10 +83,7 @@ impl Client {
         // Build the request
         let mut request = self
             .http_client
-            .request(
-                match_reqwest_method(endpoint.method()),
-                endpoint.url(&self.environment),
-            )
+            .request(endpoint.method(), endpoint.url(&self.environment))
             .query(&endpoint.query());
 
         if let Some(body) = endpoint.body() {

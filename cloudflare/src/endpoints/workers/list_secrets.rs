@@ -13,7 +13,7 @@ pub struct ListSecrets<'a> {
 
 impl<'a> Endpoint<Vec<WorkersSecret>> for ListSecrets<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!(

@@ -10,7 +10,6 @@ pub mod blocking_api;
 pub mod endpoint;
 #[cfg(not(target_arch = "wasm32"))] // The mock contains a blocking implementation.
 pub mod mock;
-mod reqwest_adaptors;
 pub mod response;
 
 use serde::Serialize;

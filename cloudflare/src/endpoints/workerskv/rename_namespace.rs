@@ -14,7 +14,7 @@ pub struct RenameNamespace<'a> {
 
 impl<'a> Endpoint<(), (), RenameNamespaceParams> for RenameNamespace<'a> {
     fn method(&self) -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(&self) -> String {
         format!(

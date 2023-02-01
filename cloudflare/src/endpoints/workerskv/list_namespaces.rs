@@ -15,7 +15,7 @@ pub struct ListNamespaces<'a> {
 
 impl<'a> Endpoint<Vec<WorkersKvNamespace>, ListNamespacesParams> for ListNamespaces<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!("accounts/{}/storage/kv/namespaces", self.account_identifier)

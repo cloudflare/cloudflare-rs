@@ -14,7 +14,7 @@ pub struct DeleteTail<'a> {
 
 impl<'a> Endpoint<()> for DeleteTail<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

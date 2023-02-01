@@ -13,7 +13,7 @@ pub struct ListBindings<'a> {
 
 impl<'a> Endpoint<Vec<WorkersBinding>> for ListBindings<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
 
     fn path(&self) -> String {
