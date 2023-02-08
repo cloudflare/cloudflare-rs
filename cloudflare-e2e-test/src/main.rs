@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 use clap::{Arg, Command};
 use cloudflare::framework::{
     async_api, async_api::ApiClient, auth::Credentials, Environment, HttpApiClientConfig,
