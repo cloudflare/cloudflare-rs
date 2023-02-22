@@ -13,7 +13,7 @@ pub struct DeleteBulk<'a> {
 
 impl<'a> Endpoint<(), (), Vec<String>> for DeleteBulk<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

@@ -70,7 +70,7 @@ pub struct GetUserDetails {}
 
 impl Endpoint<UserDetails, (), ()> for GetUserDetails {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         "user".to_string()
@@ -93,7 +93,7 @@ pub struct GetUserTokenStatus {}
 
 impl Endpoint<UserTokenStatus, (), ()> for GetUserTokenStatus {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         "user/tokens/verify".to_string()

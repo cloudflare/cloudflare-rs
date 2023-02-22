@@ -13,7 +13,7 @@ pub struct DeleteKey<'a> {
 
 impl<'a> Endpoint<(), (), ()> for DeleteKey<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

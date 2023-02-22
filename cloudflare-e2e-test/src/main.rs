@@ -1,25 +1,18 @@
 #![forbid(unsafe_code)]
 
 use clap::{Arg, Command};
-use cloudflare::framework::{
-    async_api, async_api::ApiClient, auth::Credentials, Environment, HttpApiClientConfig,
-};
+use cloudflare::framework::async_api::Client as AsyncClient;
+use cloudflare::framework::{async_api, auth::Credentials, Environment, HttpApiClientConfig};
 use std::fmt::Display;
 use std::net::{IpAddr, Ipv4Addr};
 
-async fn tests<ApiClientType: ApiClient>(
-    api_client: &ApiClientType,
-    account_id: &str,
-) -> anyhow::Result<()> {
+async fn tests(api_client: &AsyncClient, account_id: &str) -> anyhow::Result<()> {
     test_lb_pool(api_client, account_id).await?;
     println!("Tests passed");
     Ok(())
 }
 
-async fn test_lb_pool<ApiClientType: ApiClient>(
-    api_client: &ApiClientType,
-    account_identifier: &str,
-) -> anyhow::Result<()> {
+async fn test_lb_pool(api_client: &AsyncClient, account_identifier: &str) -> anyhow::Result<()> {
     use cloudflare::endpoints::load_balancing::*;
 
     // Create a pool

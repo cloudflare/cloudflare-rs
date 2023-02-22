@@ -22,7 +22,7 @@ pub struct CreateTail<'a> {
 
 impl<'a> Endpoint<WorkersTail, (), CreateTailParams> for CreateTail<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(&self) -> String {
         format!(

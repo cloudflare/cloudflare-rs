@@ -13,7 +13,7 @@ pub struct ListTails<'a> {
 
 impl<'a> Endpoint<Vec<WorkersTail>> for ListTails<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!(

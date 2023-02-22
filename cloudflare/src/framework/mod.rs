@@ -1,16 +1,12 @@
 /*!
 This module controls how requests are sent to Cloudflare's API, and how responses are parsed from it.
  */
-pub mod apiclient;
 pub mod async_api;
 pub mod auth;
 // There is no blocking implementation for wasm.
 #[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 pub mod blocking_api;
 pub mod endpoint;
-#[cfg(not(target_arch = "wasm32"))] // The mock contains a blocking implementation.
-pub mod mock;
-mod reqwest_adaptors;
 pub mod response;
 
 use serde::Serialize;
@@ -44,10 +40,16 @@ pub enum SearchMatch {
     Any,
 }
 
+/// Which environment (host path) to use for API calls
 #[derive(Debug)]
 pub enum Environment {
+    /// The production endpoint: `https://api.cloudflare.com/client/v4`
     Production,
+    /// A custom endpoint
     Custom(url::Url),
+    #[cfg(feature = "mockito")]
+    /// The local mock endpoint associated with `mockito`
+    Mockito,
 }
 
 impl<'a> From<&'a Environment> for url::Url {
@@ -57,6 +59,8 @@ impl<'a> From<&'a Environment> for url::Url {
                 url::Url::parse("https://api.cloudflare.com/client/v4/").unwrap()
             }
             Environment::Custom(url) => url.clone(),
+            #[cfg(feature = "mockito")]
+            Environment::Mockito => url::Url::parse(&mockito::server_url()).unwrap(),
         }
     }
 }
@@ -68,6 +72,14 @@ pub struct HttpApiClient {
     environment: Environment,
     credentials: auth::Credentials,
     http_client: reqwest::blocking::Client,
+}
+
+#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
+impl HttpApiClient {
+    #[cfg(feature = "mockito")]
+    pub fn is_mock(&self) -> bool {
+        matches!(self.environment, Environment::Mockito)
+    }
 }
 
 /// Configuration for the API client. Allows users to customize its behaviour.

@@ -17,7 +17,7 @@ pub struct CreateNamespace<'a> {
 
 impl<'a> Endpoint<WorkersKvNamespace, (), CreateNamespaceParams> for CreateNamespace<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(&self) -> String {
         format!("accounts/{}/storage/kv/namespaces", self.account_identifier)

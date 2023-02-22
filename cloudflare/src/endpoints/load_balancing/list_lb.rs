@@ -12,7 +12,7 @@ pub struct ListLoadBalancers<'a> {
 
 impl<'a> Endpoint<Vec<LoadBalancer>, ()> for ListLoadBalancers<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!("zones/{}/load_balancers", self.zone_identifier)

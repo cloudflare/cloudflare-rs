@@ -3,13 +3,7 @@ use crate::framework::Environment;
 use serde::Serialize;
 use url::Url;
 
-pub enum Method {
-    Get,
-    Post,
-    Put,
-    Delete,
-    Patch,
-}
+pub use http::Method;
 
 pub trait Endpoint<ResultType = (), QueryType = (), BodyType = ()>
 where

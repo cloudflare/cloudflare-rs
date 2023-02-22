@@ -13,7 +13,7 @@ pub struct DeleteRoute<'a> {
 
 impl<'a> Endpoint<WorkersRouteIdOnly> for DeleteRoute<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

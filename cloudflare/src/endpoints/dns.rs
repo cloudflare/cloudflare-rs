@@ -18,7 +18,7 @@ pub struct ListDnsRecords<'a> {
 }
 impl<'a> Endpoint<Vec<DnsRecord>, ListDnsRecordsParams> for ListDnsRecords<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!("zones/{}/dns_records", self.zone_identifier)
@@ -38,7 +38,7 @@ pub struct CreateDnsRecord<'a> {
 
 impl<'a> Endpoint<DnsRecord, (), CreateDnsRecordParams<'a>> for CreateDnsRecord<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(&self) -> String {
         format!("zones/{}/dns_records", self.zone_identifier)
@@ -74,7 +74,7 @@ pub struct DeleteDnsRecord<'a> {
 }
 impl<'a> Endpoint<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(
@@ -95,7 +95,7 @@ pub struct UpdateDnsRecord<'a> {
 
 impl<'a> Endpoint<DnsRecord, (), UpdateDnsRecordParams<'a>> for UpdateDnsRecord<'a> {
     fn method(&self) -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(&self) -> String {
         format!(

@@ -15,7 +15,7 @@ pub struct DeleteScript<'a> {
 
 impl<'a> Endpoint<ScriptDeleteID, (), ()> for DeleteScript<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

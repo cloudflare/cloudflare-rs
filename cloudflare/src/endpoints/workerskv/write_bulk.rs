@@ -15,7 +15,7 @@ pub struct WriteBulk<'a> {
 
 impl<'a> Endpoint<(), (), Vec<KeyValuePair>> for WriteBulk<'a> {
     fn method(&self) -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(&self) -> String {
         format!(

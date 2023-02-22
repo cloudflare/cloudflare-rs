@@ -13,7 +13,7 @@ pub struct PoolDetails<'a> {
 
 impl<'a> Endpoint<Pool, (), ()> for PoolDetails<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!(

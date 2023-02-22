@@ -11,7 +11,7 @@ pub struct RemoveNamespace<'a> {
 
 impl<'a> Endpoint for RemoveNamespace<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
 
     fn path(&self) -> String {

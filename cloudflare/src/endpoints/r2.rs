@@ -33,7 +33,7 @@ pub struct ListBuckets<'a> {
 
 impl<'a> Endpoint<ListBucketsResult> for ListBuckets<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!("accounts/{}/r2/buckets", self.account_identifier)
@@ -51,7 +51,7 @@ pub struct CreateBucket<'a> {
 
 impl<'a> Endpoint<EmptyMap> for CreateBucket<'a> {
     fn method(&self) -> Method {
-        Method::Put
+        Method::PUT
     }
     fn path(&self) -> String {
         format!(
@@ -70,7 +70,7 @@ pub struct DeleteBucket<'a> {
 
 impl<'a> Endpoint<EmptyMap> for DeleteBucket<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

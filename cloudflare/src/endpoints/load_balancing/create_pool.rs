@@ -53,7 +53,7 @@ pub struct OptionalParams<'a> {
 
 impl<'a> Endpoint<Pool, (), Params<'a>> for CreatePool<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(&self) -> String {
         format!("accounts/{}/load_balancers/pools", self.account_identifier)

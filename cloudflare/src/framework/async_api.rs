@@ -2,26 +2,12 @@ use crate::framework::{
     auth,
     auth::{AuthClient, Credentials},
     endpoint::Endpoint,
-    reqwest_adaptors::match_reqwest_method,
     response::{ApiErrors, ApiFailure, ApiSuccess},
     response::{ApiResponse, ApiResult},
     Environment, HttpApiClientConfig,
 };
-use async_trait::async_trait;
 use serde::Serialize;
 use std::net::SocketAddr;
-
-#[async_trait]
-pub trait ApiClient {
-    async fn request<ResultType, QueryType, BodyType>(
-        &self,
-        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
-    ) -> ApiResponse<ResultType>
-    where
-        ResultType: ApiResult,
-        QueryType: Serialize,
-        BodyType: Serialize;
-}
 
 /// A Cloudflare API client that makes requests asynchronously.
 pub struct Client {
@@ -72,9 +58,10 @@ impl Client {
         })
     }
 
-    pub async fn request_handle<ResultType, QueryType, BodyType>(
+    /// Issue an API request of the given type.
+    pub async fn request<ResultType, QueryType, BodyType>(
         &self,
-        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
+        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType>),
     ) -> ApiResponse<ResultType>
     where
         ResultType: ApiResult,
@@ -84,10 +71,7 @@ impl Client {
         // Build the request
         let mut request = self
             .http_client
-            .request(
-                match_reqwest_method(endpoint.method()),
-                endpoint.url(&self.environment),
-            )
+            .request(endpoint.method(), endpoint.url(&self.environment))
             .query(&endpoint.query());
 
         if let Some(body) = endpoint.body() {
@@ -98,24 +82,6 @@ impl Client {
         request = request.auth(&self.credentials);
         let response = request.send().await?;
         map_api_response(response).await
-    }
-}
-
-// The async_trait does not work nicely in wasm. The mapping of Rust Futures to wasm bindgen
-// Promises does not seem to work when the async_trait macro is used: it causes compilation failures.
-#[cfg(not(target_arch = "wasm32"))]
-#[async_trait]
-impl ApiClient for Client {
-    async fn request<ResultType, QueryType, BodyType>(
-        &self,
-        endpoint: &(dyn Endpoint<ResultType, QueryType, BodyType> + Send + Sync),
-    ) -> ApiResponse<ResultType>
-    where
-        ResultType: ApiResult,
-        QueryType: Serialize,
-        BodyType: Serialize,
-    {
-        self.request_handle(endpoint).await
     }
 }
 

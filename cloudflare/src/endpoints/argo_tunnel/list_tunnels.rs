@@ -15,7 +15,7 @@ pub struct ListTunnels<'a> {
 
 impl<'a> Endpoint<Vec<Tunnel>, Params> for ListTunnels<'a> {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         format!("accounts/{}/tunnels", self.account_identifier)

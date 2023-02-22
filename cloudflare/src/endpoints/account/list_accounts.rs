@@ -15,7 +15,7 @@ pub struct ListAccounts {
 
 impl Endpoint<Vec<Account>, ListAccountsParams> for ListAccounts {
     fn method(&self) -> Method {
-        Method::Get
+        Method::GET
     }
     fn path(&self) -> String {
         "accounts".to_string()

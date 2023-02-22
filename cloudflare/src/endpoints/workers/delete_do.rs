@@ -11,7 +11,7 @@ pub struct DeleteDurableObject<'a> {
 
 impl<'a> Endpoint<(), (), ()> for DeleteDurableObject<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
 
     fn path(&self) -> String {

@@ -15,7 +15,7 @@ pub struct DeleteLoadBalancer<'a> {
 
 impl<'a> Endpoint<Response, (), ()> for DeleteLoadBalancer<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

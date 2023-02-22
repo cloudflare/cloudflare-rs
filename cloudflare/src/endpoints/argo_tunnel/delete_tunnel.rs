@@ -14,7 +14,7 @@ pub struct DeleteTunnel<'a> {
 
 impl<'a> Endpoint<Tunnel> for DeleteTunnel<'a> {
     fn method(&self) -> Method {
-        Method::Delete
+        Method::DELETE
     }
     fn path(&self) -> String {
         format!(

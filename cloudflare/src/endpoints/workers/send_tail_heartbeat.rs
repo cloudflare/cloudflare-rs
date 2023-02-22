@@ -16,7 +16,7 @@ pub struct SendTailHeartbeat<'a> {
 
 impl<'a> Endpoint<WorkersTail> for SendTailHeartbeat<'a> {
     fn method(&self) -> Method {
-        Method::Post
+        Method::POST
     }
     fn path(&self) -> String {
         format!(
