@@ -9,6 +9,7 @@ use crate::framework::{
 use std::net::SocketAddr;
 
 /// A Cloudflare API client that makes requests asynchronously.
+#[derive(Debug)]
 pub struct Client {
     environment: Environment,
     credentials: auth::Credentials,
