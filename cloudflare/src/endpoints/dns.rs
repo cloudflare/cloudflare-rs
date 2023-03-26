@@ -161,7 +161,7 @@ pub struct Meta {
 /// Type of the DNS record, along with the associated value.
 /// When we add support for other types (LOC/SRV/...), the `meta` field should also probably be encoded
 /// here as an associated, strongly typed value.
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, PartialEq, Debug)]
 #[serde(tag = "type")]
 #[allow(clippy::upper_case_acronyms)]
 pub enum DnsContent {
