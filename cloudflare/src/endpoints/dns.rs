@@ -152,7 +152,7 @@ pub struct ListDnsRecordsParams {
 }
 
 /// Extra Cloudflare-specific information about the record
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Meta {
     /// Will exist if Cloudflare automatically added this DNS record during initial setup.
     pub auto_added: bool,
@@ -180,7 +180,7 @@ pub struct DeleteDnsRecordResponse {
     pub id: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct DnsRecord {
     /// Extra Cloudflare-specific information about the record
     pub meta: Meta,
