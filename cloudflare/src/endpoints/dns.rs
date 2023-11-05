@@ -128,7 +128,7 @@ pub struct UpdateDnsRecordParams<'a> {
     /// Comments or notes about the DNS record
     pub comment: Option<&'a str>,
     /// Custom tags for the DNS record. This field has no effect on DNS responses
-    pub tags: &'a Vec<String>,
+    pub tags: Option<&'a Vec<String>>,
 }
 
 #[derive(Serialize, Clone, Debug)]
