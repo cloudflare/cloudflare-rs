@@ -1,5 +1,6 @@
 use chrono::offset::Utc;
 use chrono::DateTime;
+use cloudflare_derive_macros::ApiResult;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -16,14 +17,13 @@ pub struct Bucket {
 }
 
 /// ListBucketsResult contains a list of buckets in an account.
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult)]
 pub struct ListBucketsResult {
     pub buckets: Vec<Bucket>,
 }
 
 type EmptyMap = HashMap<(), ()>;
 impl ApiResult for EmptyMap {}
-impl ApiResult for ListBucketsResult {}
 
 /// Lists all buckets within the account.
 #[derive(Debug)]

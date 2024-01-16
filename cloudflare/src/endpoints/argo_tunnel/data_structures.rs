@@ -1,13 +1,12 @@
 use chrono::{offset::Utc, DateTime};
+use cloudflare_derive_macros::{ApiResult, VecApiResult};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-
-use crate::framework::response::ApiResult;
 
 /// A Named Argo Tunnel
 /// This is an Argo Tunnel that has been created. It can be used for routing and subsequent running.
 /// <https://api.cloudflare.com/#argo-tunnel-properties>
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult, VecApiResult)]
 pub struct Tunnel {
     pub id: Uuid,
     pub created_at: DateTime<Utc>,
@@ -26,11 +25,8 @@ pub struct ActiveConnection {
     pub is_pending_reconnect: bool,
 }
 
-impl ApiResult for Tunnel {}
-impl ApiResult for Vec<Tunnel> {}
-
 /// The result of a route request for a Named Argo Tunnel
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult)]
 #[serde(untagged)]
 pub enum RouteResult {
     Dns(DnsRouteResult),
@@ -55,5 +51,3 @@ pub enum Change {
     New,
     Updated,
 }
-
-impl ApiResult for RouteResult {}

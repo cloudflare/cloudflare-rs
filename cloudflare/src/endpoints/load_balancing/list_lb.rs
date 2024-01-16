@@ -1,6 +1,5 @@
 use crate::endpoints::load_balancing::LoadBalancer;
 use crate::framework::endpoint::{EndpointSpec, Method};
-use crate::framework::response::ApiResult;
 
 /// List Load Balancers
 /// <https://api.cloudflare.com/#load-balancers-list-load-balancers>
@@ -18,5 +17,3 @@ impl<'a> EndpointSpec<Vec<LoadBalancer>> for ListLoadBalancers<'a> {
         format!("zones/{}/load_balancers", self.zone_identifier)
     }
 }
-
-impl ApiResult for Vec<LoadBalancer> {}

@@ -1,6 +1,6 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
-use crate::framework::response::ApiResult;
 
+use cloudflare_derive_macros::ApiResult;
 use serde::Deserialize;
 
 /// Delete Load Balancer
@@ -25,8 +25,7 @@ impl<'a> EndpointSpec<Response> for DeleteLoadBalancer<'a> {
     }
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug, ApiResult)]
 pub struct Response {
     pub id: String,
 }
-impl ApiResult for Response {}
