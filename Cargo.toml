@@ -2,6 +2,7 @@
 
 members = [
     "cloudflare",
+    "cloudflare-derive-macros",
     "cloudflare-examples",
     "cloudflare-e2e-test",
 ]

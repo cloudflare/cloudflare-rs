@@ -1,0 +1,13 @@
+[package]
+name = "cloudflare-derive-macros"
+version = "0.1.0"
+edition = "2018"
+description = "Internal macros for the Cloudflare crate"
+license = "BSD-3-Clause"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "1.0"
+quote = "1.0"
