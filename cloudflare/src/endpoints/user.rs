@@ -1,7 +1,7 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
-use crate::framework::response::ApiResult;
 
 use chrono::{DateTime, Utc};
+use cloudflare_derive_macros::ApiResult;
 use serde::{Deserialize, Serialize};
 
 /// Get User Details
@@ -17,7 +17,7 @@ pub struct Organization {
     roles: Vec<String>, // List of role names for the User at the Organization
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult)]
 pub struct UserDetails {
     pub organizations: Vec<Organization>,
     #[serde(default)]
@@ -35,7 +35,6 @@ pub struct UserDetails {
     pub suspended: bool,
     pub email: String,
 }
-impl ApiResult for UserDetails {}
 
 #[test]
 fn handles_empty_betas_field() {
@@ -81,12 +80,11 @@ impl EndpointSpec<UserDetails> for GetUserDetails {
 /// Returns whether a given token is valid or not.
 /// <https://blog.cloudflare.com/api-tokens-general-availability/>
 ///
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult)]
 pub struct UserTokenStatus {
     pub id: String,
     pub status: String,
 }
-impl ApiResult for UserTokenStatus {}
 
 #[derive(Debug)]
 pub struct GetUserTokenStatus {}

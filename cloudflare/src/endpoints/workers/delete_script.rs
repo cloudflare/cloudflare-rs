@@ -1,6 +1,6 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
-use crate::framework::response::ApiResult;
 
+use cloudflare_derive_macros::ApiResult;
 use serde::{Deserialize, Serialize};
 
 /// Delete Workers script
@@ -25,8 +25,7 @@ impl<'a> EndpointSpec<ScriptDeleteID> for DeleteScript<'a> {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult)]
 pub struct ScriptDeleteID {
     pub id: String,
 }
-impl ApiResult for ScriptDeleteID {}
