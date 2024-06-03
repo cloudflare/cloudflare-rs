@@ -11,10 +11,7 @@ pub use spec::EndpointSpec;
 #[cfg(not(feature = "endpoint-spec"))]
 pub(crate) use spec::EndpointSpec;
 
-// This is the internal-only representation. To avoid bloat from monomorphization, the query
-// string, body, etc are generally not exposed publicly, though it can be exposed via the
-// "endpoint-spec" feature.
-mod spec {
+pub mod spec {
     use super::*;
 
     /// Represents a specification for an API call that can be built into an HTTP request and sent.
@@ -74,6 +71,6 @@ pub trait Endpoint<ResultType: ApiResult>: spec::EndpointSpec<ResultType> {}
 
 /// A utility function for serializing parameters into a URL query string.
 #[inline]
-pub(crate) fn serialize_query<Q: Serialize>(q: &Q) -> Option<String> {
+pub fn serialize_query<Q: Serialize>(q: &Q) -> Option<String> {
     serde_urlencoded::to_string(q).ok()
 }
