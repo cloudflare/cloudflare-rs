@@ -21,7 +21,10 @@ struct Section<'a> {
     function: SectionFunction<HttpApiClient>,
 }
 
-fn print_response<T: ApiResult>(response: ApiResponse<T>) {
+fn print_response<T>(response: ApiResponse<T>)
+where
+    T: ApiResult,
+{
     match response {
         Ok(success) => println!("Success: {success:#?}"),
         Err(e) => match e {
@@ -43,9 +46,9 @@ fn print_response<T: ApiResult>(response: ApiResponse<T>) {
 }
 
 /// Sometimes you want to pipe results to jq etc
-fn print_response_json<T: ApiResult>(response: ApiResponse<T>)
+fn print_response_json<T>(response: ApiResponse<T>)
 where
-    T: Serialize,
+    T: ApiResult + Serialize,
 {
     match response {
         Ok(success) => println!("{}", serde_json::to_string(&success.result).unwrap()),
