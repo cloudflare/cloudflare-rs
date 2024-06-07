@@ -1,6 +1,6 @@
 [package]
 name = "cloudflare-examples"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2018"
 description = "Examples of how to use the Cloudflare Rust API client"
 license = "BSD-3-Clause"

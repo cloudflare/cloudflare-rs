@@ -1,6 +1,6 @@
 [package]
 name = "cloudflare"
-version = "0.11.0"
+version = "0.12.0"
 authors = ["Noah Kennedy <nkennedy@cloudflare.com>", "Jeff Hiner <jhiner@cloudflare.com>"]
 edition = "2018"
 description = "Rust library for the Cloudflare v4 API"
