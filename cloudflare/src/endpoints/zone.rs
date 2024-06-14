@@ -109,8 +109,14 @@ pub enum Status {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase", tag = "type")]
 pub enum Owner {
-    User { id: String, email: String },
-    Organization { id: String, name: String },
+    User {
+        id: Option<String>,
+        email: Option<String>,
+    },
+    Organization {
+        id: Option<String>,
+        name: Option<String>,
+    },
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -136,8 +142,6 @@ pub struct Meta {
     pub page_rule_quota: u32,
     /// Indicates if URLs on the zone have been identified as hosting phishing content.
     pub phishing_detected: bool,
-    /// Indicates whether the zone is allowed to be connected to multiple Railguns at once
-    pub multiple_railguns_allowed: bool,
 }
 
 /// A Zone is a domain name along with its subdomains and other identities
@@ -150,6 +154,8 @@ pub struct Zone {
     pub name: String,
     /// Information about the account the zone belongs to
     pub account: AccountDetails,
+    /// The last time proof of ownership was detected and the zone was made active
+    pub activated_on: DateTime<Utc>,
     /// A list of beta features in which the zone is participating
     pub betas: Option<Vec<String>>,
     /// When the zone was created
