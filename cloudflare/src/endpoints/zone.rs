@@ -114,8 +114,8 @@ pub enum Owner {
         email: Option<String>,
     },
     Organization {
-        id: String,
-        name: String,
+        id: Option<String>,
+        name: Option<String>,
     },
 }
 
