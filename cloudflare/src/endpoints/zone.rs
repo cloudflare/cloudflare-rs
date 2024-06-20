@@ -66,6 +66,21 @@ impl<'a> EndpointSpec<()> for CreateZone<'a> {
     }
 }
 
+/// Delete Zone
+/// https://api.cloudflare.com/#zone-delete-zone
+pub struct DeleteZone<'a> {
+    pub identifier: &'a str,
+}
+impl<'a> Endpoint<(), (), ()> for DeleteZone<'a> {
+    fn method(&self) -> Method {
+        Method::Delete
+    }
+
+    fn path(&self) -> String {
+        format!("zones/{}", self.identifier)
+    }
+}
+
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct CreateZoneParams<'a> {
     pub name: &'a str,
@@ -109,8 +124,14 @@ pub enum Status {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "lowercase", tag = "type")]
 pub enum Owner {
-    User { id: String, email: String },
-    Organization { id: String, name: String },
+    User {
+        id: Option<String>,
+        email: Option<String>,
+    },
+    Organization {
+        id: Option<String>,
+        name: Option<String>,
+    },
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
