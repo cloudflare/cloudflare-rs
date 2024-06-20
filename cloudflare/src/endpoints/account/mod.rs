@@ -1,5 +1,5 @@
-use crate::framework::response::ApiResult;
 use chrono::{DateTime, Utc};
+use cloudflare_derive_macros::{ApiResult, VecApiResult};
 use serde::{Deserialize, Serialize};
 
 pub mod list_accounts;
@@ -8,7 +8,7 @@ pub use list_accounts::ListAccounts;
 /// Cloudflare Accounts
 /// An Account is the root object which owns other resources such as zones, load balancers and billing details.
 /// <https://api.cloudflare.com/#accounts-properties>
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult, VecApiResult)]
 pub struct Account {
     /// Account identifier tag.
     pub id: String,
@@ -38,6 +38,3 @@ pub struct AccountDetails {
     /// Account name
     pub name: String,
 }
-
-impl ApiResult for Account {}
-impl ApiResult for Vec<Account> {}
