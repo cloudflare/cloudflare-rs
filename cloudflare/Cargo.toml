@@ -13,6 +13,8 @@ default = ["default-tls"]
 blocking = ["reqwest/blocking"]
 default-tls = ["reqwest/default-tls"]
 rustls-tls = ["reqwest/rustls-tls"]
+rustls-tls-webpki-roots = ["reqwest/rustls-tls-webpki-roots"]
+rustls-tls-native-roots = ["reqwest/rustls-tls-native-roots"]
 spec = []
 
 [dependencies]
