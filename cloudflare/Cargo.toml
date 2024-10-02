@@ -7,6 +7,7 @@ description = "Rust library for the Cloudflare v4 API"
 keywords = ["cloudflare", "api", "client"]
 categories = ["api-bindings", "web-programming::http-client"]
 license = "BSD-3-Clause"
+repository = "https://github.com/cloudflare/cloudflare-rs"
 
 [features]
 default = ["default-tls"]
