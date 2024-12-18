@@ -1,9 +1,23 @@
+use crate::framework::response::ApiResult;
 use chrono::{offset::Utc, DateTime};
 use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
 use uuid::Uuid;
 
-use crate::framework::response::ApiResult;
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct TunnelToken(String);
+
+impl From<String> for TunnelToken {
+    fn from(s: String) -> TunnelToken {
+        TunnelToken(s)
+    }
+}
+
+impl From<TunnelToken> for String {
+    fn from(s: TunnelToken) -> String {
+        s.0
+    }
+}
 
 /// A Cfd Tunnel
 /// This is an Cfd Tunnel that has been created. It can be used for routing and subsequent running.
@@ -127,6 +141,7 @@ pub struct OriginRequest {
 impl ApiResult for TunnelConfiguration {}
 impl ApiResult for Tunnel {}
 impl ApiResult for Vec<Tunnel> {}
+impl ApiResult for TunnelToken {}
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct TunnelConfigurationResult {
