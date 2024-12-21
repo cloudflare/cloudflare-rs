@@ -1,11 +1,4 @@
-use crate::endpoints::cfd_tunnel::{ConfigurationSrc, Tunnel};
-use serde::Serialize;
-use serde_with::{
-    base64::{Base64, Standard},
-    formats::Padded,
-    serde_as,
-};
-
+use crate::endpoints::cfd_tunnel::Tunnel;
 use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Create a Cfd Tunnel

@@ -1,7 +1,5 @@
-use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
-use serde::Serialize;
-
 use super::TunnelToken as TunnelTokenResult;
+use crate::framework::endpoint::{EndpointSpec, Method};
 
 /// Delete a tunnel
 /// <https://developers.cloudflare.com/api/operations/cloudflare-tunnel-delete-a-cloudflare-tunnel>
