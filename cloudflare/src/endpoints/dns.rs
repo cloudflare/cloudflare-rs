@@ -125,6 +125,54 @@ pub struct UpdateDnsRecordParams<'a> {
     /// Type of the DNS record that also holds the record value
     #[serde(flatten)]
     pub content: DnsContent,
+    /// Comments or notes about the DNS record
+    pub comment: Option<&'a str>,
+    /// Custom tags for the DNS record. This field has no effect on DNS responses
+    pub tags: Option<&'a Vec<String>>,
+}
+
+/// Patch DNS Record
+/// <https://developers.cloudflare.com/api/operations/dns-records-for-a-zone-patch-dns-record>
+#[derive(Debug)]
+pub struct PatchDnsRecord<'a> {
+    pub zone_identifier: &'a str,
+    pub identifier: &'a str,
+    pub params: PatchDnsRecordParams<'a>,
+}
+
+impl<'a> EndpointSpec<DnsRecord> for PatchDnsRecord<'a> {
+    fn method(&self) -> Method {
+        Method::PATCH
+    }
+    fn path(&self) -> String {
+        format!(
+            "zones/{}/dns_records/{}",
+            self.zone_identifier, self.identifier
+        )
+    }
+    #[inline]
+    fn body(&self) -> Option<String> {
+        let body = serde_json::to_string(&self.params).unwrap();
+        Some(body)
+    }
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Serialize, Clone, Debug)]
+pub struct PatchDnsRecordParams<'a> {
+    /// Time to live for DNS record. Value of 1 is 'automatic'
+    pub ttl: Option<u32>,
+    /// Whether the record is receiving the performance and security benefits of Cloudflare
+    pub proxied: Option<bool>,
+    /// DNS record name
+    pub name: &'a str,
+    /// Type of the DNS record that also holds the record value
+    #[serde(flatten)]
+    pub content: DnsContent,
+    /// Comments or notes about the DNS record
+    pub comment: Option<&'a str>,
+    /// Custom tags for the DNS record. This field has no effect on DNS responses
+    pub tags: Option<&'a Vec<String>>,
 }
 
 #[derive(Serialize, Clone, Debug)]
@@ -205,6 +253,10 @@ pub struct DnsRecord {
     pub proxied: bool,
     /// The domain of the record
     pub zone_name: String,
+    /// Comments or notes about the DNS record
+    pub comment: Option<String>,
+    /// Custom tags for the DNS record. This field has no effect on DNS responses
+    pub tags: Vec<String>,
 }
 
 impl ApiResult for DnsRecord {}
