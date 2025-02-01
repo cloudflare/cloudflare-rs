@@ -125,6 +125,10 @@ pub struct UpdateDnsRecordParams<'a> {
     /// Type of the DNS record that also holds the record value
     #[serde(flatten)]
     pub content: DnsContent,
+    /// Comments or notes about the DNS record
+    pub comment: Option<&'a str>,
+    /// Custom tags for the DNS record. This field has no effect on DNS responses
+    pub tags: Option<&'a Vec<String>>,
 }
 
 #[derive(Serialize, Clone, Debug)]
@@ -205,6 +209,10 @@ pub struct DnsRecord {
     pub proxied: bool,
     /// The domain of the record
     pub zone_name: String,
+    /// Comments or notes about the DNS record
+    pub comment: Option<String>,
+    /// Custom tags for the DNS record. This field has no effect on DNS responses
+    pub tags: Vec<String>,
 }
 
 impl ApiResult for DnsRecord {}
