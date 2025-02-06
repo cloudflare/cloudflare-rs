@@ -1,6 +1,5 @@
 use crate::framework::{
     endpoint::{serialize_query, EndpointSpec, Method},
-    response::ApiResult,
 };
 /// <https://api.cloudflare.com/#dns-records-for-a-zone-properties>
 use crate::framework::{OrderDirection, SearchMatch};
@@ -8,6 +7,7 @@ use chrono::offset::Utc;
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
 use std::net::{Ipv4Addr, Ipv6Addr};
+use crate::framework::response::ApiResult;
 
 /// List DNS Records
 /// <https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records>

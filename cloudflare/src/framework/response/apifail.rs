@@ -45,8 +45,6 @@ impl fmt::Display for ApiError {
     }
 }
 
-pub trait ApiResult: DeserializeOwned + Debug {}
-
 #[derive(Debug)]
 pub enum ApiFailure {
     Error(reqwest::StatusCode, ApiErrors),

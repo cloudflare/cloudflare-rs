@@ -3,10 +3,11 @@ use crate::framework::{
     auth::{AuthClient, Credentials},
     endpoint::Endpoint,
     response::{ApiErrors, ApiFailure, ApiSuccess},
-    response::{ApiResponse, ApiResult},
+    response::{ApiResponse},
     Environment, HttpApiClientConfig,
 };
 use std::net::SocketAddr;
+use crate::framework::response::ApiResult;
 
 /// A Cloudflare API client that makes requests asynchronously.
 pub struct Client {

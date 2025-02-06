@@ -5,10 +5,10 @@ use std::collections::HashMap;
 use clap::{Arg, ArgAction, ArgGroup, ArgMatches, Command};
 use cloudflare::endpoints::{account, dns, workers, zone};
 use cloudflare::framework::endpoint::Endpoint;
-use cloudflare::framework::response::{ApiError, ApiErrors};
+use cloudflare::framework::response::{ApiError, ApiErrors, ApiResult};
 use cloudflare::framework::{
     auth::Credentials,
-    response::{ApiFailure, ApiResponse, ApiResult},
+    response::{ApiFailure, ApiResponse},
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
 use serde::Serialize;
