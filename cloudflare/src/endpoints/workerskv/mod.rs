@@ -12,7 +12,7 @@ pub mod list_namespaces;
 pub mod remove_namespace;
 pub mod rename_namespace;
 pub mod write_bulk;
-
+pub mod read;
 // Upgrading to percent_encode 2.x unfortunately removed this prebaked const.
 // We need to re-assemble it by combining "control" ASCII characters with other characters
 // which are invalid or reserved in URIs. Non-ASCII characters are always encoded.

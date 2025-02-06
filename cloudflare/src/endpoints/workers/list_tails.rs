@@ -1,6 +1,7 @@
 use super::WorkersTail;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// List Tails
 /// Lists all active Tail sessions for a given Worker
@@ -11,7 +12,10 @@ pub struct ListTails<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> EndpointSpec<Vec<WorkersTail>> for ListTails<'a> {
+impl<'a> EndpointSpec for ListTails<'a> {
+    type JsonResponse = Vec<WorkersTail>;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }

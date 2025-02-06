@@ -2,6 +2,7 @@ use super::WorkersKvNamespace;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Create a Namespace
@@ -15,7 +16,10 @@ pub struct CreateNamespace<'a> {
     pub params: CreateNamespaceParams,
 }
 
-impl<'a> EndpointSpec<WorkersKvNamespace> for CreateNamespace<'a> {
+impl<'a> EndpointSpec for CreateNamespace<'a> {
+    type JsonResponse = WorkersKvNamespace;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }

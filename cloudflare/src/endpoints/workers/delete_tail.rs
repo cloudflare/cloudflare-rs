@@ -1,4 +1,5 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Delete Tail
 /// <https://api.cloudflare.com/#worker-delete-tail>
@@ -12,7 +13,10 @@ pub struct DeleteTail<'a> {
     pub tail_id: &'a str,
 }
 
-impl<'a> EndpointSpec<()> for DeleteTail<'a> {
+impl<'a> EndpointSpec for DeleteTail<'a> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

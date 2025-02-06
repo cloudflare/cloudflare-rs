@@ -2,6 +2,7 @@ use super::WorkersSecret;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Create Secret
@@ -16,7 +17,10 @@ pub struct CreateSecret<'a> {
     pub params: CreateSecretParams,
 }
 
-impl<'a> EndpointSpec<WorkersSecret> for CreateSecret<'a> {
+impl<'a> EndpointSpec for CreateSecret<'a> {
+    type JsonResponse = WorkersSecret;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PUT
     }

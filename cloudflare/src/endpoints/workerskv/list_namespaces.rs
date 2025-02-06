@@ -2,6 +2,7 @@ use super::WorkersKvNamespace;
 
 use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// List Namespaces
@@ -13,7 +14,10 @@ pub struct ListNamespaces<'a> {
     pub params: ListNamespacesParams,
 }
 
-impl<'a> EndpointSpec<Vec<WorkersKvNamespace>> for ListNamespaces<'a> {
+impl<'a> EndpointSpec for ListNamespaces<'a> {
+    type JsonResponse = Vec<WorkersKvNamespace>;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }

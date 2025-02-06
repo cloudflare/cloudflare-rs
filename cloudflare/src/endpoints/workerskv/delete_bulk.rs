@@ -1,4 +1,5 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Delete Key-Value Pairs in Bulk
 /// Deletes multiple key-value pairs from Workers KV at once.
@@ -11,7 +12,10 @@ pub struct DeleteBulk<'a> {
     pub bulk_keys: Vec<String>,
 }
 
-impl<'a> EndpointSpec<()> for DeleteBulk<'a> {
+impl<'a> EndpointSpec for DeleteBulk<'a> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

@@ -1,9 +1,9 @@
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
-use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
-
 use super::Tunnel;
+use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// List/search tunnels in an account.
 /// <https://api.cloudflare.com/#argo-tunnel-list-argo-tunnels>
@@ -13,7 +13,10 @@ pub struct ListTunnels<'a> {
     pub params: Params,
 }
 
-impl<'a> EndpointSpec<Vec<Tunnel>> for ListTunnels<'a> {
+impl<'a> EndpointSpec for ListTunnels<'a> {
+    type JsonResponse = Vec<Tunnel>;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }

@@ -2,6 +2,7 @@ use super::WorkersRouteIdOnly;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Create a Route
@@ -13,7 +14,10 @@ pub struct CreateRoute<'a> {
     pub params: CreateRouteParams,
 }
 
-impl<'a> EndpointSpec<WorkersRouteIdOnly> for CreateRoute<'a> {
+impl<'a> EndpointSpec for CreateRoute<'a> {
+    type JsonResponse = WorkersRouteIdOnly;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }

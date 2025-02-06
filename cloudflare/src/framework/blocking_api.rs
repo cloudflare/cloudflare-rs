@@ -2,14 +2,15 @@ use reqwest::blocking::RequestBuilder;
 use std::net::SocketAddr;
 
 use crate::framework::auth::Credentials;
-use crate::framework::response::{ApiErrors, ApiFailure, ApiResponse, ApiResult, ApiSuccess};
-use crate::framework::{
-    auth, auth::AuthClient, endpoint, response, Environment, HttpApiClient, HttpApiClientConfig,
+use crate::framework::endpoint::EndpointSpec;
+use crate::framework::response::{
+    ApiErrors, ApiFailure, ApiResponse, ApiSuccess, ResponseConverter,
 };
+use crate::framework::{auth::AuthClient, Environment, HttpApiClient, HttpApiClientConfig};
 
 impl HttpApiClient {
     pub fn new(
-        credentials: auth::Credentials,
+        credentials: Credentials,
         config: HttpApiClientConfig,
         environment: Environment,
     ) -> Result<HttpApiClient, crate::framework::Error> {
@@ -34,15 +35,14 @@ impl HttpApiClient {
         })
     }
 
+    //noinspection ALL
     // TODO: This should probably just implement request for the Reqwest client itself :)
     // TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
     /// Synchronously send a request to the Cloudflare API.
-    pub fn request<ResultType>(
-        &self,
-        endpoint: &dyn endpoint::Endpoint<ResultType>,
-    ) -> response::ApiResponse<ResultType>
+    pub fn request<Endpoint>(&self, endpoint: &Endpoint) -> ApiResponse<Endpoint::ResponseType>
     where
-        ResultType: response::ApiResult,
+        Endpoint: EndpointSpec + Send + Sync,
+        Endpoint::ResponseType: ResponseConverter<Endpoint::JsonResponse>,
     {
         // Build the request
         let mut request = self
@@ -58,10 +58,22 @@ impl HttpApiClient {
         }
 
         request = request.auth(&self.credentials);
-
         let response = request.send()?;
 
-        map_api_response(response)
+        // The condition is necessary, even if a warning is present.
+        // The constant is overridden in some cases.
+        if Endpoint::IS_RAW_BODY {
+            let content_type = response
+                .headers()
+                .get(reqwest::header::CONTENT_TYPE)
+                .and_then(|ct| ct.to_str().ok())
+                .unwrap_or("");
+            assert_eq!(content_type, "application/octet-stream");
+
+            map_api_response_raw::<Endpoint>(response)
+        } else {
+            map_api_response_json::<Endpoint>(response)
+        }
     }
 }
 
@@ -76,17 +88,39 @@ impl AuthClient for RequestBuilder {
 
 // There is no blocking implementation for wasm.
 #[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
-// If the response is 200 and parses, return Success.
-// If the response is 200 and doesn't parse, return Invalid.
-// If the response isn't 200, return Failure, with API errors if they were included.
-pub fn map_api_response<ResultType: ApiResult>(
+// If the response is 2XX and parses, return Success.
+// If the response is 2XX and doesn't parse, return Invalid.
+// If the response isn't 2XX, return Failure, with API errors if they were included.
+fn map_api_response_raw<Endpoint>(
     resp: reqwest::blocking::Response,
-) -> ApiResponse<ResultType> {
+) -> Result<Endpoint::ResponseType, ApiFailure>
+where
+    Endpoint: EndpointSpec,
+    Endpoint::ResponseType: ResponseConverter<Endpoint::JsonResponse>,
+{
     let status = resp.status();
     if status.is_success() {
-        let parsed: Result<ApiSuccess<ResultType>, reqwest::Error> = resp.json();
+        let bytes = resp.bytes().map_err(ApiFailure::Invalid)?.to_vec();
+        Ok(Endpoint::ResponseType::from_raw(bytes))
+    } else {
+        let parsed: Result<ApiErrors, reqwest::Error> = resp.json();
+        let errors = parsed.unwrap_or_default();
+        Err(ApiFailure::Error(status, errors))
+    }
+}
+
+fn map_api_response_json<Endpoint>(
+    resp: reqwest::blocking::Response,
+) -> Result<Endpoint::ResponseType, ApiFailure>
+where
+    Endpoint: EndpointSpec,
+    Endpoint::ResponseType: ResponseConverter<Endpoint::JsonResponse>,
+{
+    let status = resp.status();
+    if status.is_success() {
+        let parsed: Result<ApiSuccess<Endpoint::JsonResponse>, reqwest::Error> = resp.json();
         match parsed {
-            Ok(api_resp) => Ok(api_resp),
+            Ok(success) => Ok(Endpoint::ResponseType::from_json(success)),
             Err(e) => Err(ApiFailure::Invalid(e)),
         }
     } else {

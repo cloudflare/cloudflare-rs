@@ -1,6 +1,7 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
 
 use super::RouteResult;
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -16,7 +17,10 @@ pub struct RouteTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> EndpointSpec<RouteResult> for RouteTunnel<'a> {
+impl<'a> EndpointSpec for RouteTunnel<'a> {
+    type JsonResponse = RouteResult;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PUT
     }

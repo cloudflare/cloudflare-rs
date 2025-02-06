@@ -4,14 +4,19 @@ use std::collections::HashMap;
 
 use clap::{Arg, ArgAction, ArgGroup, ArgMatches, Command};
 use cloudflare::endpoints::{account, dns, workers, zone};
-use cloudflare::framework::endpoint::Endpoint;
-use cloudflare::framework::response::{ApiError, ApiErrors, ApiResult};
+// Use the new trait instead of the old one:
+use cloudflare::framework::endpoint::spec::EndpointSpec;
+use cloudflare::framework::response::{ApiError, ApiErrors, ApiResult, ApiSuccess};
 use cloudflare::framework::{
     auth::Credentials,
     response::{ApiFailure, ApiResponse},
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
 use serde::Serialize;
+
+// A helper trait (defined in your library) that converts a raw Vec<u8> or an ApiSuccess<_>
+// into the final response type.
+use cloudflare::framework::response::ResponseConverter;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 
@@ -45,8 +50,8 @@ where
     }
 }
 
-/// Sometimes you want to pipe results to jq etc
-fn print_response_json<T>(response: ApiResponse<T>)
+/// Sometimes you want to pipe results to jq etc.
+fn print_response_json<T>(response: ApiResponse<ApiSuccess<T>>)
 where
     T: ApiResult + Serialize,
 {
@@ -71,9 +76,10 @@ where
 }
 
 fn zone(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
-    let zone_identifier = arg_matches.get_one::<String>("zone_identifier");
+    let zone_identifier = arg_matches.get_one::<String>("zone_identifier").unwrap();
+    // Create the endpoint using the new trait.
     let endpoint = zone::ZoneDetails {
-        identifier: zone_identifier.unwrap(),
+        identifier: zone_identifier,
     };
     if api_client.is_mock() {
         add_static_mock(&endpoint);
@@ -95,7 +101,6 @@ fn dns(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response(response);
 }
 
@@ -131,7 +136,6 @@ fn create_txt_record(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response(response);
 }
 
@@ -148,7 +152,6 @@ fn list_routes(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response_json(response);
 }
 
@@ -158,7 +161,6 @@ fn list_accounts(_arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response_json(response);
 }
 
@@ -188,7 +190,6 @@ fn create_route(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response_json(response);
 }
 
@@ -213,14 +214,16 @@ fn delete_route(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response_json(response);
 }
 
 /// Add and leak a mock (so it runs for 'static)
-fn add_static_mock<ResultType>(endpoint: &dyn Endpoint<ResultType>)
+fn add_static_mock<E>(endpoint: &E)
 where
-    ResultType: ApiResult,
+    E: EndpointSpec,
+    // The endpoint's JSON response type isn't used for raw endpoints
+    // but we require that its final response type is ApiResult.
+    E::ResponseType: ResponseConverter<E::JsonResponse>,
 {
     let body = ApiErrors {
         errors: vec![ApiError {
@@ -345,7 +348,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     for (section_name, section) in sections.iter() {
         let mut subcommand = Command::new(*section_name).about(section.description);
-
         for arg in &section.args {
             subcommand = subcommand.arg(arg);
         }
@@ -353,9 +355,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let mut matches = cli.get_matches();
-    let email = matches.remove_one("email");
-    let key = matches.remove_one("auth-key");
-    let token = matches.remove_one("auth-token");
+    let email = matches.remove_one::<String>("email");
+    let key = matches.remove_one::<String>("auth-key");
+    let token = matches.remove_one::<String>("auth-token");
     let environment = if matches.get_flag("mock") {
         Environment::Mockito
     } else {

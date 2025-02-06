@@ -1,4 +1,5 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Remove a Namespace
 /// Deletes the namespace corresponding to the given ID.
@@ -9,7 +10,10 @@ pub struct RemoveNamespace<'a> {
     pub namespace_identifier: &'a str,
 }
 
-impl<'a> EndpointSpec<()> for RemoveNamespace<'a> {
+impl<'a> EndpointSpec for RemoveNamespace<'a> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

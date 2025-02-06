@@ -1,6 +1,6 @@
-use crate::framework::endpoint::{EndpointSpec, Method};
-
 use super::Tunnel;
+use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Delete a tunnel
 /// <https://api.cloudflare.com/#argo-tunnel-delete-argo-tunnel>
@@ -12,7 +12,10 @@ pub struct DeleteTunnel<'a> {
     pub cascade: bool,
 }
 
-impl<'a> EndpointSpec<Tunnel> for DeleteTunnel<'a> {
+impl<'a> EndpointSpec for DeleteTunnel<'a> {
+    type JsonResponse = Tunnel;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

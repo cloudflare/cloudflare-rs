@@ -7,6 +7,7 @@ use serde_with::{
 };
 
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Create a Cfd Tunnel
 /// This creates the Tunnel, which can then be routed and ran. Creating the Tunnel per se is only
@@ -19,7 +20,10 @@ pub struct UpdateTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> EndpointSpec<Tunnel> for UpdateTunnel<'a> {
+impl<'a> EndpointSpec for UpdateTunnel<'a> {
+    type JsonResponse = Tunnel;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PATCH
     }

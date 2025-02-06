@@ -1,4 +1,4 @@
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_json::value::Value as JValue;
 use std::collections::HashMap;
 use std::error::Error;

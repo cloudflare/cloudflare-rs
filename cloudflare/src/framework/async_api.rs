@@ -1,18 +1,17 @@
+use crate::framework::endpoint::EndpointSpec;
+use crate::framework::response::ResponseConverter;
 use crate::framework::{
-    auth,
     auth::{AuthClient, Credentials},
-    endpoint::Endpoint,
+    response::ApiResponse,
     response::{ApiErrors, ApiFailure, ApiSuccess},
-    response::{ApiResponse},
     Environment, HttpApiClientConfig,
 };
 use std::net::SocketAddr;
-use crate::framework::response::ApiResult;
 
 /// A Cloudflare API client that makes requests asynchronously.
 pub struct Client {
     environment: Environment,
-    credentials: auth::Credentials,
+    credentials: Credentials,
     http_client: reqwest::Client,
 }
 
@@ -27,7 +26,7 @@ impl AuthClient for reqwest::RequestBuilder {
 
 impl Client {
     pub fn new(
-        credentials: auth::Credentials,
+        credentials: Credentials,
         config: HttpApiClientConfig,
         environment: Environment,
     ) -> Result<Client, crate::framework::Error> {
@@ -58,13 +57,15 @@ impl Client {
         })
     }
 
+    //noinspection RsConstantConditionIf
     /// Issue an API request of the given type.
-    pub async fn request<ResultType>(
+    pub async fn request<Endpoint>(
         &self,
-        endpoint: &(dyn Endpoint<ResultType> + Send + Sync),
-    ) -> ApiResponse<ResultType>
+        endpoint: &Endpoint,
+    ) -> ApiResponse<Endpoint::ResponseType>
     where
-        ResultType: ApiResult,
+        Endpoint: EndpointSpec + Send + Sync,
+        Endpoint::ResponseType: ResponseConverter<Endpoint::JsonResponse>,
     {
         // Build the request
         let mut request = self
@@ -81,21 +82,57 @@ impl Client {
 
         request = request.auth(&self.credentials);
         let response = request.send().await?;
-        map_api_response(response).await
+
+        // The condition is necessary, even if a warning is present.
+        // The constant is overridden in some cases.
+        if Endpoint::IS_RAW_BODY {
+            let content_type = response
+                .headers()
+                .get(reqwest::header::CONTENT_TYPE)
+                .and_then(|ct| ct.to_str().ok())
+                .unwrap_or("");
+            assert_eq!(content_type, "application/octet-stream");
+
+            map_api_response_raw::<Endpoint>(response).await
+        } else {
+            map_api_response_json::<Endpoint>(response).await
+        }
     }
 }
 
 // If the response is 2XX and parses, return Success.
 // If the response is 2XX and doesn't parse, return Invalid.
 // If the response isn't 2XX, return Failure, with API errors if they were included.
-async fn map_api_response<ResultType: ApiResult>(
+async fn map_api_response_raw<Endpoint>(
     resp: reqwest::Response,
-) -> ApiResponse<ResultType> {
+) -> Result<Endpoint::ResponseType, ApiFailure>
+where
+    Endpoint: EndpointSpec,
+    Endpoint::ResponseType: ResponseConverter<Endpoint::JsonResponse>,
+{
     let status = resp.status();
     if status.is_success() {
-        let parsed: Result<ApiSuccess<ResultType>, reqwest::Error> = resp.json().await;
+        let bytes = resp.bytes().await.map_err(ApiFailure::Invalid)?.to_vec();
+        Ok(Endpoint::ResponseType::from_raw(bytes))
+    } else {
+        let parsed: Result<ApiErrors, reqwest::Error> = resp.json().await;
+        let errors = parsed.unwrap_or_default();
+        Err(ApiFailure::Error(status, errors))
+    }
+}
+
+async fn map_api_response_json<Endpoint>(
+    resp: reqwest::Response,
+) -> Result<Endpoint::ResponseType, ApiFailure>
+where
+    Endpoint: EndpointSpec,
+    Endpoint::ResponseType: ResponseConverter<Endpoint::JsonResponse>,
+{
+    let status = resp.status();
+    if status.is_success() {
+        let parsed: Result<ApiSuccess<Endpoint::JsonResponse>, reqwest::Error> = resp.json().await;
         match parsed {
-            Ok(api_resp) => Ok(api_resp),
+            Ok(success) => Ok(Endpoint::ResponseType::from_json(success)),
             Err(e) => Err(ApiFailure::Invalid(e)),
         }
     } else {

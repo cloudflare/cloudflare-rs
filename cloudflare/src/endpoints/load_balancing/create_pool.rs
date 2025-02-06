@@ -2,6 +2,7 @@ use crate::endpoints::load_balancing::{Origin, Pool};
 use crate::framework::endpoint::{EndpointSpec, Method};
 
 use serde::Serialize;
+use crate::framework::response::ApiSuccess;
 
 /// Create Pool
 /// <https://api.cloudflare.com/#account-load-balancer-pools-create-pool>
@@ -51,7 +52,10 @@ pub struct OptionalParams<'a> {
     pub notification_email: Option<&'a str>,
 }
 
-impl<'a> EndpointSpec<Pool> for CreatePool<'a> {
+impl<'a> EndpointSpec for CreatePool<'a> {
+    type JsonResponse = Pool;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }

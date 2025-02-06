@@ -1,13 +1,11 @@
 use crate::endpoints::{account::AccountDetails, plan::Plan};
 use crate::framework::endpoint::serialize_query;
-use crate::framework::{
-    endpoint::{EndpointSpec, Method},
-};
+use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::{ApiResult, ApiSuccess};
 use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
-use crate::framework::response::ApiResult;
 
 /// List Zones
 /// List, search, sort, and filter your zones
@@ -17,7 +15,10 @@ pub struct ListZones {
     pub params: ListZonesParams,
 }
 
-impl EndpointSpec<Vec<Zone>> for ListZones {
+impl EndpointSpec for ListZones {
+    type JsonResponse = Vec<Zone>;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }
@@ -36,7 +37,10 @@ impl EndpointSpec<Vec<Zone>> for ListZones {
 pub struct ZoneDetails<'a> {
     pub identifier: &'a str,
 }
-impl<'a> EndpointSpec<Zone> for ZoneDetails<'a> {
+impl<'a> EndpointSpec for ZoneDetails<'a> {
+    type JsonResponse = Zone;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }
@@ -50,7 +54,10 @@ impl<'a> EndpointSpec<Zone> for ZoneDetails<'a> {
 pub struct CreateZone<'a> {
     pub params: CreateZoneParams<'a>,
 }
-impl<'a> EndpointSpec<()> for CreateZone<'a> {
+impl<'a> EndpointSpec for CreateZone<'a> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }

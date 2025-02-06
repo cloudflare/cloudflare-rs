@@ -5,9 +5,9 @@ use serde_with::{
     serde_as,
 };
 
-use crate::framework::endpoint::{EndpointSpec, Method};
-
 use super::Tunnel;
+use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Create a Named Argo Tunnel
 /// This creates the Tunnel, which can then be routed and ran. Creating the Tunnel per se is only
@@ -19,7 +19,10 @@ pub struct CreateTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> EndpointSpec<Tunnel> for CreateTunnel<'a> {
+impl<'a> EndpointSpec for CreateTunnel<'a> {
+    type JsonResponse = Tunnel;
+    type ResponseType = ApiSuccess<Tunnel>;
+
     fn method(&self) -> Method {
         Method::POST
     }

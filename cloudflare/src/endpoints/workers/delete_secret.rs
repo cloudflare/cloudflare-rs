@@ -1,4 +1,5 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Delete Secret
 /// <https://api.cloudflare.com/#worker-delete-secret>
@@ -12,7 +13,10 @@ pub struct DeleteSecret<'a> {
     pub secret_name: &'a str,
 }
 
-impl<'a> EndpointSpec<()> for DeleteSecret<'a> {
+impl<'a> EndpointSpec for DeleteSecret<'a> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

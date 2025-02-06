@@ -1,4 +1,5 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Delete a key-value pair from Workers KV
 /// Deletes a given key from the given namespace in Workers KV.
@@ -11,7 +12,10 @@ pub struct DeleteKey<'a> {
     pub key: &'a str,
 }
 
-impl<'a> EndpointSpec<()> for DeleteKey<'a> {
+impl<'a> EndpointSpec for DeleteKey<'a> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

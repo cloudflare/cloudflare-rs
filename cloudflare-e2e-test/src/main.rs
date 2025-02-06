@@ -8,6 +8,7 @@ use std::net::{IpAddr, Ipv4Addr};
 
 async fn tests(api_client: &AsyncClient, account_id: &str) -> anyhow::Result<()> {
     test_lb_pool(api_client, account_id).await?;
+    test_workerkv_read(api_client, account_id).await?;
     println!("Tests passed");
     Ok(())
 }
@@ -70,6 +71,26 @@ async fn test_lb_pool(api_client: &AsyncClient, account_identifier: &str) -> any
     // Validate the pool we got was the same as the pool we sent
     let pool_details = pool_details?.result;
     assert_eq!(pool, pool_details);
+
+    Ok(())
+}
+
+async fn test_workerkv_read(api_client: &AsyncClient, account_id: &str) -> anyhow::Result<()> {
+    use cloudflare::endpoints::workerskv::*;
+
+    let namespace_id = "test_namespace";
+    let key = "test_key";
+    let value = "test_value";
+
+    // Read the value
+    let read_value = api_client
+        .request(&read::Read {
+            account_identifier: account_id,
+            namespace_identifier: namespace_id,
+            key,
+        })
+        .await
+        .log_err(|e| println!("Error in Read: {e}"))?;
 
     Ok(())
 }

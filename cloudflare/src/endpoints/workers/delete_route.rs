@@ -1,6 +1,7 @@
 use super::WorkersRouteIdOnly;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Delete a Route
 /// Deletes a route by route id
@@ -11,7 +12,10 @@ pub struct DeleteRoute<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> EndpointSpec<WorkersRouteIdOnly> for DeleteRoute<'a> {
+impl<'a> EndpointSpec for DeleteRoute<'a> {
+    type JsonResponse = WorkersRouteIdOnly;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

@@ -1,5 +1,6 @@
 use crate::endpoints::load_balancing::Pool;
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Pool Details
 /// <https://api.cloudflare.com/#account-load-balancer-pools-pool-details>
@@ -11,7 +12,10 @@ pub struct PoolDetails<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> EndpointSpec<Pool> for PoolDetails<'a> {
+impl<'a> EndpointSpec for PoolDetails<'a> {
+    type JsonResponse = Pool;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }

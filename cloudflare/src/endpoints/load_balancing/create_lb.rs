@@ -4,6 +4,7 @@ use crate::endpoints::load_balancing::{
 };
 use crate::framework::endpoint::{EndpointSpec, Method};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Create Load Balancer
@@ -55,7 +56,10 @@ pub struct OptionalParams<'a> {
     pub session_affinity_ttl: Option<u32>,
 }
 
-impl<'a> EndpointSpec<LoadBalancer> for CreateLoadBalancer<'a> {
+impl<'a> EndpointSpec for CreateLoadBalancer<'a> {
+    type JsonResponse = LoadBalancer;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }

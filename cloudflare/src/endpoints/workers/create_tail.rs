@@ -2,6 +2,7 @@ use super::WorkersTail;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Create Tail
@@ -20,7 +21,10 @@ pub struct CreateTail<'a> {
     pub params: CreateTailParams,
 }
 
-impl<'a> EndpointSpec<WorkersTail> for CreateTail<'a> {
+impl<'a> EndpointSpec for CreateTail<'a> {
+    type JsonResponse = WorkersTail;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }

@@ -1,5 +1,6 @@
 use super::WorkersBinding;
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// List Bindings
 /// Lists all bindings for a given script
@@ -11,7 +12,10 @@ pub struct ListBindings<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> EndpointSpec<Vec<WorkersBinding>> for ListBindings<'a> {
+impl<'a> EndpointSpec for ListBindings<'a> {
+    type JsonResponse = Vec<WorkersBinding>;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }

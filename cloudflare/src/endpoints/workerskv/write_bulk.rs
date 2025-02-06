@@ -1,5 +1,6 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
 
+use crate::framework::response::ApiSuccess;
 use serde::{Deserialize, Serialize};
 
 /// Write Key-Value Pairs in Bulk
@@ -13,7 +14,10 @@ pub struct WriteBulk<'a> {
     pub bulk_key_value_pairs: Vec<KeyValuePair>,
 }
 
-impl<'a> EndpointSpec<()> for WriteBulk<'a> {
+impl<'a> EndpointSpec for WriteBulk<'a> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PUT
     }

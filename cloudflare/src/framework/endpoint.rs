@@ -6,6 +6,7 @@ use url::Url;
 
 pub use http::Method;
 
+// TODO: Unused feature?
 #[cfg(feature = "endpoint-spec")]
 pub use spec::EndpointSpec;
 #[cfg(not(feature = "endpoint-spec"))]
@@ -18,12 +19,14 @@ pub mod spec {
     /// New endpoints should implement this trait.
     ///
     /// If the request succeeds, the call will resolve to a `ResultType`.
-    pub trait EndpointSpec<ResultType>
-    where
-        ResultType: ApiResult,
-    {
+    pub trait EndpointSpec {
+        const IS_RAW_BODY: bool = false;
+
+        type JsonResponse: ApiResult;
+        type ResponseType;
+
         /// The HTTP Method used for this endpoint (e.g. GET, PATCH, DELETE)
-        fn method(&self) -> http::Method;
+        fn method(&self) -> Method;
 
         /// The relative URL path for this endpoint
         fn path(&self) -> String;
@@ -53,21 +56,28 @@ pub mod spec {
             url
         }
 
+        //noinspection RsConstantConditionIf
         /// If `body` is populated, indicates the body MIME type (defaults to JSON).
         ///
         /// Implementors generally do not need to override this.
         fn content_type(&self) -> Cow<'static, str> {
-            Cow::Borrowed("application/json")
+            // The condition is necessary, even if a warning is present.
+            // The constant is overridden in some cases.
+            if Self::IS_RAW_BODY {
+                Cow::Borrowed("application/octet-stream")
+            } else {
+                Cow::Borrowed("application/json")
+            }
         }
     }
 }
 // Auto-implement the public Endpoint trait for EndpointInternal implementors.
-impl<T: ApiResult, U: EndpointSpec<T>> Endpoint<T> for U {}
+impl<T: ApiResult, U: EndpointSpec> Endpoint<T> for U {}
 
 /// An API call that can be built into an HTTP request and sent.
 ///
 /// If the request succeeds, the call will resolve to a `ResultType`.
-pub trait Endpoint<ResultType: ApiResult>: spec::EndpointSpec<ResultType> {}
+pub trait Endpoint<ResultType: ApiResult>: EndpointSpec {}
 
 /// A utility function for serializing parameters into a URL query string.
 #[inline]

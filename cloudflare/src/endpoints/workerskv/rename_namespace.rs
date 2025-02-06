@@ -1,5 +1,6 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Rename a Namespace
@@ -12,7 +13,10 @@ pub struct RenameNamespace<'a> {
     pub params: RenameNamespaceParams,
 }
 
-impl<'a> EndpointSpec<()> for RenameNamespace<'a> {
+impl<'a> EndpointSpec for RenameNamespace<'a> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PUT
     }

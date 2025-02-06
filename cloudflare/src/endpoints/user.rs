@@ -1,5 +1,5 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
-use crate::framework::response::ApiResult;
+use crate::framework::response::{ApiResult, ApiSuccess};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -68,7 +68,10 @@ fn handles_empty_betas_field() {
 #[derive(Debug)]
 pub struct GetUserDetails {}
 
-impl EndpointSpec<UserDetails> for GetUserDetails {
+impl EndpointSpec for GetUserDetails {
+    type JsonResponse = UserDetails;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }
@@ -91,7 +94,10 @@ impl ApiResult for UserTokenStatus {}
 #[derive(Debug)]
 pub struct GetUserTokenStatus {}
 
-impl EndpointSpec<UserTokenStatus> for GetUserTokenStatus {
+impl EndpointSpec for GetUserTokenStatus {
+    type JsonResponse = UserTokenStatus;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }
