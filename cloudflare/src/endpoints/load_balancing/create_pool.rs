@@ -1,8 +1,8 @@
 use crate::endpoints::load_balancing::{Origin, Pool};
 use crate::framework::endpoint::{EndpointSpec, Method};
 
-use serde::Serialize;
 use crate::framework::response::ApiSuccess;
+use serde::Serialize;
 
 /// Create Pool
 /// <https://api.cloudflare.com/#account-load-balancer-pools-create-pool>

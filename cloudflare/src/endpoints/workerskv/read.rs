@@ -1,6 +1,6 @@
 use crate::framework::endpoint::EndpointSpec;
-use crate::framework::response::ApiResult;
 use crate::framework::endpoint::Method;
+use crate::framework::response::ApiResult;
 
 /// Read a value from Workers KV
 /// Returns the value associated with the given key in the given namespace.

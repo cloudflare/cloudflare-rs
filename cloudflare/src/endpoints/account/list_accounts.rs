@@ -3,8 +3,8 @@ use super::Account;
 use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 use crate::framework::OrderDirection;
 
-use serde::Serialize;
 use crate::framework::response::ApiSuccess;
+use serde::Serialize;
 
 /// List Accounts
 /// List all accounts you have ownership or verified access to

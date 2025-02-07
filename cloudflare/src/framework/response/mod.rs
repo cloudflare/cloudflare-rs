@@ -16,29 +16,18 @@ pub struct ApiSuccess<ResultType> {
     pub errors: Vec<ApiError>,
 }
 
-pub enum ApiResponseBody<ResultType> {
-    Json(ApiSuccess<ResultType>),
-    Raw(Vec<u8>),
-}
-
 pub type ApiResponse<ResultType> = Result<ResultType, ApiFailure>;
 
 pub trait ApiResult: DeserializeOwned + Debug {}
 
-impl<T> ApiResult for ApiSuccess<T>
-where
-    T: ApiResult,
-{}
+impl<T> ApiResult for ApiSuccess<T> where T: ApiResult {}
 
 /// Some endpoints return nothing. That's OK.
 impl ApiResult for () {}
 
-
 /// A helper trait to convert a raw Vec<u8> or an ApiSuccess into the final response type.
 pub trait ResponseConverter<JsonResponse>: Sized {
-    /// Build the final response type from raw bytes.
     fn from_raw(bytes: Vec<u8>) -> Self;
-    /// Build the final response type from a JSON-deserialized ApiSuccess.
     fn from_json(api: ApiSuccess<JsonResponse>) -> Self;
 }
 

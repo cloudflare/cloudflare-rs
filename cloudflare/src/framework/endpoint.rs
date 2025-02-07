@@ -20,9 +20,18 @@ pub mod spec {
     ///
     /// If the request succeeds, the call will resolve to a `ResultType`.
     pub trait EndpointSpec {
+        /// If the body is raw bytes (Vec<u8>), set this to `true`. Defaults to `false`.
         const IS_RAW_BODY: bool = false;
 
+        /// The JSON response type for this endpoint, if any.
+        /// 
+        /// For endpoints that return either raw bytes or nothing, this should be `()`.
         type JsonResponse: ApiResult;
+        /// The final response type for this endpoint.
+        ///
+        /// For endpoints that return raw bytes, this should be `Vec<u8>`.
+        ///
+        /// For endpoints that return JSON, this should be `ApiSuccess<Self::JsonResponse>`.
         type ResponseType;
 
         /// The HTTP Method used for this endpoint (e.g. GET, PATCH, DELETE)
