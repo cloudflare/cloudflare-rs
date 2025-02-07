@@ -5,6 +5,7 @@ use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
+// TODO: Sometimes "params" as body params, sometimes not; maybe we should make it uniform?
 /// List Namespaces
 /// Returns the namespaces owned by an account
 /// <https://api.cloudflare.com/#workers-kv-namespace-list-namespaces>
@@ -33,6 +34,20 @@ impl<'a> EndpointSpec for ListNamespaces<'a> {
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListNamespacesParams {
+    pub direction: Option<Direction>,
+    pub order: Option<Order>,
     pub page: Option<u32>,
     pub per_page: Option<u32>,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub enum Direction {
+    Asc,
+    Desc,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub enum Order {
+    Id,
+    Title,
 }

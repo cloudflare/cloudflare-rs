@@ -84,7 +84,7 @@ async fn test_workerkv_read(api_client: &AsyncClient, account_id: &str) -> anyho
 
     // Read the value
     let read_value = api_client
-        .request(&read::Read {
+        .request(&read_key::ReadKey {
             account_identifier: account_id,
             namespace_identifier: namespace_id,
             key,

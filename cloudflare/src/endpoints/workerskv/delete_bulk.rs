@@ -1,3 +1,4 @@
+use crate::endpoints::workerskv::WorkersKvBulkResult;
 use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::ApiSuccess;
 
@@ -13,7 +14,7 @@ pub struct DeleteBulk<'a> {
 }
 
 impl<'a> EndpointSpec for DeleteBulk<'a> {
-    type JsonResponse = ();
+    type JsonResponse = WorkersKvBulkResult;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
     fn method(&self) -> Method {

@@ -1,5 +1,6 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
 
+use crate::endpoints::workerskv::WorkersKvBulkResult;
 use crate::framework::response::ApiSuccess;
 use serde::{Deserialize, Serialize};
 
@@ -15,7 +16,7 @@ pub struct WriteBulk<'a> {
 }
 
 impl<'a> EndpointSpec for WriteBulk<'a> {
-    type JsonResponse = ();
+    type JsonResponse = WorkersKvBulkResult;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
     fn method(&self) -> Method {
@@ -36,6 +37,7 @@ impl<'a> EndpointSpec for WriteBulk<'a> {
     // default content-type is already application/json
 }
 
+// TODO: Does not reflect the API documentation, but having everything Optional doesn't make sense
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct KeyValuePair {
