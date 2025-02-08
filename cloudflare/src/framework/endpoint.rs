@@ -12,6 +12,23 @@ pub use spec::EndpointSpec;
 #[cfg(not(feature = "endpoint-spec"))]
 pub(crate) use spec::EndpointSpec;
 
+pub enum RequestBody<'a> {
+    Json(String),
+    Raw(Vec<u8>),
+    MultiPart(&'a dyn MultipartBody),
+}
+
+pub enum MultipartPart {
+    Text(String),
+    Bytes(Vec<u8>),
+}
+
+pub trait MultipartBody {
+    /// Returns a list of parts to be included in a multipart request.
+    /// Each part is a tuple of the part name and the part data.
+    fn parts(&self) -> Vec<(String, MultipartPart)>;
+}
+
 pub mod spec {
     use super::*;
 
@@ -20,11 +37,11 @@ pub mod spec {
     ///
     /// If the request succeeds, the call will resolve to a `ResultType`.
     pub trait EndpointSpec {
-        /// If the body is raw bytes (Vec<u8>), set this to `true`. Defaults to `false`.
+        /// If the body of the response is raw bytes (Vec<u8>), set this to `true`. Defaults to `false`.
         const IS_RAW_BODY: bool = false;
 
         /// The JSON response type for this endpoint, if any.
-        /// 
+        ///
         /// For endpoints that return either raw bytes or nothing, this should be `()`.
         type JsonResponse: ApiResult;
         /// The final response type for this endpoint.
@@ -33,6 +50,11 @@ pub mod spec {
         ///
         /// For endpoints that return JSON, this should be `ApiSuccess<Self::JsonResponse>`.
         type ResponseType;
+        // The body type for this endpoint, if any.
+        //
+        // For endpoints that do not have a body, this should be `()`.
+        // For endpoints that have a JSON body, this should be `String`.
+        // type BodyType;
 
         /// The HTTP Method used for this endpoint (e.g. GET, PATCH, DELETE)
         fn method(&self) -> Method;
@@ -52,7 +74,7 @@ pub mod spec {
         ///
         /// Implementors should inline this.
         #[inline]
-        fn body(&self) -> Option<String> {
+        fn body(&self) -> Option<RequestBody> {
             None
         }
 

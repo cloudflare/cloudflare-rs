@@ -2,7 +2,7 @@ use reqwest::blocking::RequestBuilder;
 use std::net::SocketAddr;
 
 use crate::framework::auth::Credentials;
-use crate::framework::endpoint::EndpointSpec;
+use crate::framework::endpoint::{EndpointSpec, MultipartPart, RequestBody};
 use crate::framework::response::{
     ApiErrors, ApiFailure, ApiResponse, ApiSuccess, ResponseConverter,
 };
@@ -50,11 +50,38 @@ impl HttpApiClient {
             .request(endpoint.method(), endpoint.url(&self.environment));
 
         if let Some(body) = endpoint.body() {
-            request = request.body(body);
-            request = request.header(
-                reqwest::header::CONTENT_TYPE,
-                endpoint.content_type().as_ref(),
-            );
+            match body {
+                RequestBody::Json(json) => {
+                    request = request.body(json);
+                }
+                RequestBody::Raw(bytes) => {
+                    request = request.body(bytes);
+                }
+                RequestBody::MultiPart(multipart) => {
+                    let mut form = reqwest::blocking::multipart::Form::new();
+                    for (name, part) in multipart.parts() {
+                        match part {
+                            MultipartPart::Text(text) => {
+                                form = form.text(name, text);
+                            }
+                            MultipartPart::Bytes(bytes) => {
+                                form = form
+                                    .part(name, reqwest::blocking::multipart::Part::bytes(bytes));
+                            }
+                        }
+                    }
+                    request = request.multipart(form);
+
+                    //TODO: Maybe check if the content type is correct somewhere?
+                }
+            }
+            // Reqwest::RequestBuilder::multipart sets the content type for us.
+            if endpoint.content_type() != "multipart/form-data" {
+                request = request.header(
+                    reqwest::header::CONTENT_TYPE,
+                    endpoint.content_type().as_ref(),
+                );
+            }
         }
 
         request = request.auth(&self.credentials);

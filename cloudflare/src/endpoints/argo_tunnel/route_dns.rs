@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
 use super::RouteResult;
 use crate::framework::response::ApiSuccess;
@@ -28,9 +28,9 @@ impl<'a> EndpointSpec for RouteTunnel<'a> {
         format!("zones/{}/tunnels/{}/routes", self.zone_tag, self.tunnel_id)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

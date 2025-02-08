@@ -1,6 +1,6 @@
 use super::WorkersRouteIdOnly;
 
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
 use crate::framework::response::ApiSuccess;
 use serde::Serialize;
@@ -25,9 +25,9 @@ impl<'a> EndpointSpec for CreateRoute<'a> {
         format!("zones/{}/workers/routes", self.zone_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

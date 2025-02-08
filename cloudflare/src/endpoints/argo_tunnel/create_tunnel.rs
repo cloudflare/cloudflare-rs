@@ -6,7 +6,7 @@ use serde_with::{
 };
 
 use super::Tunnel;
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
 
 /// Create a Named Argo Tunnel
@@ -30,9 +30,9 @@ impl<'a> EndpointSpec for CreateTunnel<'a> {
         format!("accounts/{}/tunnels", self.account_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

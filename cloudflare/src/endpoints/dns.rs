@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
+use crate::framework::endpoint::{serialize_query, EndpointSpec, Method, RequestBody};
 use crate::framework::response::{ApiResult, ApiSuccess};
 /// <https://api.cloudflare.com/#dns-records-for-a-zone-properties>
 use crate::framework::{OrderDirection, SearchMatch};
@@ -49,9 +49,9 @@ impl<'a> EndpointSpec for CreateDnsRecord<'a> {
         format!("zones/{}/dns_records", self.zone_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 
@@ -117,9 +117,9 @@ impl<'a> EndpointSpec for UpdateDnsRecord<'a> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::framework::endpoint::EndpointSpec;
+use crate::framework::endpoint::{EndpointSpec, MultipartPart, RequestBody};
 use crate::framework::response::ResponseConverter;
 use crate::framework::{
     auth::{AuthClient, Credentials},
@@ -73,14 +73,41 @@ impl Client {
             .request(endpoint.method(), endpoint.url(&self.environment));
 
         if let Some(body) = endpoint.body() {
-            request = request.body(body);
-            request = request.header(
-                reqwest::header::CONTENT_TYPE,
-                endpoint.content_type().as_ref(),
-            );
+            match body {
+                RequestBody::Json(json) => {
+                    request = request.body(json);
+                }
+                RequestBody::Raw(bytes) => {
+                    request = request.body(bytes);
+                }
+                RequestBody::MultiPart(multipart) => {
+                    let mut form = reqwest::multipart::Form::new();
+                    for (name, part) in multipart.parts() {
+                        match part {
+                            MultipartPart::Text(text) => {
+                                form = form.text(name, text);
+                            }
+                            MultipartPart::Bytes(bytes) => {
+                                form = form.part(name, reqwest::multipart::Part::bytes(bytes));
+                            }
+                        }
+                    }
+                    request = request.multipart(form);
+
+                    //TODO: Maybe check if the content type is correct somewhere?
+                }
+            }
+            // Reqwest::RequestBuilder::multipart sets the content type for us.
+            if endpoint.content_type() != "multipart/form-data" {
+                request = request.header(
+                    reqwest::header::CONTENT_TYPE,
+                    endpoint.content_type().as_ref(),
+                );
+            }
         }
 
         request = request.auth(&self.credentials);
+        println!("{:?}", request);
         let response = request.send().await?;
 
         // The condition is necessary, even if a warning is present.

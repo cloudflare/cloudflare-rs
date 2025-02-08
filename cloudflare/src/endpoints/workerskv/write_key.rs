@@ -1,8 +1,8 @@
-use crate::framework::endpoint::Method;
-use crate::framework::endpoint::{serialize_query, EndpointSpec};
+use crate::framework::endpoint::{serialize_query, EndpointSpec, MultipartBody, MultipartPart};
+use crate::framework::endpoint::{Method, RequestBody};
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 use std::borrow::Cow;
-use crate::framework::response::ApiSuccess;
 
 /// Write a value from Workers KV
 /// Returns the value associated with the given key in the given namespace.
@@ -43,18 +43,16 @@ impl<'a> EndpointSpec for WriteKey<'a> {
         serialize_query(&self.params)
     }
     #[inline]
-    fn body(&self) -> Option<Vec<u8>> {
+    fn body(&self) -> Option<RequestBody> {
         match &self.body {
-            WriteKeyBody::Value(value) => Some(value.clone()),
-            WriteKeyBody::Metadata(metadata) => Some(metadata.value.clone()),
+            WriteKeyBody::Value(value) => Some(RequestBody::Raw(value.clone())),
+            WriteKeyBody::Metadata(metadata) => Some(RequestBody::MultiPart(metadata)),
         }
     }
     fn content_type(&self) -> Cow<'static, str> {
         match &self.body {
-            // TODO: Check if this works for every case
             WriteKeyBody::Value(_) => Cow::Borrowed("application/octet-stream"),
-            // TODO: Check if this is correct, because the documentation says that the content type is multipart/form-data
-            WriteKeyBody::Metadata(_) => Cow::Borrowed("application/json"),
+            WriteKeyBody::Metadata(_) => Cow::Borrowed("multipart/form-data"),
         }
     }
 }
@@ -74,6 +72,36 @@ pub struct WriteKeyBodyMetadata {
     pub value: Vec<u8>,
     /// Arbitrary JSON that is associated with a key.
     pub metadata: serde_json::Value,
+}
+
+impl MultipartBody for WriteKeyBodyMetadata {
+    // fn struct_to_multipart(&self) -> Result<Form, reqwest::Error> {
+    //     let mut form = Form::new();
+    //     form = form.text(
+    //         "metadata",
+    //         serde_json::to_string(&self.metadata).expect("Failed to serialize metadata"),
+    //     );
+    //     form = form.part("value", reqwest::multipart::Part::bytes(self.value.clone()));
+    //     Ok(form)
+    // }
+
+    // Client-agnostic implementation, because of the non-interoperability
+    // between reqwest's blocking::multipart::Form/Part and async_impl::multipart::Form/Part.
+    // Refactor this when reqwest has some sort of conversion between the two.
+    fn parts(&self) -> Vec<(String, MultipartPart)> {
+        vec![
+            (
+                "metadata".to_string(),
+                MultipartPart::Text(
+                    serde_json::to_string(&self.metadata).expect("Failed to serialize metadata"),
+                ),
+            ),
+            (
+                "value".to_string(),
+                MultipartPart::Bytes(self.value.clone()),
+            ),
+        ]
+    }
 }
 
 #[derive(Serialize, Clone, Debug)]

@@ -1,4 +1,4 @@
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
 use crate::endpoints::workerskv::WorkersKvBulkResult;
 use crate::framework::response::ApiSuccess;
@@ -30,9 +30,9 @@ impl<'a> EndpointSpec for WriteBulk<'a> {
     }
 
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.bulk_key_value_pairs).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
     // default content-type is already application/json
 }

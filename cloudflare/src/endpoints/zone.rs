@@ -1,5 +1,5 @@
 use crate::endpoints::{account::AccountDetails, plan::Plan};
-use crate::framework::endpoint::serialize_query;
+use crate::framework::endpoint::{serialize_query, RequestBody};
 use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::{ApiResult, ApiSuccess};
 use crate::framework::{OrderDirection, SearchMatch};
@@ -67,9 +67,9 @@ impl<'a> EndpointSpec for CreateZone<'a> {
     }
 
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

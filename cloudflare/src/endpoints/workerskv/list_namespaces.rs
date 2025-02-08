@@ -5,7 +5,6 @@ use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
-// TODO: Sometimes "params" as body params, sometimes not; maybe we should make it uniform?
 /// List Namespaces
 /// Returns the namespaces owned by an account
 /// <https://api.cloudflare.com/#workers-kv-namespace-list-namespaces>

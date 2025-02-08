@@ -1,5 +1,5 @@
 use crate::endpoints::workerskv::WorkersKvBulkResult;
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
 
 /// Delete Key-Value Pairs in Bulk
@@ -27,9 +27,9 @@ impl<'a> EndpointSpec for DeleteBulk<'a> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.bulk_keys).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
     // default content-type is already application/json
 }

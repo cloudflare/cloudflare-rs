@@ -6,7 +6,7 @@ use serde_with::{
     serde_as,
 };
 
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
 
 /// Create a Cfd Tunnel
@@ -34,9 +34,9 @@ impl<'a> EndpointSpec for UpdateTunnel<'a> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 
