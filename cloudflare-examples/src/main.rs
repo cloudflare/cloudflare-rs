@@ -3,7 +3,6 @@
 use std::collections::HashMap;
 
 use clap::{Arg, ArgAction, ArgGroup, ArgMatches, Command};
-use cloudflare::endpoints::{account, dns, workers, zone};
 // Use the new trait instead of the old one:
 use cloudflare::framework::endpoint::spec::EndpointSpec;
 use cloudflare::framework::response::{ApiError, ApiErrors, ApiResult, ApiSuccess};
@@ -13,7 +12,9 @@ use cloudflare::framework::{
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
 use serde::Serialize;
-
+use cloudflare::endpoints::dns::dns;
+use cloudflare::endpoints::{account, workers};
+use cloudflare::endpoints::zones::zone;
 // A helper trait (defined in your library) that converts a raw Vec<u8> or an ApiSuccess<_>
 // into the final response type.
 use cloudflare::framework::response::ResponseConverter;

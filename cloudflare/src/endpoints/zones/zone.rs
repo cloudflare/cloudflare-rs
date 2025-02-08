@@ -1,4 +1,5 @@
-use crate::endpoints::{account::AccountDetails, plan::Plan};
+use crate::endpoints::account::AccountDetails;
+use crate::endpoints::zones::plan::Plan;
 use crate::framework::endpoint::{serialize_query, RequestBody};
 use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::{ApiResult, ApiSuccess};
@@ -196,6 +197,7 @@ pub struct Zone {
     /// Available permissions on the zone for the current user requesting the item
     pub permissions: Vec<String>,
     /// A zone plan
+    // TODO: Right, but undocumented in the official API docs nor in the official TypeScript library. What should we do?
     pub plan: Option<Plan>,
     /// A zone plan
     pub plan_pending: Option<Plan>,
