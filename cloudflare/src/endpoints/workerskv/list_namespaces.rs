@@ -5,9 +5,9 @@ use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
-/// List Namespaces
-/// Returns the namespaces owned by an account
-/// <https://api.cloudflare.com/#workers-kv-namespace-list-namespaces>
+/// Returns the namespaces owned by an account.
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/list/>
 #[derive(Debug)]
 pub struct ListNamespaces<'a> {
     pub account_identifier: &'a str,

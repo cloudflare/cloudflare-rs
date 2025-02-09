@@ -5,8 +5,9 @@ use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
-/// List a Namespace's Keys
-/// <https://api.cloudflare.com/#workers-kv-namespace-list-a-namespace-s-keys>
+/// Lists a namespace's keys.
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/subresources/keys/methods/list/>
 #[derive(Debug)]
 pub struct ListNamespaceKeys<'a> {
     pub account_identifier: &'a str,

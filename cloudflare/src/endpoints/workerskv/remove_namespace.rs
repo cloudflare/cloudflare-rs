@@ -1,9 +1,9 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::ApiSuccess;
 
-/// Remove a Namespace
 /// Deletes the namespace corresponding to the given ID.
-/// <https://api.cloudflare.com/#workers-kv-namespace-remove-a-namespace>
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/delete/>
 #[derive(Debug)]
 pub struct RemoveNamespace<'a> {
     pub account_identifier: &'a str,

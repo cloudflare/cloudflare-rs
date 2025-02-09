@@ -42,8 +42,10 @@ const PATH_SEGMENT_ENCODE_SET: &AsciiSet = &CONTROLS
     .add(b']');
 
 /// Workers KV Namespace
+/// 
 /// A Namespace is a collection of key-value pairs stored in Workers KV.
-/// <https://api.cloudflare.com/#workers-kv-namespace-properties>
+/// 
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/models/namespace/#(schema)>
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersKvNamespace {
     /// Namespace identifier tag.

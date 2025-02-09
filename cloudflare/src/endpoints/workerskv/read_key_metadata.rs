@@ -2,9 +2,11 @@ use crate::framework::endpoint::EndpointSpec;
 use crate::framework::endpoint::Method;
 use crate::framework::response::{ApiResult, ApiSuccess};
 
-/// Read a value from Workers KV
-/// Returns the value associated with the given key in the given namespace.
-/// https://api.cloudflare.com/#workers-kv-namespace-read-key-value-pair
+/// Returns the metadata associated with the given key in the given namespace.
+///
+/// Use URL-encoding to use special characters (for example, `:`, `!`, `%`) in the key name.
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/subresources/metadata/methods/get/>
 #[derive(Debug)]
 pub struct ReadKeyMetadata<'a> {
     pub account_identifier: &'a str,

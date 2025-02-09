@@ -4,9 +4,19 @@ use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 use std::borrow::Cow;
 
-/// Write a value from Workers KV
-/// Returns the value associated with the given key in the given namespace.
-/// https://api.cloudflare.com/#workers-kv-namespace-read-key-value-pair
+/// Write a value identified by a key.
+///
+/// Use URL-encoding to use special characters (for example, `:`, `!`, `%`) in the key name.
+///
+/// Body should be the value to be stored.
+/// If JSON metadata to be associated with the key/value pair is needed, use multipart/form-data
+/// content type for your PUT request (see dropdown below in REQUEST BODY SCHEMA).
+///
+/// Existing values, expirations, and metadata will be overwritten. If neither expiration nor
+/// expiration_ttl is specified, the key-value pair will never expire.
+/// If both are set, expiration_ttl is used and expiration is ignored.
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/subresources/values/methods/update/>
 #[derive(Debug)]
 pub struct WriteKey<'a> {
     /// Identifier

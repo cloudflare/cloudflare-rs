@@ -2,10 +2,12 @@ use crate::endpoints::workerskv::WorkersKvBulkResult;
 use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
 
-/// Delete Key-Value Pairs in Bulk
-/// Deletes multiple key-value pairs from Workers KV at once.
-/// A 404 is returned if a delete action is for a namespace ID the account doesn't have.
-/// <https://api.cloudflare.com/#workers-kv-namespace-delete-multiple-key-value-pairs>
+/// Remove multiple KV pairs from the namespace.
+///
+/// Body should be an array of up to 10,000 keys to be removed.
+/// A `404` is returned if a delete action is for a namespace ID the account doesn't have.
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/bulk_delete/>
 #[derive(Debug)]
 pub struct DeleteBulk<'a> {
     pub account_identifier: &'a str,

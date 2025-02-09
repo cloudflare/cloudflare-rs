@@ -3,9 +3,9 @@ use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
-/// Rename a Namespace
 /// Modifies a namespace's title.
-/// <https://api.cloudflare.com/#workers-kv-namespace-rename-a-namespace>
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/update/>
 #[derive(Debug)]
 pub struct RenameNamespace<'a> {
     pub account_identifier: &'a str,

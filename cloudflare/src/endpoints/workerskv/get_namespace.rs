@@ -3,9 +3,9 @@ use crate::framework::endpoint::EndpointSpec;
 use crate::framework::endpoint::Method;
 use crate::framework::response::ApiSuccess;
 
-/// Get a namespace from Workers KV
 /// Get the namespace corresponding to the given ID.
-/// https://api.cloudflare.com/#workers-kv-namespace-read-key-value-pair
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/get/>
 #[derive(Debug)]
 pub struct GetNamespace<'a> {
     pub account_identifier: &'a str,

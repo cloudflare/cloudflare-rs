@@ -2,9 +2,13 @@ use crate::framework::endpoint::EndpointSpec;
 use crate::framework::endpoint::Method;
 use crate::framework::response::ApiResult;
 
-/// Read a value from Workers KV
 /// Returns the value associated with the given key in the given namespace.
-/// https://api.cloudflare.com/#workers-kv-namespace-read-key-value-pair
+///
+/// Use URL-encoding to use special characters (for example, `:`, `!`, `%`) in the key name.
+/// If the KV-pair is set to expire at some point, the expiration time as measured in seconds since
+/// the UNIX epoch will be returned in the expiration response header.
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/subresources/values/methods/get/>
 #[derive(Debug)]
 pub struct ReadKey<'a> {
     pub account_identifier: &'a str,
