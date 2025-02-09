@@ -248,9 +248,9 @@ where
             endpoint.method().as_str(),
             format!("/{}", endpoint.path()).as_str(),
         )
-            .with_status(500)
-            .with_body(serde_json::to_string(&body).unwrap())
-            .create(),
+        .with_status(500)
+        .with_body(serde_json::to_string(&body).unwrap())
+        .create(),
     );
     Box::leak(m);
 }
@@ -262,7 +262,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Section {
                 args: vec![Arg::new("zone_identifier").required(true)],
                 description:
-                "A Zone is a domain name along with its subdomains and other identities",
+                    "A Zone is a domain name along with its subdomains and other identities",
                 function: zone,
             },
         ),
@@ -298,8 +298,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "account",
             Section {
                 args: vec![Arg::new("account_identifier").required(true)],
-                description:
-                "Get information about a specific account that you are a member of",
+                description: "Get information about a specific account that you are a member of",
                 function: account,
             },
         ),
