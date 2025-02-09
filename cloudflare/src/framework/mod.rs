@@ -45,11 +45,8 @@ pub enum SearchMatch {
 pub enum Environment {
     /// The production endpoint: `https://api.cloudflare.com/client/v4`
     Production,
-    /// A custom endpoint
-    Custom(url::Url),
-    #[cfg(feature = "mockito")]
-    /// The local mock endpoint associated with `mockito`
-    Mockito,
+    /// A custom endpoint (for example, a `mockito` server)
+    Custom(String),
 }
 
 impl<'a> From<&'a Environment> for url::Url {
@@ -58,9 +55,7 @@ impl<'a> From<&'a Environment> for url::Url {
             Environment::Production => {
                 url::Url::parse("https://api.cloudflare.com/client/v4/").unwrap()
             }
-            Environment::Custom(url) => url.clone(),
-            #[cfg(feature = "mockito")]
-            Environment::Mockito => url::Url::parse(&mockito::server_url()).unwrap(),
+            Environment::Custom(url) => url::Url::parse(url.as_str()).unwrap(),
         }
     }
 }
@@ -76,9 +71,10 @@ pub struct HttpApiClient {
 
 #[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 impl HttpApiClient {
+    // TODO: Rename to is_custom?
     #[cfg(feature = "mockito")]
     pub fn is_mock(&self) -> bool {
-        matches!(self.environment, Environment::Mockito)
+        matches!(self.environment, Environment::Custom(_))
     }
 }
 

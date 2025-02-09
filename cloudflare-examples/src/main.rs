@@ -360,7 +360,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let key = matches.remove_one::<String>("auth-key");
     let token = matches.remove_one::<String>("auth-token");
     let environment = if matches.get_flag("mock") {
-        Environment::Mockito
+        Environment::Custom(mockito::server_url())
     } else {
         Environment::Production
     };

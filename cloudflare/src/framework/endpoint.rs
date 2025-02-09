@@ -26,6 +26,10 @@ pub enum MultipartPart {
 pub trait MultipartBody {
     /// Returns a list of parts to be included in a multipart request.
     /// Each part is a tuple of the part name and the part data.
+    //
+    // Client-agnostic implementation, because of the non-interoperability
+    // between reqwest's blocking::multipart::Form/Part and async_impl::multipart::Form/Part.
+    // Refactor this when reqwest has some sort of conversion between the two.
     fn parts(&self) -> Vec<(String, MultipartPart)>;
 }
 
@@ -91,13 +95,12 @@ pub mod spec {
         /// If `body` is populated, indicates the body MIME type (defaults to JSON).
         ///
         /// Implementors generally do not need to override this.
+        // TODO: Set this to optional
         fn content_type(&self) -> Cow<'static, str> {
-            // The condition is necessary, even if a warning is present.
-            // The constant is overridden in some cases.
-            if Self::IS_RAW_BODY {
-                Cow::Borrowed("application/octet-stream")
-            } else {
-                Cow::Borrowed("application/json")
+            match Self::body(self) {
+                Some(RequestBody::Json(_)) | None => Cow::Borrowed("application/json"),
+                Some(RequestBody::Raw(_)) => Cow::Borrowed("application/octet-stream"),
+                Some(RequestBody::MultiPart(_)) => Cow::Borrowed("multipart/form-data"),
             }
         }
     }

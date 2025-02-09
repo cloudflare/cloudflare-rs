@@ -95,9 +95,6 @@ impl MultipartBody for WriteKeyBodyMetadata {
     //     Ok(form)
     // }
 
-    // Client-agnostic implementation, because of the non-interoperability
-    // between reqwest's blocking::multipart::Form/Part and async_impl::multipart::Form/Part.
-    // Refactor this when reqwest has some sort of conversion between the two.
     fn parts(&self) -> Vec<(String, MultipartPart)> {
         vec![
             (

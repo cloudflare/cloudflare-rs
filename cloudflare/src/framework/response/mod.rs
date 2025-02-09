@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::value::Value as JsonValue;
 use std::fmt::Debug;
 
+// TODO: Fix types according to the API documentation
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct ApiSuccess<ResultType> {
     pub result: ResultType,

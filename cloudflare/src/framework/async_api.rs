@@ -98,6 +98,7 @@ impl Client {
                 }
             }
             // Reqwest::RequestBuilder::multipart sets the content type for us.
+            // Not matching on the body type here, so that tests fail if the content type is wrong.
             if endpoint.content_type() != "multipart/form-data" {
                 request = request.header(
                     reqwest::header::CONTENT_TYPE,
@@ -107,19 +108,11 @@ impl Client {
         }
 
         request = request.auth(&self.credentials);
-        println!("{:?}", request);
         let response = request.send().await?;
 
         // The condition is necessary, even if a warning is present.
         // The constant is overridden in some cases.
         if Endpoint::IS_RAW_BODY {
-            let content_type = response
-                .headers()
-                .get(reqwest::header::CONTENT_TYPE)
-                .and_then(|ct| ct.to_str().ok())
-                .unwrap_or("");
-            assert_eq!(content_type, "application/octet-stream");
-
             map_api_response_raw::<Endpoint>(response).await
         } else {
             map_api_response_json::<Endpoint>(response).await
@@ -166,5 +159,452 @@ where
         let parsed: Result<ApiErrors, reqwest::Error> = resp.json().await;
         let errors = parsed.unwrap_or_default();
         Err(ApiFailure::Error(status, errors))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::framework::auth::Credentials;
+    use crate::framework::endpoint::EndpointSpec;
+    use crate::framework::endpoint::RequestBody;
+    use crate::framework::response::{ApiFailure, ApiResult, ApiSuccess};
+    use crate::framework::Environment;
+    use crate::framework::HttpApiClientConfig;
+    use mockito::{Matcher, Server};
+    use serde::{Deserialize, Serialize};
+    use serde_json::json;
+    use std::borrow::Cow;
+    use tokio;
+
+    //region Endpoint that returns JSON (ApiSuccess).
+    #[derive(Debug)]
+    struct DummyJsonEndpoint;
+
+    #[derive(Debug, Deserialize)]
+    struct DummyJsonResponse {
+        message: String,
+    }
+
+    impl ApiResult for DummyJsonResponse {}
+
+    impl EndpointSpec for DummyJsonEndpoint {
+        type JsonResponse = DummyJsonResponse;
+        type ResponseType = ApiSuccess<Self::JsonResponse>;
+
+        fn method(&self) -> reqwest::Method {
+            reqwest::Method::GET
+        }
+
+        fn path(&self) -> String {
+            "/dummy/json".into()
+        }
+    }
+    //endregion
+
+    //region Endpoint that returns raw bytes.
+    #[derive(Debug)]
+    struct DummyRawEndpoint;
+
+    impl EndpointSpec for DummyRawEndpoint {
+        const IS_RAW_BODY: bool = true;
+        type JsonResponse = ();
+        type ResponseType = Vec<u8>;
+
+        fn method(&self) -> reqwest::Method {
+            reqwest::Method::GET
+        }
+
+        fn path(&self) -> String {
+            "/dummy/raw".into()
+        }
+    }
+    //endregion
+
+    //region Endpoint that returns nothing.
+    #[derive(Debug)]
+    struct DummyNothingEndpoint;
+
+    impl EndpointSpec for DummyNothingEndpoint {
+        type JsonResponse = ();
+        type ResponseType = ApiSuccess<Self::JsonResponse>;
+
+        fn method(&self) -> reqwest::Method {
+            reqwest::Method::GET
+        }
+
+        fn path(&self) -> String {
+            "/dummy/nothing".into()
+        }
+    }
+    //endregion
+
+    //region Endpoint that sends a JSON request.
+    #[derive(Debug)]
+    struct DummyJsonRequestEndpoint;
+
+    impl EndpointSpec for DummyJsonRequestEndpoint {
+        type JsonResponse = ();
+        type ResponseType = ApiSuccess<Self::JsonResponse>;
+
+        fn method(&self) -> reqwest::Method {
+            reqwest::Method::POST
+        }
+
+        fn path(&self) -> String {
+            "/dummy/json".into()
+        }
+
+        fn body(&self) -> Option<RequestBody> {
+            Some(RequestBody::Json(json!({"key": "value"}).to_string()))
+        }
+    }
+    //endregion
+
+    //region Endpoint that sends raw bytes.
+    #[derive(Debug)]
+    struct DummyRawRequestEndpoint;
+
+    impl EndpointSpec for DummyRawRequestEndpoint {
+        const IS_RAW_BODY: bool = true;
+        type JsonResponse = ();
+        type ResponseType = Vec<u8>;
+
+        fn method(&self) -> reqwest::Method {
+            reqwest::Method::POST
+        }
+
+        fn path(&self) -> String {
+            "/dummy/raw".into()
+        }
+
+        fn body(&self) -> Option<RequestBody> {
+            Some(RequestBody::Raw(b"raw content".to_vec()))
+        }
+    }
+    //endregion
+
+    //region Endpoint that sends a multipart request.
+    #[derive(Debug)]
+    struct DummyMultipartEndpoint;
+
+    impl EndpointSpec for DummyMultipartEndpoint {
+        type JsonResponse = ();
+        type ResponseType = ApiSuccess<Self::JsonResponse>;
+
+        fn method(&self) -> reqwest::Method {
+            reqwest::Method::POST
+        }
+
+        fn path(&self) -> String {
+            "/dummy/multipart".into()
+        }
+
+        fn body(&self) -> Option<RequestBody> {
+            Some(RequestBody::MultiPart(&DummyMultipart))
+        }
+
+        fn content_type(&self) -> Cow<'static, str> {
+            Cow::Borrowed("multipart/form-data")
+        }
+    }
+
+    struct DummyMultipart;
+
+    impl crate::framework::endpoint::MultipartBody for DummyMultipart {
+        fn parts(&self) -> Vec<(String, MultipartPart)> {
+            vec![("key".into(), MultipartPart::Text("value".into()))]
+        }
+    }
+    //endregion
+
+    //region Endpoint that sends a request with query parameters.
+    #[derive(Debug)]
+    struct DummyJsonRequestWithQueryEndpoint;
+
+    #[derive(Debug, Serialize)]
+    struct DummyJsonRequestWithQueryParams {
+        key: String,
+    }
+
+    impl EndpointSpec for DummyJsonRequestWithQueryEndpoint {
+        type JsonResponse = ();
+        type ResponseType = ApiSuccess<Self::JsonResponse>;
+
+        fn method(&self) -> reqwest::Method {
+            reqwest::Method::POST
+        }
+
+        fn path(&self) -> String {
+            "/dummy/json".into()
+        }
+
+        fn query(&self) -> Option<String> {
+            serde_urlencoded::to_string(DummyJsonRequestWithQueryParams {
+                key: "value".into(),
+            })
+            .ok()
+        }
+    }
+    //endregion
+
+    fn create_test_client(url: String) -> Client {
+        let environment = Environment::Custom(url);
+        let credentials = Credentials::UserAuthToken {
+            token: "dummy".into(),
+        };
+        let config = HttpApiClientConfig::default();
+        Client::new(credentials, config, environment).unwrap()
+    }
+
+    /// Test that the client can successfully request a JSON endpoint.
+    #[tokio::test]
+    async fn test_json_endpoint_success() {
+        println!("test_json_endpoint_success");
+
+        let body = json!({
+            "result": {"message": "Hello, World!"},
+            "result_info": null,
+            "messages": [],
+            "errors": [],
+            "success": true
+        });
+
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("GET", "/dummy/json")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(body.to_string())
+            .match_header("content-type", Matcher::Missing)
+            .match_query(Matcher::Missing)
+            .match_body(Matcher::Missing)
+            .create();
+
+        let client = create_test_client(server.url());
+        let response = client.request(&DummyJsonEndpoint).await;
+
+        mock.assert();
+        let response = response.unwrap();
+        assert_eq!(response.result.message, "Hello, World!");
+        assert_eq!(response.result_info, None);
+        //TODO: assert_eq!(response.messages, None);
+        assert!(response.errors.is_empty());
+    }
+
+    /// Test that the client can successfully request a raw endpoint.
+    #[tokio::test]
+    async fn test_raw_endpoint_success() {
+        println!("test_raw_endpoint_success");
+
+        let raw_body = b"raw content".to_vec();
+
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("GET", "/dummy/raw")
+            .with_status(200)
+            .with_header("content-type", "application/octet-stream")
+            .with_body(raw_body.clone())
+            .match_header("content-type", Matcher::Missing)
+            .match_query(Matcher::Missing)
+            .match_body(Matcher::Missing)
+            .create();
+
+        let client = create_test_client(server.url());
+        let response = client.request(&DummyRawEndpoint).await.unwrap();
+
+        mock.assert();
+        assert_eq!(response, raw_body);
+    }
+
+    /// Test that the client can handle an endpoint that returns an error.
+    #[tokio::test]
+    async fn test_endpoint_failure() {
+        println!("test_endpoint_failure");
+        let body = json!({
+            "errors": [{"code": 123, "message": "Something went wrong", "other": {}}],
+            "other": {}
+        });
+
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("GET", "/dummy/json")
+            .with_status(400)
+            .with_header("content-type", "application/json")
+            .with_body(body.to_string())
+            .match_header("content-type", Matcher::Missing)
+            .match_query(Matcher::Missing)
+            .match_body(Matcher::Missing)
+            .create();
+
+        let client = create_test_client(server.url());
+        let result = client.request(&DummyJsonEndpoint).await;
+
+        mock.assert();
+        assert!(result.is_err());
+        if let Err(ApiFailure::Error(status, errors)) = result {
+            assert_eq!(status.as_u16(), 400);
+            assert!(!errors.errors.is_empty());
+            assert_eq!(errors.errors[0].code, 123);
+        } else {
+            panic!("Expected error result");
+        }
+    }
+
+    /// Test that the client can handle an endpoint that returns nothing.
+    #[tokio::test]
+    async fn test_nothing_endpoint_success() {
+        println!("test_nothing_endpoint_success");
+        let body = json!({
+            "result": null,
+            "result_info": null,
+            "messages": [],
+            "errors": [],
+            "success": true
+        });
+
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("GET", "/dummy/nothing")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(body.to_string())
+            .match_header("content-type", Matcher::Missing)
+            .match_query(Matcher::Missing)
+            .match_body(Matcher::Missing)
+            .create();
+
+        let client = create_test_client(server.url());
+        let response = client.request(&DummyNothingEndpoint).await;
+
+        mock.assert();
+        let response = response.unwrap();
+        assert!(matches!(response.result, ()));
+        assert_eq!(response.result_info, None);
+        // assert_eq!(response.messages, None);
+        assert!(response.errors.is_empty());
+    }
+
+    /// Test that the client can successfully send a JSON request.
+    #[tokio::test]
+    async fn test_json_body_success() {
+        println!("test_json_body_success");
+        let body = json!({
+            "result": null,
+            "result_info": null,
+            "messages": [],
+            "errors": [],
+            "success": true
+        });
+
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("POST", "/dummy/json")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(body.to_string())
+            .match_header("content-type", "application/json")
+            .match_query(Matcher::Missing)
+            .match_body(Matcher::Json(json!({"key": "value"})))
+            .create();
+
+        let client = create_test_client(server.url());
+        let _ = client.request(&DummyJsonRequestEndpoint).await;
+
+        mock.assert();
+    }
+
+    /// Test that the client can successfully send a raw request.
+    #[tokio::test]
+    async fn test_raw_body_success() {
+        println!("test_raw_body_success");
+        let raw_body = b"raw content".to_vec();
+
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("POST", "/dummy/raw")
+            .with_status(200)
+            .with_header("content-type", "application/octet-stream")
+            .with_body(raw_body.clone())
+            .match_header("content-type", "application/octet-stream")
+            .match_query(Matcher::Missing)
+            .match_body(Matcher::Exact(String::from_utf8(raw_body.clone()).unwrap()))
+            .create();
+
+        let client = create_test_client(server.url());
+        let _ = client.request(&DummyRawRequestEndpoint).await;
+
+        mock.assert();
+    }
+
+    /// Test that the client can successfully send a multipart request.
+    #[tokio::test]
+    async fn test_multipart_body_success() {
+        println!("test_multipart_body_success");
+        let body = json!({
+            "result": null,
+            "result_info": null,
+            "messages": [],
+            "errors": [],
+            "success": true
+        });
+
+        let mut server = Server::new_async().await;
+
+        let mock = server
+            .mock("POST", "/dummy/multipart")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(body.to_string())
+            .match_header(
+                "content-type",
+                Matcher::Regex("multipart/form-data; boundary=.*".into()),
+            )
+            .match_query(Matcher::Missing)
+            .match_body(Matcher::Regex(
+                "Content-Disposition: form-data; name=\"key\".*value.*".into(),
+            ))
+            // .match_request(|req| {
+            //     let body = req.body().unwrap().to_vec();
+            //     let body = String::from_utf8_lossy(&body);
+            //     println!("body: {}", body);
+            //     body.contains("Content-Disposition: form-data; name=\"key\"")
+            //         && body.contains("value")
+            // })
+            .create();
+
+        let client = create_test_client(server.url());
+        let _ = client.request(&DummyMultipartEndpoint).await;
+
+        mock.assert();
+    }
+
+    /// Test that the client can successfully send a request with query parameters.
+    #[tokio::test]
+    async fn test_query_parameters_success() {
+        println!("test_query_parameters_success");
+        let body = json!({
+            "result": null,
+            "result_info": null,
+            "messages": [],
+            "errors": [],
+            "success": true
+        });
+
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("POST", "/dummy/json")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(body.to_string())
+            .match_header("content-type", Matcher::Missing)
+            .match_query(Matcher::UrlEncoded("key".into(), "value".into()))
+            .match_body(Matcher::Missing)
+            .create();
+
+        let client = create_test_client(server.url());
+        let _ = client.request(&DummyJsonRequestWithQueryEndpoint).await;
+
+        mock.assert();
     }
 }
