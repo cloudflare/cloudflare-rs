@@ -40,3 +40,4 @@ uuid = { version = "1.0", features = ["serde"] }
 [dev-dependencies]
 mockito = { version = "1.6.1" }
 tokio = { version = "1.0", features = ["macros"] }
+regex = "1.11.1"

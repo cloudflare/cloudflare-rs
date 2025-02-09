@@ -172,6 +172,8 @@ mod tests {
     use crate::framework::Environment;
     use crate::framework::HttpApiClientConfig;
     use mockito::{Matcher, Server};
+    use regex;
+    use regex::Regex;
     use serde::{Deserialize, Serialize};
     use serde_json::json;
     use std::borrow::Cow;
@@ -528,7 +530,7 @@ mod tests {
             .with_body(raw_body.clone())
             .match_header("content-type", "application/octet-stream")
             .match_query(Matcher::Missing)
-            .match_body(Matcher::Exact(String::from_utf8(raw_body.clone()).unwrap()))
+            .match_body(raw_body)
             .create();
 
         let client = create_test_client(server.url());
@@ -561,16 +563,16 @@ mod tests {
                 Matcher::Regex("multipart/form-data; boundary=.*".into()),
             )
             .match_query(Matcher::Missing)
-            .match_body(Matcher::Regex(
-                "Content-Disposition: form-data; name=\"key\".*value.*".into(),
-            ))
-            // .match_request(|req| {
-            //     let body = req.body().unwrap().to_vec();
-            //     let body = String::from_utf8_lossy(&body);
-            //     println!("body: {}", body);
-            //     body.contains("Content-Disposition: form-data; name=\"key\"")
-            //         && body.contains("value")
-            // })
+            .match_request(|req| {
+                let body = req.body().unwrap().to_vec();
+                let body = String::from_utf8_lossy(&body);
+
+                let re = Regex::new(
+                    r#"^--.*\s+Content-Disposition: form-data; name="key"\s+\s+value\s+--.*\s*$"#,
+                )
+                .unwrap();
+                re.is_match(&body)
+            })
             .create();
 
         let client = create_test_client(server.url());
