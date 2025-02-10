@@ -1,17 +1,36 @@
-use reqwest::blocking::RequestBuilder;
-use std::net::SocketAddr;
-
 use crate::framework::auth::Credentials;
+use crate::framework::client::ClientConfig;
 use crate::framework::endpoint::{EndpointSpec, MultipartPart, RequestBody};
 use crate::framework::response::{
     ApiErrors, ApiFailure, ApiResponse, ApiSuccess, ResponseConverter,
 };
-use crate::framework::{auth::AuthClient, Environment, HttpApiClient, HttpApiClientConfig};
+use crate::framework::{auth::AuthClient, Environment};
+use reqwest::blocking::RequestBuilder;
+use std::borrow::Cow;
+use std::net::SocketAddr;
+
+// There is no blocking support for wasm.
+#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
+/// Synchronous Cloudflare API client.
+pub struct HttpApiClient {
+    environment: Environment,
+    credentials: Credentials,
+    http_client: reqwest::blocking::Client,
+}
+
+#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
+impl HttpApiClient {
+    // TODO: Rename to is_custom?
+    #[cfg(feature = "mockito")]
+    pub fn is_mock(&self) -> bool {
+        matches!(self.environment, Environment::Custom(_))
+    }
+}
 
 impl HttpApiClient {
     pub fn new(
         credentials: Credentials,
-        config: HttpApiClientConfig,
+        config: ClientConfig,
         environment: Environment,
     ) -> Result<HttpApiClient, crate::framework::Error> {
         let mut builder = reqwest::blocking::Client::builder()
@@ -76,11 +95,11 @@ impl HttpApiClient {
                 }
             }
             // Reqwest::RequestBuilder::multipart sets the content type for us.
-            if endpoint.content_type() != "multipart/form-data" {
-                request = request.header(
-                    reqwest::header::CONTENT_TYPE,
-                    endpoint.content_type().as_ref(),
-                );
+            match endpoint.content_type() {
+                None | Some(Cow::Borrowed("multipart/form-data")) => {}
+                Some(content_type) => {
+                    request = request.header(reqwest::header::CONTENT_TYPE, content_type.as_ref());
+                }
             }
         }
 

@@ -59,10 +59,10 @@ impl<'a> EndpointSpec for WriteKey<'a> {
             WriteKeyBody::Metadata(metadata) => Some(RequestBody::MultiPart(metadata)),
         }
     }
-    fn content_type(&self) -> Cow<'static, str> {
+    fn content_type(&self) -> Option<Cow<'static, str>> {
         match &self.body {
-            WriteKeyBody::Value(_) => Cow::Borrowed("application/octet-stream"),
-            WriteKeyBody::Metadata(_) => Cow::Borrowed("multipart/form-data"),
+            WriteKeyBody::Value(_) => Some(Cow::Borrowed("application/octet-stream")),
+            WriteKeyBody::Metadata(_) => Some(Cow::Borrowed("multipart/form-data")),
         }
     }
 }

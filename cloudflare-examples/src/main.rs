@@ -15,9 +15,11 @@ use cloudflare::framework::response::{ApiErrors, ApiResult, ApiSuccess};
 use cloudflare::framework::{
     auth::Credentials,
     response::{ApiFailure, ApiResponse},
-    Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
+    Environment, OrderDirection,
 };
 use serde::Serialize;
+use cloudflare::framework::client::blocking_api::HttpApiClient;
+use cloudflare::framework::client::ClientConfig;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 
@@ -382,7 +384,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("Either API token or API key + email pair must be provided")
     };
 
-    let api_client = HttpApiClient::new(credentials, HttpApiClientConfig::default(), environment)?;
+    let api_client = HttpApiClient::new(credentials, ClientConfig::default(), environment)?;
 
     for (section_name, section) in matched_sections {
         (section.function)(

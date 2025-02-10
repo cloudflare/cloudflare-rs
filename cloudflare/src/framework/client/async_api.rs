@@ -1,11 +1,13 @@
+use crate::framework::client::ClientConfig;
 use crate::framework::endpoint::{EndpointSpec, MultipartPart, RequestBody};
 use crate::framework::response::ResponseConverter;
 use crate::framework::{
     auth::{AuthClient, Credentials},
     response::ApiResponse,
     response::{ApiErrors, ApiFailure, ApiSuccess},
-    Environment, HttpApiClientConfig,
+    Environment,
 };
+use std::borrow::Cow;
 use std::net::SocketAddr;
 
 /// A Cloudflare API client that makes requests asynchronously.
@@ -27,7 +29,7 @@ impl AuthClient for reqwest::RequestBuilder {
 impl Client {
     pub fn new(
         credentials: Credentials,
-        config: HttpApiClientConfig,
+        config: ClientConfig,
         environment: Environment,
     ) -> Result<Client, crate::framework::Error> {
         let mut builder = reqwest::Client::builder().default_headers(config.default_headers);
@@ -98,12 +100,11 @@ impl Client {
                 }
             }
             // Reqwest::RequestBuilder::multipart sets the content type for us.
-            // Not matching on the body type here, so that tests fail if the content type is wrong.
-            if endpoint.content_type() != "multipart/form-data" {
-                request = request.header(
-                    reqwest::header::CONTENT_TYPE,
-                    endpoint.content_type().as_ref(),
-                );
+            match endpoint.content_type() {
+                None | Some(Cow::Borrowed("multipart/form-data")) => {}
+                Some(content_type) => {
+                    request = request.header(reqwest::header::CONTENT_TYPE, content_type.as_ref());
+                }
             }
         }
 
@@ -170,13 +171,12 @@ mod tests {
     use crate::framework::endpoint::RequestBody;
     use crate::framework::response::{ApiFailure, ApiResult, ApiSuccess};
     use crate::framework::Environment;
-    use crate::framework::HttpApiClientConfig;
+    use crate::framework::client::ClientConfig;
     use mockito::{Matcher, Server};
     use regex;
     use regex::Regex;
     use serde::{Deserialize, Serialize};
     use serde_json::json;
-    use std::borrow::Cow;
     use tokio;
 
     //region Endpoint that returns JSON (ApiSuccess).
@@ -305,10 +305,6 @@ mod tests {
         fn body(&self) -> Option<RequestBody> {
             Some(RequestBody::MultiPart(&DummyMultipart))
         }
-
-        fn content_type(&self) -> Cow<'static, str> {
-            Cow::Borrowed("multipart/form-data")
-        }
     }
 
     struct DummyMultipart;
@@ -355,15 +351,13 @@ mod tests {
         let credentials = Credentials::UserAuthToken {
             token: "dummy".into(),
         };
-        let config = HttpApiClientConfig::default();
+        let config = ClientConfig::default();
         Client::new(credentials, config, environment).unwrap()
     }
 
     /// Test that the client can successfully request a JSON endpoint.
     #[tokio::test]
     async fn test_json_endpoint_success() {
-        println!("test_json_endpoint_success");
-
         let body = json!({
             "result": {"message": "Hello, World!"},
             "result_info": null,
@@ -390,15 +384,13 @@ mod tests {
         let response = response.unwrap();
         assert_eq!(response.result.message, "Hello, World!");
         assert_eq!(response.result_info, None);
-        //TODO: assert_eq!(response.messages, None);
+        assert!(response.messages.is_empty());
         assert!(response.errors.is_empty());
     }
 
     /// Test that the client can successfully request a raw endpoint.
     #[tokio::test]
     async fn test_raw_endpoint_success() {
-        println!("test_raw_endpoint_success");
-
         let raw_body = b"raw content".to_vec();
 
         let mut server = Server::new_async().await;
@@ -422,7 +414,6 @@ mod tests {
     /// Test that the client can handle an endpoint that returns an error.
     #[tokio::test]
     async fn test_endpoint_failure() {
-        println!("test_endpoint_failure");
         let body = json!({
             "errors": [{"code": 123, "message": "Something went wrong", "other": {}}],
             "other": {}
@@ -456,7 +447,6 @@ mod tests {
     /// Test that the client can handle an endpoint that returns nothing.
     #[tokio::test]
     async fn test_nothing_endpoint_success() {
-        println!("test_nothing_endpoint_success");
         let body = json!({
             "result": null,
             "result_info": null,
@@ -483,14 +473,13 @@ mod tests {
         let response = response.unwrap();
         assert!(matches!(response.result, ()));
         assert_eq!(response.result_info, None);
-        // assert_eq!(response.messages, None);
+        assert!(response.messages.is_empty());
         assert!(response.errors.is_empty());
     }
 
     /// Test that the client can successfully send a JSON request.
     #[tokio::test]
     async fn test_json_body_success() {
-        println!("test_json_body_success");
         let body = json!({
             "result": null,
             "result_info": null,
@@ -519,7 +508,6 @@ mod tests {
     /// Test that the client can successfully send a raw request.
     #[tokio::test]
     async fn test_raw_body_success() {
-        println!("test_raw_body_success");
         let raw_body = b"raw content".to_vec();
 
         let mut server = Server::new_async().await;
@@ -542,7 +530,6 @@ mod tests {
     /// Test that the client can successfully send a multipart request.
     #[tokio::test]
     async fn test_multipart_body_success() {
-        println!("test_multipart_body_success");
         let body = json!({
             "result": null,
             "result_info": null,
@@ -584,7 +571,6 @@ mod tests {
     /// Test that the client can successfully send a request with query parameters.
     #[tokio::test]
     async fn test_query_parameters_success() {
-        println!("test_query_parameters_success");
         let body = json!({
             "result": null,
             "result_info": null,

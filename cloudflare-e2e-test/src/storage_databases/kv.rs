@@ -12,7 +12,7 @@ use cloudflare::endpoints::workerskv::write_bulk::{KeyValuePair, WriteBulk};
 use cloudflare::endpoints::workerskv::write_key::WriteKey;
 use cloudflare::endpoints::workerskv::write_key::{WriteKeyBody, WriteKeyBodyMetadata};
 use cloudflare::endpoints::workerskv::{Key, WorkersKvBulkResult, WorkersKvNamespace};
-use cloudflare::framework::async_api::Client;
+use cloudflare::framework::client::async_api::Client;
 use cloudflare::framework::response::{ApiFailure, ApiResponse, ApiSuccess};
 use rand;
 use rand::Rng;

@@ -95,12 +95,12 @@ pub mod spec {
         /// If `body` is populated, indicates the body MIME type (defaults to JSON).
         ///
         /// Implementors generally do not need to override this.
-        // TODO: Set this to optional
-        fn content_type(&self) -> Cow<'static, str> {
+        fn content_type(&self) -> Option<Cow<'static, str>> {
             match Self::body(self) {
-                Some(RequestBody::Json(_)) | None => Cow::Borrowed("application/json"),
-                Some(RequestBody::Raw(_)) => Cow::Borrowed("application/octet-stream"),
-                Some(RequestBody::MultiPart(_)) => Cow::Borrowed("multipart/form-data"),
+                Some(RequestBody::Json(_)) => Some(Cow::Borrowed("application/json")),
+                Some(RequestBody::Raw(_)) => Some(Cow::Borrowed("application/octet-stream")),
+                Some(RequestBody::MultiPart(_)) => Some(Cow::Borrowed("multipart/form-data")),
+                None => None,
             }
         }
     }
