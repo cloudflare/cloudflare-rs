@@ -9,11 +9,11 @@ use cloudflare::endpoints::workerskv::read_key_metadata::ReadKeyMetadata;
 use cloudflare::endpoints::workerskv::remove_namespace::RemoveNamespace;
 use cloudflare::endpoints::workerskv::rename_namespace::{RenameNamespace, RenameNamespaceParams};
 use cloudflare::endpoints::workerskv::write_bulk::{KeyValuePair, WriteBulk};
-use cloudflare::endpoints::workerskv::write_key::WriteKeyBody;
-use cloudflare::endpoints::workerskv::write_key::{WriteKey, WriteKeyBodyMetadata};
+use cloudflare::endpoints::workerskv::write_key::WriteKey;
+use cloudflare::endpoints::workerskv::write_key::{WriteKeyBody, WriteKeyBodyMetadata};
 use cloudflare::endpoints::workerskv::{Key, WorkersKvBulkResult, WorkersKvNamespace};
 use cloudflare::framework::async_api::Client;
-use cloudflare::framework::response::{ApiResponse, ApiSuccess};
+use cloudflare::framework::response::{ApiFailure, ApiResponse, ApiSuccess};
 use rand;
 use rand::Rng;
 use serde_json::json;
@@ -179,14 +179,18 @@ async fn write_key_metadata(
     namespace_id: &str,
     key: &str,
     value: Vec<u8>,
-    metadata: serde_json::Value,
+    metadata: Option<serde_json::Value>,
 ) -> ApiResponse<ApiSuccess<()>> {
     let endpoint = WriteKey {
         account_identifier: account_id,
         namespace_identifier: namespace_id,
         key,
         params: Default::default(),
-        body: WriteKeyBody::Metadata(WriteKeyBodyMetadata { value, metadata }),
+        body: if let Some(metadata) = metadata {
+            WriteKeyBody::Metadata(WriteKeyBodyMetadata { value, metadata })
+        } else {
+            WriteKeyBody::Value(value)
+        },
     };
 
     client.request(&endpoint).await
@@ -232,7 +236,7 @@ pub async fn test_kv(client: &AsyncClient, account_id: &str) -> anyhow::Result<(
         namespace_id,
         key,
         b"value".to_vec(),
-        serde_json::to_value(json!({"metadata": true})).unwrap(),
+        Some(serde_json::to_value(json!({"metadata": true})).unwrap()),
     )
     .await
     .log_err(|e| println!("Error while writing key: {e}"))?;
@@ -385,6 +389,30 @@ pub async fn test_kv(client: &AsyncClient, account_id: &str) -> anyhow::Result<(
         .log_err(|e| println!("Error while listing namespaces: {e}"))?
         .result;
     assert!(result.iter().all(|n| n.title != "test_renamed"));
+    //endregion
+
+    //region Set a key on a non-existing namespace and check for error handling
+    println!("Error handling check...");
+
+    let result = write_key_metadata(
+        client,
+        account_id,
+        namespace_id,
+        key,
+        b"value".to_vec(),
+        None,
+    )
+    .await.expect_err("Error while checking error handling");
+    match result {
+        ApiFailure::Error(status, errors) => {
+            assert_eq!(status, 404);
+            assert_eq!(errors.errors.len(), 1);
+            assert_eq!(errors.errors[0].code, 10013);
+        }
+        ApiFailure::Invalid(e) => {
+            panic!("Unexpected error: {e}");
+        }
+    }
     //endregion
 
     println!("All KV tests passed!");
