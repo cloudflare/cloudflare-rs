@@ -402,7 +402,8 @@ pub async fn test_kv(client: &AsyncClient, account_id: &str) -> anyhow::Result<(
         b"value".to_vec(),
         None,
     )
-    .await.expect_err("Error while checking error handling");
+    .await
+    .expect_err("Error while checking error handling");
     match result {
         ApiFailure::Error(status, errors) => {
             assert_eq!(status, 404);

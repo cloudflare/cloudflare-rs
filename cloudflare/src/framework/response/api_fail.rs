@@ -3,16 +3,7 @@ use serde_json::value::Value as JValue;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt::{self, Debug, Write as _};
-
-/// Note that APIError's `eq` implementation only compares `code` and `message`.
-/// It does NOT compare the `other` values.
-#[derive(Deserialize, Serialize, Debug)]
-pub struct ApiError {
-    pub code: u16,
-    pub message: String,
-    #[serde(flatten)]
-    pub other: HashMap<String, JValue>,
-}
+use crate::framework::response::ResponseInfo;
 
 /// Note that APIErrors's `eq` implementation only compares `code` and `message`.
 /// It does NOT compare the `other` values.
@@ -20,7 +11,7 @@ pub struct ApiError {
 pub struct ApiErrors {
     #[serde(flatten)]
     pub other: HashMap<String, JValue>,
-    pub errors: Vec<ApiError>,
+    pub errors: Vec<ResponseInfo>,
 }
 
 impl PartialEq for ApiErrors {
@@ -29,21 +20,7 @@ impl PartialEq for ApiErrors {
     }
 }
 
-impl PartialEq for ApiError {
-    fn eq(&self, other: &Self) -> bool {
-        self.code == other.code && self.message == other.message
-    }
-}
-
-impl Eq for ApiError {}
 impl Eq for ApiErrors {}
-impl Error for ApiError {}
-
-impl fmt::Display for ApiError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Error {}: {}", self.code, self.message)
-    }
-}
 
 #[derive(Debug)]
 pub enum ApiFailure {

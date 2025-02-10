@@ -4,20 +4,20 @@ use std::collections::HashMap;
 
 use clap::{Arg, ArgAction, ArgGroup, ArgMatches, Command};
 // Use the new trait instead of the old one:
+use cloudflare::endpoints::dns::dns;
+use cloudflare::endpoints::zones::zone;
+use cloudflare::endpoints::{account, workers};
 use cloudflare::framework::endpoint::spec::EndpointSpec;
-use cloudflare::framework::response::{ApiError, ApiErrors, ApiResult, ApiSuccess};
+// A helper trait (defined in your library) that converts a raw Vec<u8> or an ApiSuccess<_>
+// into the final response type.
+use cloudflare::framework::response::{ResponseConverter, ResponseInfo};
+use cloudflare::framework::response::{ApiErrors, ApiResult, ApiSuccess};
 use cloudflare::framework::{
     auth::Credentials,
     response::{ApiFailure, ApiResponse},
     Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
 };
 use serde::Serialize;
-use cloudflare::endpoints::dns::dns;
-use cloudflare::endpoints::{account, workers};
-use cloudflare::endpoints::zones::zone;
-// A helper trait (defined in your library) that converts a raw Vec<u8> or an ApiSuccess<_>
-// into the final response type.
-use cloudflare::framework::response::ResponseConverter;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 
@@ -227,7 +227,7 @@ where
     E::ResponseType: ResponseConverter<E::JsonResponse>,
 {
     let body = ApiErrors {
-        errors: vec![ApiError {
+        errors: vec![ResponseInfo {
             code: 9999,
             message: "This is a mocked failure response".to_owned(),
             other: HashMap::new(),

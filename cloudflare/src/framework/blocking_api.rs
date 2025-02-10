@@ -160,7 +160,7 @@ where
 #[cfg(all(test, feature = "blocking", not(target_arch = "wasm32")))]
 mod tests {
     use super::*;
-    use crate::framework::response::ApiError;
+    use crate::framework::response::ResponseInfo;
     use std::collections::HashMap;
 
     #[test]
@@ -168,7 +168,7 @@ mod tests {
         let err1 = ApiFailure::Error(
             reqwest::StatusCode::NOT_FOUND,
             ApiErrors {
-                errors: vec![ApiError {
+                errors: vec![ResponseInfo {
                     code: 1000,
                     message: "some failed".to_owned(),
                     other: HashMap::new(),
@@ -181,7 +181,7 @@ mod tests {
         let err2 = ApiFailure::Error(
             reqwest::StatusCode::NOT_FOUND,
             ApiErrors {
-                errors: vec![ApiError {
+                errors: vec![ResponseInfo {
                     code: 1000,
                     message: "some different thing failed".to_owned(),
                     other: HashMap::new(),

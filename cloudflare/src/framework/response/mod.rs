@@ -1,20 +1,22 @@
-mod apifail;
+mod api_fail;
 
-pub use apifail::*;
+pub use api_fail::*;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use serde_json::value::Value as JsonValue;
 use std::fmt::Debug;
+use std::collections::HashMap;
+use std::fmt;
+use std::error::Error;
 
-// TODO: Fix types according to the API documentation
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct ApiSuccess<ResultType> {
     pub result: ResultType,
     pub result_info: Option<JsonValue>,
     #[serde(default)]
-    pub messages: JsonValue,
+    pub messages: Vec<ResponseInfo>,
     #[serde(default)]
-    pub errors: Vec<ApiError>,
+    pub errors: Vec<ResponseInfo>,
 }
 
 pub type ApiResponse<ResultType> = Result<ResultType, ApiFailure>;
@@ -46,5 +48,31 @@ impl ResponseConverter<()> for Vec<u8> {
     }
     fn from_json(_api: ApiSuccess<()>) -> Self {
         panic!("This endpoint does not return JSON")
+    }
+}
+
+/// Note that ResponseInfo's `eq` implementation only compares `code` and `message`.
+/// It does NOT compare the `other` values.
+#[derive(Deserialize, Serialize, Debug)]
+pub struct ResponseInfo {
+    pub code: u16,
+    pub message: String,
+    #[serde(flatten)]
+    pub other: HashMap<String, serde_json::Value>,
+}
+
+impl PartialEq for ResponseInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.code == other.code && self.message == other.message
+    }
+}
+
+impl Eq for ResponseInfo {}
+
+impl Error for ResponseInfo {}
+
+impl fmt::Display for ResponseInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Error {}: {}", self.code, self.message)
     }
 }
