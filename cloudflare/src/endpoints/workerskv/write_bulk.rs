@@ -43,7 +43,7 @@ impl<'a> EndpointSpec for WriteBulk<'a> {
     // default content-type is already application/json
 }
 
-// TODO: Does not reflect the API documentation, but having everything Optional doesn't make sense
+// TODO: Does not reflect the API documentation, but having everything Optional doesn't make sense either
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct KeyValuePair {

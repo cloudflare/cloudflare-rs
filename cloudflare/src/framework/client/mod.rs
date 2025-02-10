@@ -2,6 +2,8 @@ use std::net::IpAddr;
 use std::time::Duration;
 
 pub mod async_api;
+// There is no blocking support for wasm.
+#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 pub mod blocking_api;
 
 /// Configuration for the API client. Allows users to customize its behaviour.

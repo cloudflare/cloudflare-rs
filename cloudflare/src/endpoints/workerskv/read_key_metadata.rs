@@ -17,7 +17,6 @@ pub struct ReadKeyMetadata<'a> {
 impl ApiResult for Option<serde_json::Value> {}
 
 impl<'a> EndpointSpec for ReadKeyMetadata<'a> {
-    // TODO: Option<HashMap<String, serde_json::Value>> or Option<serde_json::Value>? (test it)
     type JsonResponse = Option<serde_json::Value>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

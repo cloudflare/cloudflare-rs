@@ -163,6 +163,7 @@ where
     }
 }
 
+// TODO: Refactor this to test the blocking_api as well
 #[cfg(test)]
 mod tests {
     use super::*;

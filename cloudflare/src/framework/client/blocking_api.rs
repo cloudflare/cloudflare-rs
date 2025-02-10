@@ -9,8 +9,6 @@ use reqwest::blocking::RequestBuilder;
 use std::borrow::Cow;
 use std::net::SocketAddr;
 
-// There is no blocking support for wasm.
-#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 /// Synchronous Cloudflare API client.
 pub struct HttpApiClient {
     environment: Environment,
@@ -18,7 +16,6 @@ pub struct HttpApiClient {
     http_client: reqwest::blocking::Client,
 }
 
-#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 impl HttpApiClient {
     // TODO: Rename to is_custom?
     #[cfg(feature = "mockito")]
@@ -90,8 +87,6 @@ impl HttpApiClient {
                         }
                     }
                     request = request.multipart(form);
-
-                    //TODO: Maybe check if the content type is correct somewhere?
                 }
             }
             // Reqwest::RequestBuilder::multipart sets the content type for us.
@@ -132,8 +127,6 @@ impl AuthClient for RequestBuilder {
     }
 }
 
-// There is no blocking implementation for wasm.
-#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 // If the response is 2XX and parses, return Success.
 // If the response is 2XX and doesn't parse, return Invalid.
 // If the response isn't 2XX, return Failure, with API errors if they were included.
@@ -173,47 +166,5 @@ where
         let parsed: Result<ApiErrors, reqwest::Error> = resp.json();
         let errors = parsed.unwrap_or_default();
         Err(ApiFailure::Error(status, errors))
-    }
-}
-
-#[cfg(all(test, feature = "blocking", not(target_arch = "wasm32")))]
-mod tests {
-    use super::*;
-    use crate::framework::response::ResponseInfo;
-    use std::collections::HashMap;
-
-    #[test]
-    fn api_failure_eq() {
-        let err1 = ApiFailure::Error(
-            reqwest::StatusCode::NOT_FOUND,
-            ApiErrors {
-                errors: vec![ResponseInfo {
-                    code: 1000,
-                    message: "some failed".to_owned(),
-                    other: HashMap::new(),
-                }],
-                other: HashMap::new(),
-            },
-        );
-        assert_eq!(err1, err1);
-
-        let err2 = ApiFailure::Error(
-            reqwest::StatusCode::NOT_FOUND,
-            ApiErrors {
-                errors: vec![ResponseInfo {
-                    code: 1000,
-                    message: "some different thing failed".to_owned(),
-                    other: HashMap::new(),
-                }],
-                other: HashMap::new(),
-            },
-        );
-        assert_ne!(err2, err1);
-
-        let not_real_website = "notavalid:url.evena little";
-        let fail = ApiFailure::Invalid(reqwest::blocking::get(not_real_website).unwrap_err());
-        assert_eq!(fail, fail);
-        assert_ne!(fail, err1);
-        assert_ne!(fail, err2);
     }
 }

@@ -76,7 +76,6 @@ pub struct Key {
     #[serde(deserialize_with = "deserialize_option_timestamp")]
     pub expiration: Option<DateTime<Utc>>,
 
-    // TODO: Option<HashMap<String, serde_json::Value>> or Option<serde_json::Value>? (test it)
     /// Arbitrary JSON that is associated with a key.
     #[serde(default)]
     pub metadata: Option<serde_json::Value>,
