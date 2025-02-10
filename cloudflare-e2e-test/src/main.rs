@@ -1,97 +1,16 @@
 #![forbid(unsafe_code)]
+mod routing_performance;
+mod storage_databases;
 
 use clap::{Arg, Command};
 use cloudflare::framework::async_api::Client as AsyncClient;
 use cloudflare::framework::{async_api, auth::Credentials, Environment, HttpApiClientConfig};
 use std::fmt::Display;
-use std::net::{IpAddr, Ipv4Addr};
 
 async fn tests(api_client: &AsyncClient, account_id: &str) -> anyhow::Result<()> {
-    test_lb_pool(api_client, account_id).await?;
-    test_workerkv_read(api_client, account_id).await?;
+    routing_performance::load_balancers::test_lb_pool(api_client, account_id).await?;
+    storage_databases::kv::test_kv(api_client, account_id).await?;
     println!("Tests passed");
-    Ok(())
-}
-
-async fn test_lb_pool(api_client: &AsyncClient, account_identifier: &str) -> anyhow::Result<()> {
-    use cloudflare::endpoints::load_balancing::*;
-
-    // Create a pool
-    let origins = vec![
-        Origin {
-            name: "test-origin".to_owned(),
-            address: IpAddr::V4(Ipv4Addr::new(152, 122, 3, 1)),
-            enabled: true,
-            weight: 1.0,
-        },
-        Origin {
-            name: "test-origin-2".to_owned(),
-            address: IpAddr::V4(Ipv4Addr::new(152, 122, 3, 2)),
-            enabled: true,
-            weight: 1.0,
-        },
-    ];
-    let pool = api_client
-        .request(&create_pool::CreatePool {
-            account_identifier,
-            params: create_pool::Params {
-                name: "test-pool",
-                optional_params: Some(create_pool::OptionalParams {
-                    description: Some("test description"),
-                    enabled: Some(true),
-                    minimum_origins: Some(2),
-                    monitor: Some("9004c07f1c0f33255410e45590251cf4"),
-                    notification_email: Some("test@example.com"),
-                }),
-                origins: &origins,
-            },
-        })
-        .await
-        .log_err(|e| println!("Error in CreatePool: {e}"))?
-        .result;
-
-    // Get the details, but wait until after we delete the pool to validate it.
-    let pool_details = api_client
-        .request(&pool_details::PoolDetails {
-            account_identifier,
-            identifier: &pool.id,
-        })
-        .await
-        .log_err(|e| println!("Error in PoolDetails: {e}"));
-
-    // Delete the pool
-    let _ = api_client
-        .request(&delete_pool::DeletePool {
-            account_identifier,
-            identifier: &pool.id,
-        })
-        .await
-        .log_err(|e| println!("Error in DeletePool: {e}"))?;
-
-    // Validate the pool we got was the same as the pool we sent
-    let pool_details = pool_details?.result;
-    assert_eq!(pool, pool_details);
-
-    Ok(())
-}
-
-async fn test_workerkv_read(api_client: &AsyncClient, account_id: &str) -> anyhow::Result<()> {
-    use cloudflare::endpoints::workerskv::*;
-
-    let namespace_id = "test_namespace";
-    let key = "test_key";
-    let value = "test_value";
-
-    // Read the value
-    let read_value = api_client
-        .request(&read_key::ReadKey {
-            account_identifier: account_id,
-            namespace_identifier: namespace_id,
-            key,
-        })
-        .await
-        .log_err(|e| println!("Error in Read: {e}"))?;
-
     Ok(())
 }
 
@@ -104,6 +23,7 @@ async fn main() -> anyhow::Result<()> {
         .about("Issues example requests to the Cloudflare API using the cloudflare-rust client library")
         .arg(Arg::new("email")
             .long("email")
+            .env("CF_RS_EMAIL")
             .help("Email address associated with your account")
             .requires("auth-key"))
         .arg(Arg::new("auth-key")
@@ -123,14 +43,14 @@ async fn main() -> anyhow::Result<()> {
         .arg_required_else_help(true);
 
     let mut matches = cli.get_matches();
-    let email = matches.remove_one("email").unwrap();
+    let email = matches.remove_one("email");
     let key = matches.remove_one("auth-key");
     let token = matches.remove_one("auth-token");
-    let account_id = matches
+    let account_id: String = matches
         .remove_one("account-id")
         .expect("account_id is mandatory");
 
-    let credentials: Credentials = if let Some(key) = key {
+    let credentials: Credentials = if let (Some(email), Some(key)) = (email, key) {
         Credentials::UserAuthKey { email, key }
     } else if let Some(token) = token {
         Credentials::UserAuthToken { token }
@@ -144,7 +64,7 @@ async fn main() -> anyhow::Result<()> {
         Environment::Production,
     )?;
 
-    tests(&api_client, account_id).await
+    tests(&api_client, account_id.as_str()).await
 }
 
 pub trait ResultExt<T, E: Display> {

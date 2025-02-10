@@ -42,9 +42,9 @@ const PATH_SEGMENT_ENCODE_SET: &AsciiSet = &CONTROLS
     .add(b']');
 
 /// Workers KV Namespace
-/// 
+///
 /// A Namespace is a collection of key-value pairs stored in Workers KV.
-/// 
+///
 /// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/models/namespace/#(schema)>
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersKvNamespace {
@@ -108,10 +108,11 @@ fn url_encode_key(key: &str) -> String {
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct WorkersKvBulkResult {
     /// Number of keys successfully updated.
-    successful_key_count: Option<i8>,
+    pub successful_key_count: Option<i8>,
 
     /// Name of the keys that failed to be fully updated. They should be retried.
-    unsuccessful_keys: Option<Vec<String>>,
+    // TODO: Ambiguity with the official docs; it does not seem to be optional. It's an empty array if no keys failed.
+    pub unsuccessful_keys: Option<Vec<String>>,
 }
 
 impl ApiResult for WorkersKvBulkResult {}
