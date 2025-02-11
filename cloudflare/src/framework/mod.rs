@@ -9,8 +9,6 @@ pub mod response;
 pub mod client;
 
 use serde::Serialize;
-use std::net::IpAddr;
-use std::time::Duration;
 
 #[derive(thiserror::Error, Debug)]
 /// Errors encountered while trying to connect to the Cloudflare API

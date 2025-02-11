@@ -6,10 +6,6 @@ use url::Url;
 
 pub use http::Method;
 
-// TODO: Unused feature?
-#[cfg(feature = "endpoint-spec")]
-pub use spec::EndpointSpec;
-#[cfg(not(feature = "endpoint-spec"))]
 pub(crate) use spec::EndpointSpec;
 
 pub enum RequestBody<'a> {
