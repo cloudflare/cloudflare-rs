@@ -15,7 +15,7 @@ pub struct DeleteBulk<'a> {
     pub bulk_keys: Vec<String>,
 }
 
-impl<'a> EndpointSpec for DeleteBulk<'a> {
+impl EndpointSpec for DeleteBulk<'_> {
     type JsonResponse = WorkersKvBulkResult;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

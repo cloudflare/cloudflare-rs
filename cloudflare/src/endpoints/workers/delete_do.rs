@@ -10,7 +10,7 @@ pub struct DeleteDurableObject<'a> {
     pub namespace_id: &'a str,
 }
 
-impl<'a> EndpointSpec for DeleteDurableObject<'a> {
+impl EndpointSpec for DeleteDurableObject<'_> {
     type JsonResponse = ();
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

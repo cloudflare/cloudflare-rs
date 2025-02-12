@@ -13,7 +13,7 @@ pub struct DeleteSecret<'a> {
     pub secret_name: &'a str,
 }
 
-impl<'a> EndpointSpec for DeleteSecret<'a> {
+impl EndpointSpec for DeleteSecret<'_> {
     type JsonResponse = ();
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

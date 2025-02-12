@@ -12,7 +12,7 @@ pub struct DeleteTunnel<'a> {
     pub params: Params,
 }
 
-impl<'a> EndpointSpec for DeleteTunnel<'a> {
+impl EndpointSpec for DeleteTunnel<'_> {
     type JsonResponse = Tunnel;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

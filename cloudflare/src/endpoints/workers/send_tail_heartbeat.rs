@@ -15,7 +15,7 @@ pub struct SendTailHeartbeat<'a> {
     pub tail_id: &'a str,
 }
 
-impl<'a> EndpointSpec for SendTailHeartbeat<'a> {
+impl EndpointSpec for SendTailHeartbeat<'_> {
     type JsonResponse = WorkersTail;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

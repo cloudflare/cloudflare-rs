@@ -95,8 +95,6 @@ impl Client {
                         }
                     }
                     request = request.multipart(form);
-
-                    //TODO: Maybe check if the content type is correct somewhere?
                 }
             }
             // Reqwest::RequestBuilder::multipart sets the content type for us.

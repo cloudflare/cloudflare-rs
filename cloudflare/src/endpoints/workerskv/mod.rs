@@ -71,7 +71,6 @@ where
 }
 
 impl ApiResult for Key {}
-
 impl ApiResult for Vec<Key> {}
 
 fn url_encode_key(key: &str) -> String {

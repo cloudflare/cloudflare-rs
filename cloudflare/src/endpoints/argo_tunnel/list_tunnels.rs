@@ -13,7 +13,7 @@ pub struct ListTunnels<'a> {
     pub params: Params,
 }
 
-impl<'a> EndpointSpec for ListTunnels<'a> {
+impl EndpointSpec for ListTunnels<'_> {
     type JsonResponse = Vec<Tunnel>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

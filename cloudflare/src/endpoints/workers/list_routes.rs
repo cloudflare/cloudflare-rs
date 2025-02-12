@@ -11,7 +11,7 @@ pub struct ListRoutes<'a> {
     pub zone_identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for ListRoutes<'a> {
+impl EndpointSpec for ListRoutes<'_> {
     type JsonResponse = Vec<WorkersRoute>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

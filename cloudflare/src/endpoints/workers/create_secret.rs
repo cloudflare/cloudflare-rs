@@ -17,7 +17,7 @@ pub struct CreateSecret<'a> {
     pub params: CreateSecretParams,
 }
 
-impl<'a> EndpointSpec for CreateSecret<'a> {
+impl EndpointSpec for CreateSecret<'_> {
     type JsonResponse = WorkersSecret;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

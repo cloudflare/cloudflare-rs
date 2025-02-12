@@ -15,7 +15,7 @@ pub struct ListNamespaceKeys<'a> {
     pub params: ListNamespaceKeysParams,
 }
 
-impl<'a> EndpointSpec for ListNamespaceKeys<'a> {
+impl EndpointSpec for ListNamespaceKeys<'_> {
     type JsonResponse = Vec<Key>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

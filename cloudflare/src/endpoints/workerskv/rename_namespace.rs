@@ -13,7 +13,7 @@ pub struct RenameNamespace<'a> {
     pub params: RenameNamespaceParams,
 }
 
-impl<'a> EndpointSpec for RenameNamespace<'a> {
+impl EndpointSpec for RenameNamespace<'_> {
     type JsonResponse = ();
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

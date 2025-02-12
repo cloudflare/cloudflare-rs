@@ -17,7 +17,7 @@ pub struct CreateNamespace<'a> {
     pub params: CreateNamespaceParams,
 }
 
-impl<'a> EndpointSpec for CreateNamespace<'a> {
+impl EndpointSpec for CreateNamespace<'_> {
     type JsonResponse = WorkersKvNamespace;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

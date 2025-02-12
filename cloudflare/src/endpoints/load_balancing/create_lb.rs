@@ -56,7 +56,7 @@ pub struct OptionalParams<'a> {
     pub session_affinity_ttl: Option<u32>,
 }
 
-impl<'a> EndpointSpec for CreateLoadBalancer<'a> {
+impl EndpointSpec for CreateLoadBalancer<'_> {
     type JsonResponse = LoadBalancer;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

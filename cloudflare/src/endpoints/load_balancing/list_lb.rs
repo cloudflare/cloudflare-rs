@@ -10,7 +10,7 @@ pub struct ListLoadBalancers<'a> {
     pub zone_identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for ListLoadBalancers<'a> {
+impl EndpointSpec for ListLoadBalancers<'_> {
     type JsonResponse = Vec<LoadBalancer>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

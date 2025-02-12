@@ -13,7 +13,7 @@ pub struct DeleteTail<'a> {
     pub tail_id: &'a str,
 }
 
-impl<'a> EndpointSpec for DeleteTail<'a> {
+impl EndpointSpec for DeleteTail<'_> {
     type JsonResponse = ();
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

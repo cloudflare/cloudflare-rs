@@ -14,7 +14,7 @@ pub struct CreateRoute<'a> {
     pub params: CreateRouteParams,
 }
 
-impl<'a> EndpointSpec for CreateRoute<'a> {
+impl EndpointSpec for CreateRoute<'_> {
     type JsonResponse = WorkersRouteIdOnly;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

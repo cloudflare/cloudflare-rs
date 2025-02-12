@@ -16,7 +16,7 @@ pub struct ReadKeyMetadata<'a> {
 
 impl ApiResult for Option<serde_json::Value> {}
 
-impl<'a> EndpointSpec for ReadKeyMetadata<'a> {
+impl EndpointSpec for ReadKeyMetadata<'_> {
     type JsonResponse = Option<serde_json::Value>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

@@ -13,7 +13,7 @@ pub struct DeletePool<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for DeletePool<'a> {
+impl EndpointSpec for DeletePool<'_> {
     type JsonResponse = Response;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

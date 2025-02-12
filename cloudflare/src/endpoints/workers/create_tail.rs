@@ -21,7 +21,7 @@ pub struct CreateTail<'a> {
     pub params: CreateTailParams,
 }
 
-impl<'a> EndpointSpec for CreateTail<'a> {
+impl EndpointSpec for CreateTail<'_> {
     type JsonResponse = WorkersTail;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

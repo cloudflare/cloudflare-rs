@@ -31,7 +31,7 @@ pub struct ListBuckets<'a> {
     pub account_identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for ListBuckets<'a> {
+impl EndpointSpec for ListBuckets<'_> {
     type JsonResponse = ListBucketsResult;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
@@ -52,7 +52,7 @@ pub struct CreateBucket<'a> {
     pub bucket_name: &'a str,
 }
 
-impl<'a> EndpointSpec for CreateBucket<'a> {
+impl EndpointSpec for CreateBucket<'_> {
     type JsonResponse = EmptyMap;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
@@ -74,7 +74,7 @@ pub struct DeleteBucket<'a> {
     pub bucket_name: &'a str,
 }
 
-impl<'a> EndpointSpec for DeleteBucket<'a> {
+impl EndpointSpec for DeleteBucket<'_> {
     type JsonResponse = EmptyMap;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

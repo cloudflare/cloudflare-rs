@@ -13,7 +13,7 @@ pub struct DeleteScript<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> EndpointSpec for DeleteScript<'a> {
+impl EndpointSpec for DeleteScript<'_> {
     type JsonResponse = ScriptDeleteID;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

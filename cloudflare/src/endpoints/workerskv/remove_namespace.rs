@@ -10,7 +10,7 @@ pub struct RemoveNamespace<'a> {
     pub namespace_identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for RemoveNamespace<'a> {
+impl EndpointSpec for RemoveNamespace<'_> {
     type JsonResponse = ();
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

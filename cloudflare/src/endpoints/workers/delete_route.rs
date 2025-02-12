@@ -12,7 +12,7 @@ pub struct DeleteRoute<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for DeleteRoute<'a> {
+impl EndpointSpec for DeleteRoute<'_> {
     type JsonResponse = WorkersRouteIdOnly;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

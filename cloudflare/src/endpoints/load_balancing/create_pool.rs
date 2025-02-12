@@ -52,7 +52,7 @@ pub struct OptionalParams<'a> {
     pub notification_email: Option<&'a str>,
 }
 
-impl<'a> EndpointSpec for CreatePool<'a> {
+impl EndpointSpec for CreatePool<'_> {
     type JsonResponse = Pool;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

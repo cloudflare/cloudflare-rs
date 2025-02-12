@@ -14,7 +14,7 @@ pub struct ListDnsRecords<'a> {
     pub zone_identifier: &'a str,
     pub params: ListDnsRecordsParams,
 }
-impl<'a> EndpointSpec for ListDnsRecords<'a> {
+impl EndpointSpec for ListDnsRecords<'_> {
     type JsonResponse = Vec<DnsRecord>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
@@ -38,7 +38,7 @@ pub struct CreateDnsRecord<'a> {
     pub params: CreateDnsRecordParams<'a>,
 }
 
-impl<'a> EndpointSpec for CreateDnsRecord<'a> {
+impl EndpointSpec for CreateDnsRecord<'_> {
     type JsonResponse = DnsRecord;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
@@ -79,7 +79,7 @@ pub struct DeleteDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
 }
-impl<'a> EndpointSpec for DeleteDnsRecord<'a> {
+impl EndpointSpec for DeleteDnsRecord<'_> {
     type JsonResponse = DeleteDnsRecordResponse;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
@@ -103,7 +103,7 @@ pub struct UpdateDnsRecord<'a> {
     pub params: UpdateDnsRecordParams<'a>,
 }
 
-impl<'a> EndpointSpec for UpdateDnsRecord<'a> {
+impl EndpointSpec for UpdateDnsRecord<'_> {
     type JsonResponse = DnsRecord;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

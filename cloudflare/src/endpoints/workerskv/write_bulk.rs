@@ -21,7 +21,7 @@ pub struct WriteBulk<'a> {
     pub bulk_key_value_pairs: Vec<KeyValuePair>,
 }
 
-impl<'a> EndpointSpec for WriteBulk<'a> {
+impl EndpointSpec for WriteBulk<'_> {
     type JsonResponse = WorkersKvBulkResult;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

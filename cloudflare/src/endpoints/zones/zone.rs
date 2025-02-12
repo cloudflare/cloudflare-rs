@@ -38,7 +38,7 @@ impl EndpointSpec for ListZones {
 pub struct ZoneDetails<'a> {
     pub identifier: &'a str,
 }
-impl<'a> EndpointSpec for ZoneDetails<'a> {
+impl EndpointSpec for ZoneDetails<'_> {
     type JsonResponse = Zone;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
@@ -55,7 +55,7 @@ impl<'a> EndpointSpec for ZoneDetails<'a> {
 pub struct CreateZone<'a> {
     pub params: CreateZoneParams<'a>,
 }
-impl<'a> EndpointSpec for CreateZone<'a> {
+impl EndpointSpec for CreateZone<'_> {
     type JsonResponse = ();
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

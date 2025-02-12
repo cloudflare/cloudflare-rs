@@ -12,7 +12,7 @@ pub struct PoolDetails<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for PoolDetails<'a> {
+impl EndpointSpec for PoolDetails<'_> {
     type JsonResponse = Pool;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

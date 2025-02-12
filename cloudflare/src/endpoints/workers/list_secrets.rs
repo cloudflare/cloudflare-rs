@@ -12,7 +12,7 @@ pub struct ListSecrets<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> EndpointSpec for ListSecrets<'a> {
+impl EndpointSpec for ListSecrets<'_> {
     type JsonResponse = Vec<WorkersSecret>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

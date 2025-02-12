@@ -18,7 +18,7 @@ pub struct ReadKey<'a> {
 
 impl ApiResult for Vec<u8> {}
 
-impl<'a> EndpointSpec for ReadKey<'a> {
+impl EndpointSpec for ReadKey<'_> {
     const IS_RAW_BODY: bool = true;
 
     type JsonResponse = ();

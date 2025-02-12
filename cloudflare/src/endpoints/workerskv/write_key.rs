@@ -33,7 +33,7 @@ pub struct WriteKey<'a> {
     pub body: WriteKeyBody,
 }
 
-impl<'a> EndpointSpec for WriteKey<'a> {
+impl EndpointSpec for WriteKey<'_> {
     type JsonResponse = ();
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

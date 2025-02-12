@@ -12,7 +12,7 @@ pub struct GetNamespace<'a> {
     pub namespace_identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for GetNamespace<'a> {
+impl EndpointSpec for GetNamespace<'_> {
     type JsonResponse = WorkersKvNamespace;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

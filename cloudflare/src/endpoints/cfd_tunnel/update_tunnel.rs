@@ -20,7 +20,7 @@ pub struct UpdateTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> EndpointSpec for UpdateTunnel<'a> {
+impl EndpointSpec for UpdateTunnel<'_> {
     type JsonResponse = Tunnel;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

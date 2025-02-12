@@ -17,7 +17,7 @@ pub struct RouteTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> EndpointSpec for RouteTunnel<'a> {
+impl EndpointSpec for RouteTunnel<'_> {
     type JsonResponse = RouteResult;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

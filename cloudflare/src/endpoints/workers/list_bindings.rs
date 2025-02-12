@@ -12,7 +12,7 @@ pub struct ListBindings<'a> {
     pub script_name: &'a str,
 }
 
-impl<'a> EndpointSpec for ListBindings<'a> {
+impl EndpointSpec for ListBindings<'_> {
     type JsonResponse = Vec<WorkersBinding>;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 

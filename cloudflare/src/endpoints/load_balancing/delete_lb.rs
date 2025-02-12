@@ -13,7 +13,7 @@ pub struct DeleteLoadBalancer<'a> {
     pub identifier: &'a str,
 }
 
-impl<'a> EndpointSpec for DeleteLoadBalancer<'a> {
+impl EndpointSpec for DeleteLoadBalancer<'_> {
     type JsonResponse = Response;
     type ResponseType = ApiSuccess<Self::JsonResponse>;
 
