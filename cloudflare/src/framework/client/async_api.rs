@@ -168,7 +168,7 @@ where
 mod tests {
     use super::*;
     use crate::framework::auth::Credentials;
-    use crate::framework::endpoint::EndpointSpec;
+    use crate::framework::endpoint::{serialize_query, EndpointSpec};
     use crate::framework::endpoint::RequestBody;
     use crate::framework::response::{ApiFailure, ApiResult, ApiSuccess};
     use crate::framework::Environment;
@@ -339,10 +339,9 @@ mod tests {
         }
 
         fn query(&self) -> Option<String> {
-            serde_urlencoded::to_string(DummyJsonRequestWithQueryParams {
+            serialize_query(&DummyJsonRequestWithQueryParams {
                 key: "value".into(),
             })
-            .ok()
         }
     }
     //endregion

@@ -2,8 +2,6 @@
 This module controls how requests are sent to Cloudflare's API, and how responses are parsed from it.
  */
 pub mod auth;
-// There is no blocking implementation for wasm.
-#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
 pub mod endpoint;
 pub mod response;
 pub mod client;

@@ -1,7 +1,6 @@
 use crate::framework::response::ApiResult;
 use chrono::DateTime;
 use chrono::{TimeZone, Utc};
-use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use serde::{Deserialize, Deserializer, Serialize};
 
 pub mod create_namespace;
@@ -16,30 +15,6 @@ pub mod remove_namespace;
 pub mod rename_namespace;
 pub mod write_bulk;
 pub mod write_key;
-// Upgrading to percent_encode 2.x unfortunately removed this prebaked const.
-// We need to re-assemble it by combining "control" ASCII characters with other characters
-// which are invalid or reserved in URIs. Non-ASCII characters are always encoded.
-
-// https://docs.rs/percent-encoding/1.0.0/src/percent_encoding/lib.rs.html#104
-const PATH_SEGMENT_ENCODE_SET: &AsciiSet = &CONTROLS
-    // "QUERY_ENCODE_SET" additions:
-    .add(b' ')
-    .add(b'"')
-    .add(b'#')
-    .add(b'<')
-    .add(b'>')
-    // "DEFAULT_ENCODE_SET" additions:
-    .add(b'`')
-    .add(b'?')
-    .add(b'{')
-    .add(b'}')
-    // "PATH_SEGMENT_ENCODE_SET" additions
-    .add(b'%')
-    .add(b'/')
-    // The following were NOT in PATH_SEGMENT but are URI reserved characters not covered above.
-    // ':' and '@' are explicitly permitted in paths, so we don't add them.
-    .add(b'[')
-    .add(b']');
 
 /// Workers KV Namespace
 ///
@@ -100,7 +75,7 @@ impl ApiResult for Key {}
 impl ApiResult for Vec<Key> {}
 
 fn url_encode_key(key: &str) -> String {
-    percent_encode(key.as_bytes(), PATH_SEGMENT_ENCODE_SET).to_string()
+    urlencoding::encode(key).to_string()
 }
 
 #[serde_with::skip_serializing_none]
