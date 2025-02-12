@@ -2,9 +2,9 @@
 This module controls how requests are sent to Cloudflare's API, and how responses are parsed from it.
  */
 pub mod auth;
+pub mod client;
 pub mod endpoint;
 pub mod response;
-pub mod client;
 
 use serde::Serialize;
 

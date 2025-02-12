@@ -11,6 +11,7 @@ use std::borrow::Cow;
 use std::net::SocketAddr;
 
 /// A Cloudflare API client that makes requests asynchronously.
+// TODO: Rename to AsyncClient?
 pub struct Client {
     environment: Environment,
     credentials: Credentials,
@@ -166,11 +167,11 @@ where
 mod tests {
     use super::*;
     use crate::framework::auth::Credentials;
-    use crate::framework::endpoint::{serialize_query, EndpointSpec};
+    use crate::framework::client::ClientConfig;
     use crate::framework::endpoint::RequestBody;
+    use crate::framework::endpoint::{serialize_query, EndpointSpec};
     use crate::framework::response::{ApiFailure, ApiResult, ApiSuccess};
     use crate::framework::Environment;
-    use crate::framework::client::ClientConfig;
     use mockito::{Matcher, Server};
     use regex;
     use regex::Regex;

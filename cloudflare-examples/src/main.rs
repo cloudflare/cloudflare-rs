@@ -3,23 +3,20 @@
 use std::collections::HashMap;
 
 use clap::{Arg, ArgAction, ArgGroup, ArgMatches, Command};
-// Use the new trait instead of the old one:
 use cloudflare::endpoints::dns::dns;
 use cloudflare::endpoints::zones::zone;
 use cloudflare::endpoints::{account, workers};
+use cloudflare::framework::client::blocking_api::HttpApiClient;
+use cloudflare::framework::client::ClientConfig;
 use cloudflare::framework::endpoint::spec::EndpointSpec;
-// A helper trait (defined in your library) that converts a raw Vec<u8> or an ApiSuccess<_>
-// into the final response type.
-use cloudflare::framework::response::{ResponseConverter, ResponseInfo};
 use cloudflare::framework::response::{ApiErrors, ApiResult, ApiSuccess};
+use cloudflare::framework::response::{ResponseConverter, ResponseInfo};
 use cloudflare::framework::{
     auth::Credentials,
     response::{ApiFailure, ApiResponse},
     Environment, OrderDirection,
 };
 use serde::Serialize;
-use cloudflare::framework::client::blocking_api::HttpApiClient;
-use cloudflare::framework::client::ClientConfig;
 
 type SectionFunction<ApiClientType> = fn(&ArgMatches, &ApiClientType);
 

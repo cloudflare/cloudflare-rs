@@ -10,6 +10,7 @@ use std::borrow::Cow;
 use std::net::SocketAddr;
 
 /// Synchronous Cloudflare API client.
+// TODO: Rename to BlockingClient?
 pub struct HttpApiClient {
     environment: Environment,
     credentials: Credentials,
@@ -53,7 +54,6 @@ impl HttpApiClient {
 
     //noinspection ALL
     // TODO: This should probably just implement request for the Reqwest client itself :)
-    // TODO: It should also probably be called `ReqwestApiClient` rather than `HttpApiClient`.
     /// Synchronously send a request to the Cloudflare API.
     pub fn request<Endpoint>(&self, endpoint: &Endpoint) -> ApiResponse<Endpoint::ResponseType>
     where

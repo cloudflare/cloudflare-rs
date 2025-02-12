@@ -4,9 +4,9 @@ mod storage_databases;
 
 use clap::{Arg, Command};
 use cloudflare::framework::client::async_api::Client as AsyncClient;
-use cloudflare::framework::{client::async_api, auth::Credentials, Environment};
-use std::fmt::Display;
 use cloudflare::framework::client::ClientConfig;
+use cloudflare::framework::{auth::Credentials, client::async_api, Environment};
+use std::fmt::Display;
 
 async fn tests(api_client: &AsyncClient, account_id: &str) -> anyhow::Result<()> {
     routing_performance::load_balancers::test_lb_pool(api_client, account_id).await?;
