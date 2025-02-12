@@ -30,6 +30,9 @@ impl EndpointSpec for DeleteBulk<'_> {
     }
     #[inline]
     fn body(&self) -> Option<RequestBody> {
+        if self.bulk_keys.len() > 10_000 {
+            panic!("Bulk delete request can only contain up to 10,000 keys.");
+        }
         let body = serde_json::to_string(&self.bulk_keys).unwrap();
         Some(RequestBody::Json(body))
     }
