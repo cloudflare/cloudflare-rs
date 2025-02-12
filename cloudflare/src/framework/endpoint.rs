@@ -19,6 +19,10 @@ pub enum MultipartPart {
     Bytes(Vec<u8>),
 }
 
+/// Helper trait for endpoints that require a multipart body.
+///
+/// Mainly exists to allow for client-agnostic multipart body implementations, until reqwest has a
+/// conversion between blocking::multipart::Form/Part and async_impl::multipart::Form/Part.
 pub trait MultipartBody {
     /// Returns a list of parts to be included in a multipart request.
     /// Each part is a tuple of the part name and the part data.
@@ -50,11 +54,6 @@ pub mod spec {
         ///
         /// For endpoints that return JSON, this should be `ApiSuccess<Self::JsonResponse>`.
         type ResponseType;
-        // The body type for this endpoint, if any.
-        //
-        // For endpoints that do not have a body, this should be `()`.
-        // For endpoints that have a JSON body, this should be `String`.
-        // type BodyType;
 
         /// The HTTP Method used for this endpoint (e.g. GET, PATCH, DELETE)
         fn method(&self) -> Method;

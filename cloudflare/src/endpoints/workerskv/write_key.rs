@@ -85,16 +85,6 @@ pub struct WriteKeyBodyMetadata {
 }
 
 impl MultipartBody for WriteKeyBodyMetadata {
-    // fn struct_to_multipart(&self) -> Result<Form, reqwest::Error> {
-    //     let mut form = Form::new();
-    //     form = form.text(
-    //         "metadata",
-    //         serde_json::to_string(&self.metadata).expect("Failed to serialize metadata"),
-    //     );
-    //     form = form.part("value", reqwest::multipart::Part::bytes(self.value.clone()));
-    //     Ok(form)
-    // }
-
     fn parts(&self) -> Vec<(String, MultipartPart)> {
         vec![
             (
