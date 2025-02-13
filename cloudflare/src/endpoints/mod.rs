@@ -4,6 +4,7 @@ If you want to add a new Cloudflare API to this crate, simply add a new submodul
 module.
  */
 pub mod account;
+pub mod ai;
 pub mod argo_tunnel;
 pub mod cfd_tunnel;
 pub mod dns;
