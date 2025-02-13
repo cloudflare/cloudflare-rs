@@ -154,8 +154,7 @@ pub struct ListDnsRecordsParams {
 /// Extra Cloudflare-specific information about the record
 #[derive(Deserialize, Debug)]
 pub struct Meta {
-    /// Will exist if Cloudflare automatically added this DNS record during initial setup.
-    pub auto_added: bool,
+    
 }
 
 /// Type of the DNS record, along with the associated value.
