@@ -3,6 +3,7 @@ use super::Account;
 use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 use crate::framework::OrderDirection;
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// List Accounts
@@ -13,7 +14,10 @@ pub struct ListAccounts {
     pub params: Option<ListAccountsParams>,
 }
 
-impl EndpointSpec<Vec<Account>> for ListAccounts {
+impl EndpointSpec for ListAccounts {
+    type JsonResponse = Vec<Account>;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }

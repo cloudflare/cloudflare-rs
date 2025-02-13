@@ -1,9 +1,13 @@
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::endpoints::workerskv::WorkersKvBulkResult;
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
+use crate::framework::response::ApiSuccess;
 
-/// Delete Key-Value Pairs in Bulk
-/// Deletes multiple key-value pairs from Workers KV at once.
-/// A 404 is returned if a delete action is for a namespace ID the account doesn't have.
-/// <https://api.cloudflare.com/#workers-kv-namespace-delete-multiple-key-value-pairs>
+/// Remove multiple KV pairs from the namespace.
+///
+/// Body should be an array of up to 10,000 keys to be removed.
+/// A `404` is returned if a delete action is for a namespace ID the account doesn't have.
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/bulk_delete/>
 #[derive(Debug)]
 pub struct DeleteBulk<'a> {
     pub account_identifier: &'a str,
@@ -11,7 +15,10 @@ pub struct DeleteBulk<'a> {
     pub bulk_keys: Vec<String>,
 }
 
-impl<'a> EndpointSpec<()> for DeleteBulk<'a> {
+impl EndpointSpec for DeleteBulk<'_> {
+    type JsonResponse = WorkersKvBulkResult;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }
@@ -22,9 +29,12 @@ impl<'a> EndpointSpec<()> for DeleteBulk<'a> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
+        if self.bulk_keys.len() > 10_000 {
+            panic!("Bulk delete request can only contain up to 10,000 keys.");
+        }
         let body = serde_json::to_string(&self.bulk_keys).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
     // default content-type is already application/json
 }

@@ -6,10 +6,32 @@ use url::Url;
 
 pub use http::Method;
 
-#[cfg(feature = "endpoint-spec")]
-pub use spec::EndpointSpec;
-#[cfg(not(feature = "endpoint-spec"))]
 pub(crate) use spec::EndpointSpec;
+
+pub enum RequestBody<'a> {
+    Json(String),
+    Raw(Vec<u8>),
+    MultiPart(&'a dyn MultipartBody),
+}
+
+pub enum MultipartPart {
+    Text(String),
+    Bytes(Vec<u8>),
+}
+
+/// Helper trait for endpoints that require a multipart body.
+///
+/// Mainly exists to allow for client-agnostic multipart body implementations, until reqwest has a
+/// conversion between blocking::multipart::Form/Part and async_impl::multipart::Form/Part.
+pub trait MultipartBody {
+    /// Returns a list of parts to be included in a multipart request.
+    /// Each part is a tuple of the part name and the part data.
+    //
+    // Client-agnostic implementation, because of the non-interoperability
+    // between reqwest's blocking::multipart::Form/Part and async_impl::multipart::Form/Part.
+    // Refactor this when reqwest has some sort of conversion between the two.
+    fn parts(&self) -> Vec<(String, MultipartPart)>;
+}
 
 pub mod spec {
     use super::*;
@@ -18,12 +40,23 @@ pub mod spec {
     /// New endpoints should implement this trait.
     ///
     /// If the request succeeds, the call will resolve to a `ResultType`.
-    pub trait EndpointSpec<ResultType>
-    where
-        ResultType: ApiResult,
-    {
+    pub trait EndpointSpec {
+        /// If the body of the response is raw bytes (Vec<u8>), set this to `true`. Defaults to `false`.
+        const IS_RAW_BODY: bool = false;
+
+        /// The JSON response type for this endpoint, if any.
+        ///
+        /// For endpoints that return either raw bytes or nothing, this should be `()`.
+        type JsonResponse: ApiResult;
+        /// The final response type for this endpoint.
+        ///
+        /// For endpoints that return raw bytes, this should be `Vec<u8>`.
+        ///
+        /// For endpoints that return JSON, this should be `ApiSuccess<Self::JsonResponse>`.
+        type ResponseType;
+
         /// The HTTP Method used for this endpoint (e.g. GET, PATCH, DELETE)
-        fn method(&self) -> http::Method;
+        fn method(&self) -> Method;
 
         /// The relative URL path for this endpoint
         fn path(&self) -> String;
@@ -40,7 +73,7 @@ pub mod spec {
         ///
         /// Implementors should inline this.
         #[inline]
-        fn body(&self) -> Option<String> {
+        fn body(&self) -> Option<RequestBody> {
             None
         }
 
@@ -53,21 +86,27 @@ pub mod spec {
             url
         }
 
+        //noinspection RsConstantConditionIf
         /// If `body` is populated, indicates the body MIME type (defaults to JSON).
         ///
         /// Implementors generally do not need to override this.
-        fn content_type(&self) -> Cow<'static, str> {
-            Cow::Borrowed("application/json")
+        fn content_type(&self) -> Option<Cow<'static, str>> {
+            match Self::body(self) {
+                Some(RequestBody::Json(_)) => Some(Cow::Borrowed("application/json")),
+                Some(RequestBody::Raw(_)) => Some(Cow::Borrowed("application/octet-stream")),
+                Some(RequestBody::MultiPart(_)) => Some(Cow::Borrowed("multipart/form-data")),
+                None => None,
+            }
         }
     }
 }
 // Auto-implement the public Endpoint trait for EndpointInternal implementors.
-impl<T: ApiResult, U: EndpointSpec<T>> Endpoint<T> for U {}
+impl<T: ApiResult, U: EndpointSpec> Endpoint<T> for U {}
 
 /// An API call that can be built into an HTTP request and sent.
 ///
 /// If the request succeeds, the call will resolve to a `ResultType`.
-pub trait Endpoint<ResultType: ApiResult>: spec::EndpointSpec<ResultType> {}
+pub trait Endpoint<ResultType: ApiResult>: EndpointSpec {}
 
 /// A utility function for serializing parameters into a URL query string.
 #[inline]

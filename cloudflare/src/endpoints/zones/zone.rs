@@ -1,9 +1,8 @@
-use crate::endpoints::{account::AccountDetails, plan::Plan};
-use crate::framework::endpoint::serialize_query;
-use crate::framework::{
-    endpoint::{EndpointSpec, Method},
-    response::ApiResult,
-};
+use crate::endpoints::account::AccountDetails;
+use crate::endpoints::zones::plan::Plan;
+use crate::framework::endpoint::{serialize_query, RequestBody};
+use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::{ApiResult, ApiSuccess};
 use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
@@ -17,7 +16,10 @@ pub struct ListZones {
     pub params: ListZonesParams,
 }
 
-impl EndpointSpec<Vec<Zone>> for ListZones {
+impl EndpointSpec for ListZones {
+    type JsonResponse = Vec<Zone>;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }
@@ -36,7 +38,10 @@ impl EndpointSpec<Vec<Zone>> for ListZones {
 pub struct ZoneDetails<'a> {
     pub identifier: &'a str,
 }
-impl<'a> EndpointSpec<Zone> for ZoneDetails<'a> {
+impl EndpointSpec for ZoneDetails<'_> {
+    type JsonResponse = Zone;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }
@@ -50,7 +55,10 @@ impl<'a> EndpointSpec<Zone> for ZoneDetails<'a> {
 pub struct CreateZone<'a> {
     pub params: CreateZoneParams<'a>,
 }
-impl<'a> EndpointSpec<()> for CreateZone<'a> {
+impl EndpointSpec for CreateZone<'_> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }
@@ -60,9 +68,9 @@ impl<'a> EndpointSpec<()> for CreateZone<'a> {
     }
 
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 
@@ -189,6 +197,7 @@ pub struct Zone {
     /// Available permissions on the zone for the current user requesting the item
     pub permissions: Vec<String>,
     /// A zone plan
+    // TODO: Correct, but undocumented in the official API docs nor in the official TypeScript library. What should we do?
     pub plan: Option<Plan>,
     /// A zone plan
     pub plan_pending: Option<Plan>,

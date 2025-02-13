@@ -1,83 +1,79 @@
-mod apifail;
+mod api_fail;
 
-pub use apifail::*;
-use serde::Deserialize;
+pub use api_fail::*;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 use serde_json::value::Value as JsonValue;
+use std::collections::HashMap;
+use std::error::Error;
+use std::fmt;
+use std::fmt::Debug;
 
-#[derive(Deserialize, Debug, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct ApiSuccess<ResultType> {
     pub result: ResultType,
     pub result_info: Option<JsonValue>,
     #[serde(default)]
-    pub messages: JsonValue,
+    pub messages: Vec<ResponseInfo>,
     #[serde(default)]
-    pub errors: Vec<ApiError>,
+    pub errors: Vec<ResponseInfo>,
 }
 
-pub type ApiResponse<ResultType> = Result<ApiSuccess<ResultType>, ApiFailure>;
+pub type ApiResponse<ResultType> = Result<ResultType, ApiFailure>;
 
-// There is no blocking implementation for wasm.
-#[cfg(all(feature = "blocking", not(target_arch = "wasm32")))]
-// If the response is 200 and parses, return Success.
-// If the response is 200 and doesn't parse, return Invalid.
-// If the response isn't 200, return Failure, with API errors if they were included.
-pub fn map_api_response<ResultType: ApiResult>(
-    resp: reqwest::blocking::Response,
-) -> ApiResponse<ResultType> {
-    let status = resp.status();
-    if status.is_success() {
-        let parsed: Result<ApiSuccess<ResultType>, reqwest::Error> = resp.json();
-        match parsed {
-            Ok(api_resp) => Ok(api_resp),
-            Err(e) => Err(ApiFailure::Invalid(e)),
-        }
-    } else {
-        let parsed: Result<ApiErrors, reqwest::Error> = resp.json();
-        let errors = parsed.unwrap_or_default();
-        Err(ApiFailure::Error(status, errors))
-    }
-}
+pub trait ApiResult: DeserializeOwned + Debug {}
+
+impl<T> ApiResult for ApiSuccess<T> where T: ApiResult {}
 
 /// Some endpoints return nothing. That's OK.
 impl ApiResult for () {}
 
-#[cfg(all(test, feature = "blocking", not(target_arch = "wasm32")))]
-mod tests {
-    use super::*;
-    use std::collections::HashMap;
+/// A helper trait to avoid trait bounds issues in the clients.
+pub trait ResponseConverter<JsonResponse>: Sized {
+    fn from_raw(bytes: Vec<u8>) -> Self;
+    fn from_json(api: ApiSuccess<JsonResponse>) -> Self;
+}
+// JSON endpoints
+impl<T> ResponseConverter<T> for ApiSuccess<T> {
+    fn from_raw(_bytes: Vec<u8>) -> Self {
+        panic!("This endpoint does not return raw bytes")
+    }
+    fn from_json(api: ApiSuccess<T>) -> Self {
+        api
+    }
+}
+// Raw endpoints
+impl ResponseConverter<()> for Vec<u8> {
+    fn from_raw(bytes: Vec<u8>) -> Self {
+        bytes
+    }
+    fn from_json(_api: ApiSuccess<()>) -> Self {
+        panic!("This endpoint does not return JSON")
+    }
+}
 
-    #[test]
-    fn api_failure_eq() {
-        let err1 = ApiFailure::Error(
-            reqwest::StatusCode::NOT_FOUND,
-            ApiErrors {
-                errors: vec![ApiError {
-                    code: 1000,
-                    message: "some failed".to_owned(),
-                    other: HashMap::new(),
-                }],
-                other: HashMap::new(),
-            },
-        );
-        assert_eq!(err1, err1);
+/// Note that ResponseInfo's `eq` implementation only compares `code` and `message`.
+/// It does NOT compare the `other` values.
+#[derive(Deserialize, Serialize, Debug)]
+pub struct ResponseInfo {
+    pub code: u16,
+    pub message: String,
+    #[serde(flatten)]
+    pub other: HashMap<String, serde_json::Value>,
+}
 
-        let err2 = ApiFailure::Error(
-            reqwest::StatusCode::NOT_FOUND,
-            ApiErrors {
-                errors: vec![ApiError {
-                    code: 1000,
-                    message: "some different thing failed".to_owned(),
-                    other: HashMap::new(),
-                }],
-                other: HashMap::new(),
-            },
-        );
-        assert_ne!(err2, err1);
+impl PartialEq for ResponseInfo {
+    fn eq(&self, other: &Self) -> bool {
+        self.code == other.code && self.message == other.message
+    }
+}
 
-        let not_real_website = "notavalid:url.evena little";
-        let fail = ApiFailure::Invalid(reqwest::blocking::get(not_real_website).unwrap_err());
-        assert_eq!(fail, fail);
-        assert_ne!(fail, err1);
-        assert_ne!(fail, err2);
+impl Eq for ResponseInfo {}
+
+impl Error for ResponseInfo {}
+
+impl fmt::Display for ResponseInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Error {}: {}", self.code, self.message)
     }
 }

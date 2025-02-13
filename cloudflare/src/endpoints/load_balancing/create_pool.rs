@@ -1,6 +1,7 @@
 use crate::endpoints::load_balancing::{Origin, Pool};
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Create Pool
@@ -51,7 +52,10 @@ pub struct OptionalParams<'a> {
     pub notification_email: Option<&'a str>,
 }
 
-impl<'a> EndpointSpec<Pool> for CreatePool<'a> {
+impl EndpointSpec for CreatePool<'_> {
+    type JsonResponse = Pool;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }
@@ -59,8 +63,8 @@ impl<'a> EndpointSpec<Pool> for CreatePool<'a> {
         format!("accounts/{}/load_balancers/pools", self.account_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }

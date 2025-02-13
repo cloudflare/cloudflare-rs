@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
 
+use crate::framework::response::ApiSuccess;
 use crate::framework::{
     endpoint::{EndpointSpec, Method},
     response::ApiResult,
 };
+use crate::framework::endpoint::RequestBody;
 
 /// Get an inference from a model.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -13,7 +15,10 @@ pub struct ExecuteModel<'a> {
     pub params: ExecuteModelParams,
 }
 
-impl<'a> EndpointSpec<ExecuteModelResult> for ExecuteModel<'a> {
+impl EndpointSpec for ExecuteModel<'_> {
+    type JsonResponse = ExecuteModelResult;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }
@@ -26,9 +31,9 @@ impl<'a> EndpointSpec<ExecuteModelResult> for ExecuteModel<'a> {
     }
 
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 
@@ -560,6 +565,8 @@ pub struct ResponseAndToolCallsResult {
     /// Array of tool call requests made during the response generation.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tool_calls: Vec<ToolCall>,
+
+    // TODO: Missing `usage` field
 }
 
 /// Represents a single tool call request during response generation.

@@ -1,9 +1,11 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
-/// Delete a key-value pair from Workers KV
-/// Deletes a given key from the given namespace in Workers KV.
-/// Returns 404 if the given namespace id is not found for an account.
-/// <https://api.cloudflare.com/#workers-kv-namespace-delete-key-value-pair>
+/// Remove a KV pair from the namespace.
+///
+/// Use URL-encoding to use special characters (for example, `:`, `!`, `%`) in the key name.
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/subresources/values/methods/delete/>
 #[derive(Debug)]
 pub struct DeleteKey<'a> {
     pub account_identifier: &'a str,
@@ -11,7 +13,10 @@ pub struct DeleteKey<'a> {
     pub key: &'a str,
 }
 
-impl<'a> EndpointSpec<()> for DeleteKey<'a> {
+impl EndpointSpec for DeleteKey<'_> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

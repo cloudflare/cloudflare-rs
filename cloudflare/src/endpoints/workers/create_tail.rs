@@ -1,7 +1,8 @@
 use super::WorkersTail;
 
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Create Tail
@@ -20,7 +21,10 @@ pub struct CreateTail<'a> {
     pub params: CreateTailParams,
 }
 
-impl<'a> EndpointSpec<WorkersTail> for CreateTail<'a> {
+impl EndpointSpec for CreateTail<'_> {
+    type JsonResponse = WorkersTail;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }
@@ -31,10 +35,10 @@ impl<'a> EndpointSpec<WorkersTail> for CreateTail<'a> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         if self.params.url.is_some() {
             let body = serde_json::to_string(&self.params).unwrap();
-            Some(body)
+            Some(RequestBody::Json(body))
         } else {
             None
         }

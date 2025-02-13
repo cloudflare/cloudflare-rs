@@ -1,10 +1,11 @@
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
-/// Rename a Namespace
 /// Modifies a namespace's title.
-/// <https://api.cloudflare.com/#workers-kv-namespace-rename-a-namespace>
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/update/>
 #[derive(Debug)]
 pub struct RenameNamespace<'a> {
     pub account_identifier: &'a str,
@@ -12,7 +13,10 @@ pub struct RenameNamespace<'a> {
     pub params: RenameNamespaceParams,
 }
 
-impl<'a> EndpointSpec<()> for RenameNamespace<'a> {
+impl EndpointSpec for RenameNamespace<'_> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PUT
     }
@@ -23,9 +27,9 @@ impl<'a> EndpointSpec<()> for RenameNamespace<'a> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

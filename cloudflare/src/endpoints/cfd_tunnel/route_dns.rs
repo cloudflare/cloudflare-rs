@@ -1,6 +1,9 @@
-use crate::framework::endpoint::{EndpointSpec, Method};
+// TODO: Exact same code as in argo_tunnel/route_dns.rs. Consider refactoring?
+
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
 use super::RouteResult;
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -16,7 +19,10 @@ pub struct RouteTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> EndpointSpec<RouteResult> for RouteTunnel<'a> {
+impl EndpointSpec for RouteTunnel<'_> {
+    type JsonResponse = RouteResult;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PUT
     }
@@ -24,9 +30,9 @@ impl<'a> EndpointSpec<RouteResult> for RouteTunnel<'a> {
         format!("zones/{}/tunnels/{}/routes", self.zone_tag, self.tunnel_id)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

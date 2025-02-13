@@ -1,4 +1,5 @@
 use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
 
 /// Delete a Durable Object namespace
 #[derive(Debug)]
@@ -9,7 +10,10 @@ pub struct DeleteDurableObject<'a> {
     pub namespace_id: &'a str,
 }
 
-impl<'a> EndpointSpec<()> for DeleteDurableObject<'a> {
+impl EndpointSpec for DeleteDurableObject<'_> {
+    type JsonResponse = ();
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

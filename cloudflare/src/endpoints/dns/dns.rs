@@ -1,7 +1,5 @@
-use crate::framework::{
-    endpoint::{serialize_query, EndpointSpec, Method},
-    response::ApiResult,
-};
+use crate::framework::endpoint::{serialize_query, EndpointSpec, Method, RequestBody};
+use crate::framework::response::{ApiResult, ApiSuccess};
 /// <https://api.cloudflare.com/#dns-records-for-a-zone-properties>
 use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
@@ -16,7 +14,10 @@ pub struct ListDnsRecords<'a> {
     pub zone_identifier: &'a str,
     pub params: ListDnsRecordsParams,
 }
-impl<'a> EndpointSpec<Vec<DnsRecord>> for ListDnsRecords<'a> {
+impl EndpointSpec for ListDnsRecords<'_> {
+    type JsonResponse = Vec<DnsRecord>;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }
@@ -37,7 +38,10 @@ pub struct CreateDnsRecord<'a> {
     pub params: CreateDnsRecordParams<'a>,
 }
 
-impl<'a> EndpointSpec<DnsRecord> for CreateDnsRecord<'a> {
+impl EndpointSpec for CreateDnsRecord<'_> {
+    type JsonResponse = DnsRecord;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }
@@ -45,9 +49,9 @@ impl<'a> EndpointSpec<DnsRecord> for CreateDnsRecord<'a> {
         format!("zones/{}/dns_records", self.zone_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 
@@ -75,7 +79,10 @@ pub struct DeleteDnsRecord<'a> {
     pub zone_identifier: &'a str,
     pub identifier: &'a str,
 }
-impl<'a> EndpointSpec<DeleteDnsRecordResponse> for DeleteDnsRecord<'a> {
+impl EndpointSpec for DeleteDnsRecord<'_> {
+    type JsonResponse = DeleteDnsRecordResponse;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }
@@ -96,7 +103,10 @@ pub struct UpdateDnsRecord<'a> {
     pub params: UpdateDnsRecordParams<'a>,
 }
 
-impl<'a> EndpointSpec<DnsRecord> for UpdateDnsRecord<'a> {
+impl EndpointSpec for UpdateDnsRecord<'_> {
+    type JsonResponse = DnsRecord;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PUT
     }
@@ -107,9 +117,9 @@ impl<'a> EndpointSpec<DnsRecord> for UpdateDnsRecord<'a> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

@@ -6,7 +6,7 @@ use uuid::Uuid;
 use crate::framework::response::ApiResult;
 
 /// A Cfd Tunnel
-/// This is an Cfd Tunnel that has been created. It can be used for routing and subsequent running.
+/// This is a Cfd Tunnel that has been created. It can be used for routing and subsequent running.
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct Tunnel {
     pub id: Uuid,
