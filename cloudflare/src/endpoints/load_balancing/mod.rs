@@ -5,15 +5,15 @@ pub mod delete_pool;
 pub mod list_lb;
 pub mod pool_details;
 
-use crate::framework::response::ApiResult;
 use chrono::offset::Utc;
 use chrono::DateTime;
+use cloudflare_derive_macros::{ApiResult, VecApiResult};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::net::IpAddr;
 
-#[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
+#[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug, ApiResult, VecApiResult)]
 pub struct LoadBalancer {
     pub id: String,
     pub created_on: DateTime<Utc>,
@@ -108,8 +108,6 @@ pub enum Secure {
     Never,
 }
 
-impl ApiResult for LoadBalancer {}
-
 /// A pool is a set of origins that requests could be routed to (e.g. each of your data centers or
 /// regions have its own pool).
 /// Requests will be routed to particular pools according to your steering policy, and then balanced
@@ -120,7 +118,7 @@ impl ApiResult for LoadBalancer {}
 /// handle. Then you might use a "dynamic latency" steering policy to ensure requests get routed
 /// to whatever pool can serve them fastest. So US users will probably get routed to the US pool. If
 /// the US pool becomes unavailable, they'll fail over to the Oceania pool.
-#[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
+#[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug, ApiResult)]
 pub struct Pool {
     pub id: String,
     pub created_on: DateTime<Utc>,
@@ -151,7 +149,7 @@ pub struct Pool {
 /// An origin represents something that can serve user requests. Usually a machine, maybe an ELB.
 /// Origins with similar latency functions (e.g. origins in the same data center or region) might be
 /// in the same pool.
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, ApiResult)]
 pub struct Origin {
     /// A human-identifiable name for the origin.
     /// e.g. app-server-1
@@ -190,6 +188,3 @@ impl Hash for Origin {
         self.weight.to_bits().hash(state);
     }
 }
-
-impl ApiResult for Origin {}
-impl ApiResult for Pool {}

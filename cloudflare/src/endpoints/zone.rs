@@ -1,12 +1,10 @@
 use crate::endpoints::{account::AccountDetails, plan::Plan};
 use crate::framework::endpoint::serialize_query;
-use crate::framework::{
-    endpoint::{EndpointSpec, Method},
-    response::ApiResult,
-};
+use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
+use cloudflare_derive_macros::{ApiResult, VecApiResult};
 use serde::{Deserialize, Serialize};
 
 /// List Zones
@@ -146,7 +144,7 @@ pub struct Meta {
 
 /// A Zone is a domain name along with its subdomains and other identities
 /// <https://api.cloudflare.com/#zone-properties>
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, ApiResult, VecApiResult)]
 pub struct Zone {
     /// Zone identifier tag
     pub id: String,
@@ -202,7 +200,3 @@ pub struct Zone {
     #[serde(rename = "type")]
     pub zone_type: Type,
 }
-
-// TODO: This should probably be a derive macro
-impl ApiResult for Zone {}
-impl ApiResult for Vec<Zone> {}

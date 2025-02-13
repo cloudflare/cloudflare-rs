@@ -1,6 +1,5 @@
-use crate::framework::response::ApiResult;
-
 use chrono::{DateTime, Utc};
+use cloudflare_derive_macros::{ApiResult, VecApiResult};
 use serde::{Deserialize, Serialize};
 
 mod create_route;
@@ -34,7 +33,7 @@ pub use send_tail_heartbeat::SendTailHeartbeat;
 /// Workers KV Route
 /// Routes are basic patterns used to enable or disable workers that match requests.
 /// <https://api.cloudflare.com/#worker-routes-properties>
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult, VecApiResult)]
 pub struct WorkersRoute {
     /// Namespace identifier tag.
     pub id: String,
@@ -45,52 +44,47 @@ pub struct WorkersRoute {
     pub script: Option<String>,
 }
 
-impl ApiResult for WorkersRoute {}
-impl ApiResult for Vec<WorkersRoute> {}
-
 /// A variant of WorkersRoute returned by the CreateRoute endpoint
 /// We could make `pattern` and `script` into `Option<String>` types
 /// but it feels wrong.
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult)]
 pub struct WorkersRouteIdOnly {
     /// Namespace identifier tag.
     pub id: String,
 }
 
-impl ApiResult for WorkersRouteIdOnly {}
-
 /// Secrets attach to a single script to be readable in only the script
 /// <https://api.cloudflare.com/#worker-secrets-properties>
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(
+    Deserialize,
+    Serialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    ApiResult,
+    VecApiResult, /* to parse arrays too */
+)]
 pub struct WorkersSecret {
     pub name: String,
     #[serde(rename = "type")]
     pub secret_type: String,
 }
 
-impl ApiResult for WorkersSecret {}
-impl ApiResult for Vec<WorkersSecret> {} // to parse arrays too
-
 /// A Tail is attached to a single Worker and is impermanent
 /// <https://api.cloudflare.com/#worker-tail-properties>
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult, VecApiResult)]
 pub struct WorkersTail {
     pub id: String,
     pub url: Option<String>,
     pub expires_at: DateTime<Utc>,
 }
 
-impl ApiResult for WorkersTail {}
-impl ApiResult for Vec<WorkersTail> {}
-
 // Binding for a Workers Script
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult, VecApiResult)]
 pub struct WorkersBinding {
     pub name: String,
     pub r#type: String,
     pub namespace_id: String,
     pub class_name: Option<String>,
 }
-
-impl ApiResult for WorkersBinding {}
-impl ApiResult for Vec<WorkersBinding> {}

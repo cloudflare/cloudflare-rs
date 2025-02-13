@@ -1,6 +1,6 @@
-use crate::framework::response::ApiResult;
 use chrono::DateTime;
 use chrono::{TimeZone, Utc};
+use cloudflare_derive_macros::{ApiResult, VecApiResult};
 use percent_encoding::{percent_encode, AsciiSet, CONTROLS};
 use serde::{Deserialize, Deserializer, Serialize};
 
@@ -41,7 +41,7 @@ const PATH_SEGMENT_ENCODE_SET: &AsciiSet = &CONTROLS
 /// Workers KV Namespace
 /// A Namespace is a collection of key-value pairs stored in Workers KV.
 /// <https://api.cloudflare.com/#workers-kv-namespace-properties>
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult, VecApiResult)]
 pub struct WorkersKvNamespace {
     /// Namespace identifier tag.
     pub id: String,
@@ -49,12 +49,8 @@ pub struct WorkersKvNamespace {
     pub title: String,
 }
 
-impl ApiResult for WorkersKvNamespace {}
-
-impl ApiResult for Vec<WorkersKvNamespace> {}
-
 #[serde_with::skip_serializing_none]
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, ApiResult, VecApiResult)]
 pub struct Key {
     pub name: String,
     #[serde(default)]
@@ -75,10 +71,6 @@ where
 
     Ok(None)
 }
-
-impl ApiResult for Key {}
-
-impl ApiResult for Vec<Key> {}
 
 fn url_encode_key(key: &str) -> String {
     percent_encode(key.as_bytes(), PATH_SEGMENT_ENCODE_SET).to_string()

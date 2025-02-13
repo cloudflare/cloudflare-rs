@@ -1,11 +1,9 @@
-use crate::framework::{
-    endpoint::{serialize_query, EndpointSpec, Method},
-    response::ApiResult,
-};
+use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
 /// <https://api.cloudflare.com/#dns-records-for-a-zone-properties>
 use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
+use cloudflare_derive_macros::{ApiResult, VecApiResult};
 use serde::{Deserialize, Serialize};
 use std::net::{Ipv4Addr, Ipv6Addr};
 
@@ -174,13 +172,13 @@ pub enum DnsContent {
     SRV { content: String },
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, ApiResult)]
 pub struct DeleteDnsRecordResponse {
     /// DNS record identifier tag
     pub id: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, ApiResult, VecApiResult)]
 pub struct DnsRecord {
     /// Extra Cloudflare-specific information about the record
     pub meta: Meta,
@@ -202,7 +200,3 @@ pub struct DnsRecord {
     /// Whether the record is receiving the performance and security benefits of Cloudflare
     pub proxied: bool,
 }
-
-impl ApiResult for DnsRecord {}
-impl ApiResult for Vec<DnsRecord> {}
-impl ApiResult for DeleteDnsRecordResponse {}
