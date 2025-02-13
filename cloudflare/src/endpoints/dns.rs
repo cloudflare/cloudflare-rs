@@ -7,7 +7,7 @@ use crate::framework::{OrderDirection, SearchMatch};
 use chrono::offset::Utc;
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
-use std::net::{Ipv4Addr, Ipv6Addr};
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
 /// List DNS Records
 /// <https://api.cloudflare.com/#dns-records-for-a-zone-list-dns-records>
@@ -172,6 +172,15 @@ pub enum DnsContent {
     MX { content: String, priority: u16 },
     TXT { content: String },
     SRV { content: String },
+}
+
+impl<T: Into<IpAddr>> From<T> for DnsContent {
+    fn from(value: T) -> Self {
+        match value.into() {
+            IpAddr::V4(content) => Self::A { content },
+            IpAddr::V6(content) => Self::AAAA { content },
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]
