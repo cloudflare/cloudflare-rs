@@ -41,8 +41,9 @@ pub struct Params<'a> {
     pub name: &'a str,
     /// The byte array (with 32 or more bytes) representing a secret for the tunnel. This is
     /// encoded into JSON as a base64 String. This secret is necessary to run the tunnel.
-    #[serde_as(as = "Base64<Standard, Padded>")]
-    pub tunnel_secret: &'a Vec<u8>,
+    #[serde_as(as = "Option<Base64<Standard, Padded>>")]
+    #[serde(default)]
+    pub tunnel_secret: Option<&'a [u8]>,
 
     pub config_src: &'a ConfigurationSrc,
 

@@ -1,9 +1,23 @@
+use crate::framework::response::ApiResult;
 use chrono::{offset::Utc, DateTime};
 use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
 use uuid::Uuid;
 
-use crate::framework::response::ApiResult;
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct TunnelToken(String);
+
+impl From<String> for TunnelToken {
+    fn from(s: String) -> TunnelToken {
+        TunnelToken(s)
+    }
+}
+
+impl From<TunnelToken> for String {
+    fn from(s: TunnelToken) -> String {
+        s.0
+    }
+}
 
 /// A Cfd Tunnel
 /// This is an Cfd Tunnel that has been created. It can be used for routing and subsequent running.
@@ -68,8 +82,76 @@ pub struct ActiveConnection {
     pub client_version: String,
 }
 
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Hash)]
+#[serde(rename_all = "camelCase")]
+pub struct TunnelConfiguration {
+    pub ingress: Option<Vec<Ingress>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub origin_request: Option<OriginRequest>,
+    #[serde(rename = "warp-routing")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub warp_routing: Option<WarpRouting>,
+}
+
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Hash)]
+pub struct WarpRouting {
+    pub enabled: bool,
+}
+
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Hash)]
+#[serde(rename_all = "camelCase")]
+pub struct Ingress {
+    pub hostname: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "warp-routing")]
+    pub origin_request: Option<OriginRequest>,
+    pub path: Option<String>,
+    pub service: String,
+}
+
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Hash)]
+#[serde(rename_all = "camelCase")]
+pub struct OriginRequestAccress {
+    pub aud_tag: Vec<String>,
+    pub required: bool,
+    pub team_name: String,
+}
+
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Hash)]
+#[serde(rename_all = "camelCase")]
+pub struct OriginRequest {
+    pub access: Option<OriginRequestAccress>,
+    pub ca_pool: Option<String>,
+    pub connection_timeout: i32,
+    pub disable_chunked_encoding: bool,
+    pub http2origin: bool,
+    pub http_host_header: Option<String>,
+    pub keep_alive_connections: i32,
+    pub keep_alive_timeout: i32,
+    pub no_happy_eyeballs: bool,
+    pub no_tls_verify: bool,
+    pub origin_server_name: Option<String>,
+    pub proxy_type: Option<String>,
+    pub tcp_keep_alive: i32,
+    pub tls_timeout: i32,
+}
+
+impl ApiResult for TunnelConfiguration {}
 impl ApiResult for Tunnel {}
 impl ApiResult for Vec<Tunnel> {}
+impl ApiResult for TunnelToken {}
+
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
+pub struct TunnelConfigurationResult {
+    pub account_id: Option<String>,
+    pub created_at: DateTime<Utc>,
+    pub config: Option<TunnelConfiguration>,
+    pub source: String,
+    pub tunnel_id: Uuid,
+    pub version: i32,
+}
 
 /// The result of a route request for a Cfd Tunnel
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
@@ -100,4 +182,5 @@ pub enum Change {
     Updated,
 }
 
+impl ApiResult for TunnelConfigurationResult {}
 impl ApiResult for RouteResult {}
