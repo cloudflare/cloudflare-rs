@@ -6,7 +6,8 @@ use serde_with::{
     serde_as,
 };
 
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
+use crate::framework::response::ApiSuccess;
 
 /// Create a Cfd Tunnel
 /// This creates the Tunnel, which can then be routed and ran. Creating the Tunnel per se is only
@@ -18,7 +19,10 @@ pub struct CreateTunnel<'a> {
     pub params: Params<'a>,
 }
 
-impl<'a> EndpointSpec<Tunnel> for CreateTunnel<'a> {
+impl EndpointSpec for CreateTunnel<'_> {
+    type JsonResponse = Tunnel;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }
@@ -26,9 +30,9 @@ impl<'a> EndpointSpec<Tunnel> for CreateTunnel<'a> {
         format!("accounts/{}/cfd_tunnel", self.account_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 

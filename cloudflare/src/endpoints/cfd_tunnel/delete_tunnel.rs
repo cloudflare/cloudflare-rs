@@ -1,7 +1,7 @@
-use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
-use serde::Serialize;
-
 use super::Tunnel;
+use crate::framework::endpoint::{serialize_query, EndpointSpec, Method};
+use crate::framework::response::ApiSuccess;
+use serde::Serialize;
 
 /// Delete a tunnel
 /// <https://developers.cloudflare.com/api/operations/cloudflare-tunnel-delete-a-cloudflare-tunnel>
@@ -12,7 +12,10 @@ pub struct DeleteTunnel<'a> {
     pub params: Params,
 }
 
-impl<'a> EndpointSpec<Tunnel> for DeleteTunnel<'a> {
+impl EndpointSpec for DeleteTunnel<'_> {
+    type JsonResponse = Tunnel;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

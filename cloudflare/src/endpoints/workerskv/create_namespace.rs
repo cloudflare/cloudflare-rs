@@ -1,21 +1,26 @@
 use super::WorkersKvNamespace;
 
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
-/// Create a Namespace
 /// Creates a namespace under the given title.
-/// A 400 is returned if the account already owns a namespace with this title.
+///
+/// A `400` is returned if the account already owns a namespace with this title.
 /// A namespace must be explicitly deleted to be replaced.
-/// <https://api.cloudflare.com/#workers-kv-namespace-create-a-namespace>
+///
+/// <https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/create/>
 #[derive(Debug)]
 pub struct CreateNamespace<'a> {
     pub account_identifier: &'a str,
     pub params: CreateNamespaceParams,
 }
 
-impl<'a> EndpointSpec<WorkersKvNamespace> for CreateNamespace<'a> {
+impl EndpointSpec for CreateNamespace<'_> {
+    type JsonResponse = WorkersKvNamespace;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }
@@ -23,9 +28,9 @@ impl<'a> EndpointSpec<WorkersKvNamespace> for CreateNamespace<'a> {
         format!("accounts/{}/storage/kv/namespaces", self.account_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }
 
