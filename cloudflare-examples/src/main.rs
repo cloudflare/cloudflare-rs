@@ -155,6 +155,18 @@ fn list_routes(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
     print_response_json(response);
 }
 
+fn account(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
+    let account_identifier = arg_matches.get_one::<String>("account_identifier");
+    let endpoint = account::account_details::AccountDetails {
+        account_identifier: account_identifier.unwrap(),
+    };
+    if api_client.is_mock() {
+        add_static_mock(&endpoint);
+    }
+    let response = api_client.request(&endpoint);
+    print_response(response)
+}
+
 fn list_accounts(_arg_matches: &ArgMatches, api_client: &HttpApiClient) {
     let endpoint = account::ListAccounts { params: None };
     if api_client.is_mock() {
@@ -283,6 +295,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 args: vec![Arg::new("zone_identifier").required(true)],
                 description: "Activate a Worker on a Route",
                 function: list_routes,
+            },
+        ),
+        (
+            "account",
+            Section {
+                args: vec![Arg::new("account_identifier").required(true)],
+                description: "Get information about a specific account that you are a member of",
+                function: account,
             },
         ),
         (
