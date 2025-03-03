@@ -84,13 +84,297 @@ impl ApiResult for WorkersTail {}
 impl ApiResult for Vec<WorkersTail> {}
 
 // Binding for a Workers Script
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
-pub struct WorkersBinding {
-    pub name: String,
-    pub r#type: String,
-    pub namespace_id: String,
-    pub class_name: Option<String>,
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum WorkersBinding {
+    Ai {
+        name: String,
+    },
+    AnalyticsEngine {
+        name: String,
+        dataset: String,
+    },
+    Assets {
+        name: String,
+    },
+    BrowserRendering {
+        name: String,
+    },
+    D1 {
+        name: String,
+        id: String,
+    },
+    DurableObjectNamespace {
+        name: String,
+        class_name: String,
+    },
+    Hyperdrive {
+        name: String,
+        id: String,
+    },
+    KvNamespace {
+        name: String,
+        namespace_id: String,
+    },
+    MtlsCertificate {
+        name: String,
+        certificate_id: String,
+    },
+    PlainText {
+        name: String,
+        text: String,
+    },
+    Queue {
+        name: String,
+        queue_name: String,
+    },
+    R2Bucket {
+        name: String,
+        bucket_name: String,
+    },
+    SecretText {
+        name: String,
+        // When fetching bindings, the text field of a Secret is not returned
+        text: Option<String>,
+    },
+    Service {
+        name: String,
+        service: String,
+        environment: String,
+    },
+    TailConsumer {
+        service: String,
+    },
+    Vectorize {
+        name: String,
+        index_name: String,
+    },
+    VersionMetadata {
+        name: String,
+    },
 }
 
 impl ApiResult for WorkersBinding {}
 impl ApiResult for Vec<WorkersBinding> {}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::VecDeque;
+
+    use super::WorkersBinding;
+
+    #[test]
+    fn test_deserializing_worker_bindings() {
+        // https://developers.cloudflare.com/workers/configuration/multipart-upload-metadata/#bindings
+        let payload = serde_json::json!(
+            [
+              {
+                "type": "ai",
+                "name": "<VARIABLE_NAME>"
+              },
+              {
+                "type": "analytics_engine",
+                "name": "<VARIABLE_NAME>",
+                "dataset": "<DATASET>"
+              },
+              {
+                "type": "assets",
+                "name": "<VARIABLE_NAME>"
+              },
+              {
+                "type": "browser_rendering",
+                "name": "<VARIABLE_NAME>"
+              },
+              {
+                "type": "d1",
+                "name": "<VARIABLE_NAME>",
+                "id": "<D1_ID>"
+              },
+              {
+                "type": "durable_object_namespace",
+                "name": "<VARIABLE_NAME>",
+                "class_name": "<DO_CLASS_NAME>"
+              },
+              {
+                "type": "hyperdrive",
+                "name": "<VARIABLE_NAME>",
+                "id": "<HYPERDRIVE_ID>"
+              },
+              {
+                "type": "kv_namespace",
+                "name": "<VARIABLE_NAME>",
+                "namespace_id": "<KV_ID>"
+              },
+              {
+                "type": "mtls_certificate",
+                "name": "<VARIABLE_NAME>",
+                "certificate_id": "<MTLS_CERTIFICATE_ID>"
+              },
+              {
+                "type": "plain_text",
+                "name": "<VARIABLE_NAME>",
+                "text": "<VARIABLE_VALUE>"
+              },
+              {
+                "type": "queue",
+                "name": "<VARIABLE_NAME>",
+                "queue_name": "<QUEUE_NAME>"
+              },
+              {
+                "type": "r2_bucket",
+                "name": "<VARIABLE_NAME>",
+                "bucket_name": "<R2_BUCKET_NAME>"
+              },
+              {
+                "type": "secret_text",
+                "name": "<VARIABLE_NAME>",
+                "text": "<SECRET_VALUE>"
+              },
+              {
+                "type": "service",
+                "name": "<VARIABLE_NAME>",
+                "service": "<SERVICE_NAME>",
+                "environment": "production"
+              },
+              {
+                "type": "tail_consumer",
+                "service": "<WORKER_NAME>"
+              },
+              {
+                "type": "vectorize",
+                "name": "<VARIABLE_NAME>",
+                "index_name": "<INDEX_NAME>"
+              },
+              {
+                "type": "version_metadata",
+                "name": "<VARIABLE_NAME>"
+              }
+            ]
+        );
+
+        let result: Result<Vec<WorkersBinding>, serde_json::Error> =
+            serde_json::from_value(payload);
+        assert!(result.is_ok());
+
+        let mut bindings = VecDeque::from(result.unwrap());
+        assert_eq!(17, bindings.len());
+
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::Ai {
+                name: "<VARIABLE_NAME>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::AnalyticsEngine {
+                name: "<VARIABLE_NAME>".to_string(),
+                dataset: "<DATASET>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::Assets {
+                name: "<VARIABLE_NAME>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::BrowserRendering {
+                name: "<VARIABLE_NAME>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::D1 {
+                name: "<VARIABLE_NAME>".to_string(),
+                id: "<D1_ID>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::DurableObjectNamespace {
+                name: "<VARIABLE_NAME>".to_string(),
+                class_name: "<DO_CLASS_NAME>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::Hyperdrive {
+                name: "<VARIABLE_NAME>".to_string(),
+                id: "<HYPERDRIVE_ID>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::KvNamespace {
+                name: "<VARIABLE_NAME>".to_string(),
+                namespace_id: "<KV_ID>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::MtlsCertificate {
+                name: "<VARIABLE_NAME>".to_string(),
+                certificate_id: "<MTLS_CERTIFICATE_ID>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::PlainText {
+                name: "<VARIABLE_NAME>".to_string(),
+                text: "<VARIABLE_VALUE>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::Queue {
+                name: "<VARIABLE_NAME>".to_string(),
+                queue_name: "<QUEUE_NAME>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::R2Bucket {
+                name: "<VARIABLE_NAME>".to_string(),
+                bucket_name: "<R2_BUCKET_NAME>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::SecretText {
+                name: "<VARIABLE_NAME>".to_string(),
+                text: Some("<SECRET_VALUE>".to_string())
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::Service {
+                name: "<VARIABLE_NAME>".to_string(),
+                service: "<SERVICE_NAME>".to_string(),
+                environment: "production".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::TailConsumer {
+                service: "<WORKER_NAME>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::Vectorize {
+                name: "<VARIABLE_NAME>".to_string(),
+                index_name: "<INDEX_NAME>".to_string()
+            }
+        );
+        assert_eq!(
+            bindings.pop_front().unwrap(),
+            WorkersBinding::VersionMetadata {
+                name: "<VARIABLE_NAME>".to_string()
+            }
+        );
+
+        assert!(bindings.is_empty());
+    }
+}
