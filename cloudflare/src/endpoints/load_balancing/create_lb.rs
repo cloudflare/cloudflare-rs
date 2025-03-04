@@ -2,8 +2,9 @@ use crate::endpoints::load_balancing::{
     LbPoolId, LbPoolMapping, LoadBalancer, SessionAffinity, SessionAffinityAttributes,
     SteeringPolicy,
 };
-use crate::framework::endpoint::{EndpointSpec, Method};
+use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 
+use crate::framework::response::ApiSuccess;
 use serde::Serialize;
 
 /// Create Load Balancer
@@ -55,7 +56,10 @@ pub struct OptionalParams<'a> {
     pub session_affinity_ttl: Option<u32>,
 }
 
-impl<'a> EndpointSpec<LoadBalancer> for CreateLoadBalancer<'a> {
+impl EndpointSpec for CreateLoadBalancer<'_> {
+    type JsonResponse = LoadBalancer;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::POST
     }
@@ -63,8 +67,8 @@ impl<'a> EndpointSpec<LoadBalancer> for CreateLoadBalancer<'a> {
         format!("zones/{}/load_balancers", self.zone_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<String> {
+    fn body(&self) -> Option<RequestBody> {
         let body = serde_json::to_string(&self.params).unwrap();
-        Some(body)
+        Some(RequestBody::Json(body))
     }
 }

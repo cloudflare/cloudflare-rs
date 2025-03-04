@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
-use crate::framework::response::ApiResult;
+use crate::framework::response::{ApiResult, ApiSuccess};
 
 /// A Bucket is a collection of Objects stored in R2.
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
@@ -31,7 +31,10 @@ pub struct ListBuckets<'a> {
     pub account_identifier: &'a str,
 }
 
-impl<'a> EndpointSpec<ListBucketsResult> for ListBuckets<'a> {
+impl EndpointSpec for ListBuckets<'_> {
+    type JsonResponse = ListBucketsResult;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::GET
     }
@@ -49,7 +52,10 @@ pub struct CreateBucket<'a> {
     pub bucket_name: &'a str,
 }
 
-impl<'a> EndpointSpec<EmptyMap> for CreateBucket<'a> {
+impl EndpointSpec for CreateBucket<'_> {
+    type JsonResponse = EmptyMap;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::PUT
     }
@@ -68,7 +74,10 @@ pub struct DeleteBucket<'a> {
     pub bucket_name: &'a str,
 }
 
-impl<'a> EndpointSpec<EmptyMap> for DeleteBucket<'a> {
+impl EndpointSpec for DeleteBucket<'_> {
+    type JsonResponse = EmptyMap;
+    type ResponseType = ApiSuccess<Self::JsonResponse>;
+
     fn method(&self) -> Method {
         Method::DELETE
     }

@@ -3,13 +3,18 @@
 use std::collections::HashMap;
 
 use clap::{Arg, ArgAction, ArgGroup, ArgMatches, Command};
-use cloudflare::endpoints::{account, dns, workers, zone};
-use cloudflare::framework::endpoint::Endpoint;
-use cloudflare::framework::response::{ApiError, ApiErrors};
+use cloudflare::endpoints::dns::dns;
+use cloudflare::endpoints::zones::zone;
+use cloudflare::endpoints::{account, workers};
+use cloudflare::framework::client::blocking_api::HttpApiClient;
+use cloudflare::framework::client::ClientConfig;
+use cloudflare::framework::endpoint::spec::EndpointSpec;
+use cloudflare::framework::response::{ApiErrors, ApiResult, ApiSuccess};
+use cloudflare::framework::response::{ResponseConverter, ResponseInfo};
 use cloudflare::framework::{
     auth::Credentials,
-    response::{ApiFailure, ApiResponse, ApiResult},
-    Environment, HttpApiClient, HttpApiClientConfig, OrderDirection,
+    response::{ApiFailure, ApiResponse},
+    Environment, OrderDirection,
 };
 use serde::Serialize;
 
@@ -45,8 +50,8 @@ where
     }
 }
 
-/// Sometimes you want to pipe results to jq etc
-fn print_response_json<T>(response: ApiResponse<T>)
+/// Sometimes you want to pipe results to jq etc.
+fn print_response_json<T>(response: ApiResponse<ApiSuccess<T>>)
 where
     T: ApiResult + Serialize,
 {
@@ -71,9 +76,10 @@ where
 }
 
 fn zone(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
-    let zone_identifier = arg_matches.get_one::<String>("zone_identifier");
+    let zone_identifier = arg_matches.get_one::<String>("zone_identifier").unwrap();
+    // Create the endpoint using the new trait.
     let endpoint = zone::ZoneDetails {
-        identifier: zone_identifier.unwrap(),
+        identifier: zone_identifier,
     };
     if api_client.is_mock() {
         add_static_mock(&endpoint);
@@ -95,7 +101,6 @@ fn dns(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response(response);
 }
 
@@ -131,7 +136,6 @@ fn create_txt_record(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response(response);
 }
 
@@ -148,7 +152,6 @@ fn list_routes(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response_json(response);
 }
 
@@ -158,7 +161,6 @@ fn list_accounts(_arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response_json(response);
 }
 
@@ -188,7 +190,6 @@ fn create_route(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response_json(response);
 }
 
@@ -213,17 +214,19 @@ fn delete_route(arg_matches: &ArgMatches, api_client: &HttpApiClient) {
         add_static_mock(&endpoint);
     }
     let response = api_client.request(&endpoint);
-
     print_response_json(response);
 }
 
 /// Add and leak a mock (so it runs for 'static)
-fn add_static_mock<ResultType>(endpoint: &dyn Endpoint<ResultType>)
+fn add_static_mock<E>(endpoint: &E)
 where
-    ResultType: ApiResult,
+    E: EndpointSpec,
+    // The endpoint's JSON response type isn't used for raw endpoints
+    // but we require that its final response type is ApiResult.
+    E::ResponseType: ResponseConverter<E::JsonResponse>,
 {
     let body = ApiErrors {
-        errors: vec![ApiError {
+        errors: vec![ResponseInfo {
             code: 9999,
             message: "This is a mocked failure response".to_owned(),
             other: HashMap::new(),
@@ -345,7 +348,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     for (section_name, section) in sections.iter() {
         let mut subcommand = Command::new(*section_name).about(section.description);
-
         for arg in &section.args {
             subcommand = subcommand.arg(arg);
         }
@@ -353,11 +355,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let mut matches = cli.get_matches();
-    let email = matches.remove_one("email");
-    let key = matches.remove_one("auth-key");
-    let token = matches.remove_one("auth-token");
+    let email = matches.remove_one::<String>("email");
+    let key = matches.remove_one::<String>("auth-key");
+    let token = matches.remove_one::<String>("auth-token");
     let environment = if matches.get_flag("mock") {
-        Environment::Mockito
+        Environment::Custom(mockito::server_url())
     } else {
         Environment::Production
     };
@@ -379,7 +381,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         panic!("Either API token or API key + email pair must be provided")
     };
 
-    let api_client = HttpApiClient::new(credentials, HttpApiClientConfig::default(), environment)?;
+    let api_client = HttpApiClient::new(credentials, ClientConfig::default(), environment)?;
 
     for (section_name, section) in matched_sections {
         (section.function)(

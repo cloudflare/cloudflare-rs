@@ -3,6 +3,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 pub mod list_accounts;
+pub mod user;
 pub use list_accounts::ListAccounts;
 
 /// Cloudflare Accounts
