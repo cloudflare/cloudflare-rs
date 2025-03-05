@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
+use crate::framework::endpoint::RequestBody;
 use crate::framework::response::ApiSuccess;
 use crate::framework::{
     endpoint::{EndpointSpec, Method},
     response::ApiResult,
 };
-use crate::framework::endpoint::RequestBody;
 
 /// Get an inference from a model.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -565,7 +565,6 @@ pub struct ResponseAndToolCallsResult {
     /// Array of tool call requests made during the response generation.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tool_calls: Vec<ToolCall>,
-
     // TODO: Missing `usage` field
 }
 
