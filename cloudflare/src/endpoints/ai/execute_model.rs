@@ -335,28 +335,28 @@ impl ToString for MessageRole {
 pub struct AssistantFunction {
     /// The function code.
     #[serde(skip_serializing_if = "Option::is_none")]
-    code: Option<String>,
+    pub code: Option<String>,
 
     /// The function name.
-    name: String,
+    pub name: String,
 
     /// The function parameters (if applicable).
     #[serde(skip_serializing_if = "Option::is_none")]
-    parameters: Option<String>,
+    pub parameters: Option<String>,
 }
 
 /// Represents a tool with additional details.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AssistantTool {
     /// A description of the tool.
-    description: String,
+    pub description: String,
 
     /// The name of the tool.
-    name: String,
+    pub name: String,
 
     /// The parameters associated with the tool.
     #[serde(skip_serializing_if = "Option::is_none")]
-    parameters: Option<String>,
+    pub parameters: Option<String>,
 }
 
 /// Parameters for the `Translation` task.
