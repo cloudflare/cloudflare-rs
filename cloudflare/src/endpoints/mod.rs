@@ -10,6 +10,7 @@ pub mod cfd_tunnel;
 pub mod d1;
 pub mod dns;
 pub mod load_balancing;
+pub mod pages;
 pub mod r2;
 pub mod workers;
 pub mod workerskv;
