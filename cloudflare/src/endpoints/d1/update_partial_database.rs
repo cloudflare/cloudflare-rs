@@ -1,5 +1,4 @@
-use super::D1Database;
-use super::update_database::{D1ReadReplicationConfig};
+use super::data_structures::{D1Database, D1ReadReplicationConfig};
 
 use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
@@ -10,7 +9,7 @@ use serde::Serialize;
 /// Partially updates configuration for an existing D1 database.
 /// Only provided fields will be updated.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/update-partial/>
+/// <https://api.cloudflare.com/#d1-update-partial-database>
 #[derive(Debug)]
 pub struct UpdatePartialDatabase<'a> {
     pub account_identifier: &'a str,
@@ -54,10 +53,10 @@ impl EndpointSpec for UpdatePartialDatabase<'_> {
 }
 
 /// Parameters for partially updating a D1 database
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
 pub struct UpdatePartialDatabaseParams {
     /// Configuration for D1 read replication (optional)
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub read_replication: Option<D1ReadReplicationConfig>,
 }
 

@@ -1,4 +1,4 @@
-use super::D1Database;
+use super::data_structures::D1Database;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::ApiSuccess;
@@ -7,7 +7,7 @@ use crate::framework::response::ApiSuccess;
 /// 
 /// Returns a list of all D1 databases owned by the account.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/list/>
+/// <https://api.cloudflare.com/#d1-list-databases>
 #[derive(Debug)]
 pub struct ListDatabases<'a> {
     pub account_identifier: &'a str,

@@ -1,4 +1,4 @@
-use super::D1RawQueryResult;
+use super::data_structures::D1RawQueryResult;
 
 use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
@@ -10,7 +10,7 @@ use serde::Serialize;
 /// This endpoint is useful for administrative operations and bulk operations
 /// but should be used with caution as it doesn't support parameterization.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/raw/>
+/// <https://api.cloudflare.com/#d1-raw-database-query>
 #[derive(Debug)]
 pub struct RawQuery<'a> {
     pub account_identifier: &'a str,

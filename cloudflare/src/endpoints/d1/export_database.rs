@@ -10,7 +10,7 @@ use serde::Serialize;
 /// your DB unnecessarily, an in-progress export must be continually
 /// polled or will automatically cancel.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/export/>
+/// <https://api.cloudflare.com/#d1-export-database>
 #[derive(Debug)]
 pub struct ExportDatabase<'a> {
     pub account_identifier: &'a str,
@@ -53,28 +53,13 @@ impl EndpointSpec for ExportDatabase<'_> {
     }
 }
 
-/// D1 Export Result
-/// 
-/// Result of a D1 database export operation.
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq)]
-pub struct D1ExportResult {
-    /// Export operation ID for polling status
-    pub id: Option<String>,
-    /// URL to download the exported SQL file (when ready)
-    pub url: Option<String>,
-    /// Status of the export operation
-    pub status: Option<String>,
-    /// Export expiry time
-    pub expires_at: Option<String>,
-}
-
-impl crate::framework::response::ApiResult for D1ExportResult {}
+use super::data_structures::D1ExportResult;
 
 /// Parameters for exporting a D1 database
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
 pub struct ExportDatabaseParams {
     /// Output format for the export (optional)
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
 }
 

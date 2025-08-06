@@ -8,7 +8,7 @@ use serde::Serialize;
 /// the D1 to import it and polling it for status updates. Imports block
 /// the D1 for their duration.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/import/>
+/// <https://api.cloudflare.com/#d1-import-database>
 #[derive(Debug)]
 pub struct ImportDatabase<'a> {
     pub account_identifier: &'a str,
@@ -51,31 +51,15 @@ impl EndpointSpec for ImportDatabase<'_> {
     }
 }
 
-/// D1 Import Result
-/// 
-/// Result of a D1 database import operation.
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, PartialEq, Eq)]
-pub struct D1ImportResult {
-    /// Import operation ID for polling status
-    pub id: Option<String>,
-    /// Upload URL for the SQL file
-    pub upload_url: Option<String>,
-    /// Status of the import operation
-    pub status: Option<String>,
-    /// Import completion time
-    pub completed_at: Option<String>,
-}
-
-impl crate::framework::response::ApiResult for D1ImportResult {}
+use super::data_structures::D1ImportResult;
 
 /// Parameters for importing to a D1 database
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
 pub struct ImportDatabaseParams {
     /// SQL content to import (optional - if not provided, use upload_url)
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub sql: Option<String>,
     /// File name for the import operation (optional)
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub file_name: Option<String>,
 }
 

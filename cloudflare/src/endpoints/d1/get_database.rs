@@ -1,4 +1,4 @@
-use super::D1Database;
+use super::data_structures::D1Database;
 
 use crate::framework::endpoint::{EndpointSpec, Method};
 use crate::framework::response::ApiSuccess;
@@ -7,7 +7,7 @@ use crate::framework::response::ApiSuccess;
 /// 
 /// Retrieves detailed information about a D1 database by its UUID.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/get/>
+/// <https://api.cloudflare.com/#d1-get-database>
 #[derive(Debug)]
 pub struct GetDatabase<'a> {
     pub account_identifier: &'a str,

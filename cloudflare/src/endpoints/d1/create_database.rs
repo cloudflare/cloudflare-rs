@@ -1,4 +1,4 @@
-use super::D1Database;
+use super::data_structures::{D1Database, D1PrimaryLocationHint};
 
 use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
@@ -9,7 +9,7 @@ use serde::Serialize;
 /// Creates a new D1 database with the specified name.
 /// Database names must be unique within the account.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/create/>
+/// <https://api.cloudflare.com/#d1-create-database>
 #[derive(Debug)]
 pub struct CreateDatabase<'a> {
     pub account_identifier: &'a str,
@@ -43,34 +43,13 @@ impl EndpointSpec for CreateDatabase<'_> {
     }
 }
 
-/// D1 Primary Location Hint
-/// 
-/// Specify the region to create the D1 primary, if available.
-/// If omitted, D1 will be created as close as possible to the current user.
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
-#[serde(rename_all = "lowercase")]
-pub enum D1PrimaryLocationHint {
-    /// Western North America
-    Wnam,
-    /// Eastern North America  
-    Enam,
-    /// Western Europe
-    Weur,
-    /// Eastern Europe
-    Eeur,
-    /// Asia-Pacific
-    Apac,
-    /// Oceania
-    Oc,
-}
-
 /// Parameters for creating a D1 database
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
 pub struct CreateDatabaseParams {
     /// The name of the database to create
     pub name: String,
     /// Specify the region to create the D1 primary (optional)
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub primary_location_hint: Option<D1PrimaryLocationHint>,
 }
 
@@ -87,5 +66,35 @@ impl CreateDatabaseParams {
             name,
             primary_location_hint: Some(location_hint),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_database_params() {
+        let params = CreateDatabaseParams::new("test-db".to_string());
+        assert_eq!(params.name, "test-db");
+        assert_eq!(params.primary_location_hint, None);
+        
+        let json = serde_json::to_string(&params).unwrap();
+        let expected = r#"{"name":"test-db"}"#;
+        assert_eq!(json, expected);
+    }
+
+    #[test]
+    fn test_create_database_params_with_location() {
+        let params = CreateDatabaseParams::with_location_hint(
+            "test-db".to_string(),
+            D1PrimaryLocationHint::Weur
+        );
+        assert_eq!(params.name, "test-db");
+        assert_eq!(params.primary_location_hint, Some(D1PrimaryLocationHint::Weur));
+        
+        let json = serde_json::to_string(&params).unwrap();
+        let expected = r#"{"name":"test-db","primary_location_hint":"weur"}"#;
+        assert_eq!(json, expected);
     }
 }

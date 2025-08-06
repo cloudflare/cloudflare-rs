@@ -1,4 +1,4 @@
-use super::{D1QueryResult};
+use super::data_structures::D1QueryResult;
 
 use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
@@ -10,7 +10,7 @@ use serde::Serialize;
 /// This is the recommended way to execute queries as it supports parameterization
 /// which helps prevent SQL injection attacks.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/query/>
+/// <https://api.cloudflare.com/#d1-query-database>
 #[derive(Debug)]
 pub struct QueryDatabase<'a> {
     pub account_identifier: &'a str,
@@ -72,5 +72,24 @@ impl QueryDatabaseParams {
 
     pub fn with_params(sql: String, params: Vec<serde_json::Value>) -> Self {
         Self { sql, params }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_query_database_params() {
+        let params = QueryDatabaseParams::new("SELECT * FROM users".to_string());
+        assert_eq!(params.sql, "SELECT * FROM users");
+        assert!(params.params.is_empty());
+
+        let params_with_bindings = QueryDatabaseParams::with_params(
+            "SELECT * FROM users WHERE id = ?".to_string(),
+            vec![serde_json::Value::Number(serde_json::Number::from(1))]
+        );
+        assert_eq!(params_with_bindings.sql, "SELECT * FROM users WHERE id = ?");
+        assert_eq!(params_with_bindings.params.len(), 1);
     }
 }

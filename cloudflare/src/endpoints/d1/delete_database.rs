@@ -6,7 +6,7 @@ use crate::framework::response::ApiSuccess;
 /// Permanently deletes a D1 database and all its data.
 /// This operation cannot be undone.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/delete/>
+/// <https://api.cloudflare.com/#d1-delete-database>
 #[derive(Debug)]
 pub struct DeleteDatabase<'a> {
     pub account_identifier: &'a str,

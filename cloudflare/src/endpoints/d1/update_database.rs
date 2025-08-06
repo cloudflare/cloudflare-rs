@@ -1,4 +1,4 @@
-use super::D1Database;
+use super::data_structures::{D1Database, D1ReadReplicationMode, D1ReadReplicationConfig};
 
 use crate::framework::endpoint::{EndpointSpec, Method, RequestBody};
 use crate::framework::response::ApiSuccess;
@@ -8,7 +8,7 @@ use serde::Serialize;
 /// 
 /// Updates configuration for an existing D1 database.
 /// 
-/// <https://developers.cloudflare.com/api/resources/d1/methods/update/>
+/// <https://api.cloudflare.com/#d1-update-database>
 #[derive(Debug)]
 pub struct UpdateDatabase<'a> {
     pub account_identifier: &'a str,
@@ -49,25 +49,6 @@ impl EndpointSpec for UpdateDatabase<'_> {
         let body = serde_json::to_string(&self.params).unwrap();
         Some(RequestBody::Json(body))
     }
-}
-
-/// D1 Read Replication Mode
-/// 
-/// Configuration for D1 read replication.
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
-#[serde(rename_all = "lowercase")]
-pub enum D1ReadReplicationMode {
-    /// Create replicas automatically and place them around the world
-    Auto,
-    /// Disable database replicas (takes a few hours to delete all replicas)
-    Disabled,
-}
-
-/// D1 Read Replication Configuration
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
-pub struct D1ReadReplicationConfig {
-    /// The read replication mode for the database
-    pub mode: D1ReadReplicationMode,
 }
 
 /// Parameters for updating a D1 database
