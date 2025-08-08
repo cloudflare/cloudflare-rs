@@ -81,6 +81,7 @@ pub enum SessionAffinity {
     Nil,
     None,
     Cookie,
+    #[serde(rename = "ip_cookie")]
     IpCookie,
 }
 
