@@ -174,6 +174,7 @@ pub struct Meta {}
 pub enum DnsContent {
     A { content: Ipv4Addr },
     AAAA { content: Ipv6Addr },
+    CAA { content: String },
     CNAME { content: String },
     NS { content: String },
     MX { content: String, priority: u16 },
