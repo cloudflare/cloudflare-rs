@@ -28,7 +28,7 @@ impl EndpointSpec for CreateNamespace<'_> {
         format!("accounts/{}/storage/kv/namespaces", self.account_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<RequestBody> {
+    fn body(&self) -> Option<RequestBody<'_>> {
         let body = serde_json::to_string(&self.params).unwrap();
         Some(RequestBody::Json(body))
     }

@@ -53,7 +53,7 @@ impl EndpointSpec for WriteKey<'_> {
         serialize_query(&self.params)
     }
     #[inline]
-    fn body(&self) -> Option<RequestBody> {
+    fn body(&self) -> Option<RequestBody<'_>> {
         match &self.body {
             WriteKeyBody::Value(value) => Some(RequestBody::Raw(value.clone())),
             WriteKeyBody::Metadata(metadata) => Some(RequestBody::MultiPart(metadata)),

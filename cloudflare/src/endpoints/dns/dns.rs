@@ -49,7 +49,7 @@ impl EndpointSpec for CreateDnsRecord<'_> {
         format!("zones/{}/dns_records", self.zone_identifier)
     }
     #[inline]
-    fn body(&self) -> Option<RequestBody> {
+    fn body(&self) -> Option<RequestBody<'_>> {
         let body = serde_json::to_string(&self.params).unwrap();
         Some(RequestBody::Json(body))
     }
@@ -117,7 +117,7 @@ impl EndpointSpec for UpdateDnsRecord<'_> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<RequestBody> {
+    fn body(&self) -> Option<RequestBody<'_>> {
         let body = serde_json::to_string(&self.params).unwrap();
         Some(RequestBody::Json(body))
     }

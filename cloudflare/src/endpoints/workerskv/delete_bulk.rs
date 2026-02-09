@@ -29,7 +29,7 @@ impl EndpointSpec for DeleteBulk<'_> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<RequestBody> {
+    fn body(&self) -> Option<RequestBody<'_>> {
         if self.bulk_keys.len() > 10_000 {
             panic!("Bulk delete request can only contain up to 10,000 keys.");
         }
