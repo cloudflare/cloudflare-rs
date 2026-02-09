@@ -320,12 +320,12 @@ pub enum MessageRole {
     Assistant,
 }
 
-impl ToString for MessageRole {
-    fn to_string(&self) -> String {
+impl std::fmt::Display for MessageRole {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            MessageRole::System => "System".to_string(),
-            MessageRole::User => "User".to_string(),
-            MessageRole::Assistant => "Assistant".to_string(),
+            MessageRole::System => write!(formatter, "System"),
+            MessageRole::User => write!(formatter, "User"),
+            MessageRole::Assistant => write!(formatter, "Assistant"),
         }
     }
 }
