@@ -4,18 +4,22 @@ pub use api_fail::*;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use serde_json::value::Value as JsonValue;
+use serde_with::{serde_as, DefaultOnNull};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 use std::fmt::Debug;
 
+#[serde_as]
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct ApiSuccess<ResultType> {
     pub result: ResultType,
     pub result_info: Option<JsonValue>,
     #[serde(default)]
+    #[serde_as(deserialize_as = "DefaultOnNull")]
     pub messages: Vec<ResponseInfo>,
     #[serde(default)]
+    #[serde_as(deserialize_as = "DefaultOnNull")]
     pub errors: Vec<ResponseInfo>,
 }
 
