@@ -44,7 +44,7 @@ pub enum Environment {
     Custom(String),
 }
 
-impl<'a> From<&'a Environment> for url::Url {
+impl From<&Environment> for url::Url {
     fn from(environment: &Environment) -> Self {
         match environment {
             Environment::Production => {

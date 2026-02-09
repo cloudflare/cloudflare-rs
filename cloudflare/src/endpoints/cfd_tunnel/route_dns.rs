@@ -30,7 +30,7 @@ impl EndpointSpec for RouteTunnel<'_> {
         format!("zones/{}/tunnels/{}/routes", self.zone_tag, self.tunnel_id)
     }
     #[inline]
-    fn body(&self) -> Option<RequestBody> {
+    fn body(&self) -> Option<RequestBody<'_>> {
         let body = serde_json::to_string(&self.params).unwrap();
         Some(RequestBody::Json(body))
     }

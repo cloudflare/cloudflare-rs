@@ -38,7 +38,7 @@ impl EndpointSpec for WriteBulk<'_> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<RequestBody> {
+    fn body(&self) -> Option<RequestBody<'_>> {
         if self.bulk_key_value_pairs.len() > 10_000 {
             panic!("Bulk write request must have 10,000 key-value pairs or less.");
         }

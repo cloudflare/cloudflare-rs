@@ -35,7 +35,7 @@ impl EndpointSpec for CreateTail<'_> {
         )
     }
     #[inline]
-    fn body(&self) -> Option<RequestBody> {
+    fn body(&self) -> Option<RequestBody<'_>> {
         if self.params.url.is_some() {
             let body = serde_json::to_string(&self.params).unwrap();
             Some(RequestBody::Json(body))

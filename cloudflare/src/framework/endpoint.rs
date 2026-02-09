@@ -73,7 +73,7 @@ pub mod spec {
         ///
         /// Implementors should inline this.
         #[inline]
-        fn body(&self) -> Option<RequestBody> {
+        fn body(&self) -> Option<RequestBody<'_>> {
             None
         }
 
