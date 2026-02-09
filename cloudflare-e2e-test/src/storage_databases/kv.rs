@@ -428,6 +428,7 @@ fn get_random_title() -> String {
             char::from(65),
             char::from(90),
         ))
-        .take(10).collect();
+        .take(10)
+        .collect();
     title
 }
