@@ -13,9 +13,11 @@ mod delete_secret;
 mod delete_tail;
 mod list_bindings;
 mod list_routes;
+mod list_schedules;
 mod list_secrets;
 mod list_tails;
 mod send_tail_heartbeat;
+mod update_schedules;
 
 pub use create_route::{CreateRoute, CreateRouteParams};
 pub use create_secret::{CreateSecret, CreateSecretParams};
@@ -27,9 +29,11 @@ pub use delete_secret::DeleteSecret;
 pub use delete_tail::DeleteTail;
 pub use list_bindings::ListBindings;
 pub use list_routes::ListRoutes;
+pub use list_schedules::{ListSchedules, ListSchedulesResponse};
 pub use list_secrets::ListSecrets;
 pub use list_tails::ListTails;
 pub use send_tail_heartbeat::SendTailHeartbeat;
+pub use update_schedules::{UpdateSchedules, UpdateSchedulesResponse};
 
 /// Workers KV Route
 /// Routes are basic patterns used to enable or disable workers that match requests.
@@ -156,6 +160,17 @@ pub enum WorkersBinding {
 
 impl ApiResult for WorkersBinding {}
 impl ApiResult for Vec<WorkersBinding> {}
+
+// Schedule for a Workers Script
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, Default, PartialOrd, Ord)]
+pub struct WorkersSchedule {
+    pub cron: Option<String>,
+    pub created_on: Option<String>,
+    pub modified_on: Option<String>,
+}
+
+impl ApiResult for WorkersSchedule {}
+impl ApiResult for Vec<WorkersSchedule> {}
 
 #[cfg(test)]
 mod tests {
