@@ -111,5 +111,5 @@ pub trait Endpoint<ResultType: ApiResult>: EndpointSpec {}
 /// A utility function for serializing parameters into a URL query string.
 #[inline]
 pub fn serialize_query<Q: Serialize>(q: &Q) -> Option<String> {
-    serde_urlencoded::to_string(q).ok()
+    serde_qs::to_string(q).ok()
 }
