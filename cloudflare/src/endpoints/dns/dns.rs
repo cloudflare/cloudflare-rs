@@ -137,6 +137,26 @@ pub struct UpdateDnsRecordParams<'a> {
     pub content: DnsContent,
 }
 
+/// Export DNS Records as a BIND zone file. The response is plain text.
+/// <https://developers.cloudflare.com/api/resources/dns/subresources/records/methods/export/>
+#[derive(Debug)]
+pub struct ExportDnsRecords<'a> {
+    pub zone_identifier: &'a str,
+}
+
+impl EndpointSpec for ExportDnsRecords<'_> {
+    const IS_RAW_BODY: bool = true;
+    type JsonResponse = ();
+    type ResponseType = Vec<u8>;
+
+    fn method(&self) -> Method {
+        Method::GET
+    }
+    fn path(&self) -> String {
+        format!("zones/{}/dns_records/export", self.zone_identifier)
+    }
+}
+
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum ListDnsRecordsOrder {

@@ -103,14 +103,9 @@ impl HttpApiClient {
 
         // The condition is necessary, even if a warning is present.
         // The constant is overridden in some cases.
+        // Raw endpoints return various content types (e.g. text/plain for a
+        // zone export), as the async client already accepts.
         if Endpoint::IS_RAW_BODY {
-            let content_type = response
-                .headers()
-                .get(reqwest::header::CONTENT_TYPE)
-                .and_then(|ct| ct.to_str().ok())
-                .unwrap_or("");
-            assert_eq!(content_type, "application/octet-stream");
-
             map_api_response_raw::<Endpoint>(response)
         } else {
             map_api_response_json::<Endpoint>(response)
@@ -166,5 +161,37 @@ where
         let parsed: Result<ApiErrors, reqwest::Error> = resp.json();
         let errors = parsed.unwrap_or_default();
         Err(ApiFailure::Error(status, errors))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::endpoints::dns::dns::ExportDnsRecords;
+
+    #[test]
+    fn raw_endpoint_accepts_text_plain() {
+        let mut server = mockito::Server::new();
+        let bind = "example.com.\t1\tIN\tA\t192.0.2.1\n";
+        server
+            .mock("GET", "/zones/abc/dns_records/export")
+            .with_header("content-type", "text/plain")
+            .with_body(bind)
+            .create();
+        let client = HttpApiClient::new(
+            Credentials::UserAuthToken {
+                token: "token".into(),
+            },
+            ClientConfig::default(),
+            Environment::Custom(format!("{}/", server.url())),
+        )
+        .unwrap();
+
+        let body = client
+            .request(&ExportDnsRecords {
+                zone_identifier: "abc",
+            })
+            .unwrap();
+        assert_eq!(body, bind.as_bytes());
     }
 }
