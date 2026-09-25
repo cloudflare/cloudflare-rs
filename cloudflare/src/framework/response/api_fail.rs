@@ -49,9 +49,24 @@ impl fmt::Display for ApiFailure {
             ApiFailure::Error(status, api_errors) => {
                 let mut output = format!("HTTP {status}");
                 for err in &api_errors.errors {
-                    let _ = write!(output, "\n{}: {} ({:?})", err.code, err.message, err.other);
+                    let _ = write!(output, "\n{}: {}", err.code, err.message);
+                    if !err.other.is_empty() {
+                        let _ = write!(output, " ({:?})", err.other);
+                    }
                 }
-                for (k, v) in &api_errors.other {
+                // Extra top-level fields, minus the envelope's own and in a
+                // stable order.
+                let mut extra: Vec<_> = api_errors
+                    .other
+                    .iter()
+                    .filter(|(k, v)| {
+                        !matches!(k.as_str(), "success" | "result" | "result_info")
+                            && !v.is_null()
+                            && v.as_array().is_none_or(|a| !a.is_empty())
+                    })
+                    .collect();
+                extra.sort_by_key(|(k, _)| k.as_str());
+                for (k, v) in extra {
                     let _ = write!(output, "\n{k}: {v}");
                 }
                 write!(f, "{output}")
@@ -106,5 +121,23 @@ mod tests {
         assert_eq!(fail, fail);
         assert_ne!(fail, err1);
         assert_ne!(fail, err2);
+    }
+
+    #[test]
+    fn display_omits_empty_envelope_fields() {
+        let errors: ApiErrors = serde_json::from_value(serde_json::json!({
+            "success": false,
+            "errors": [{ "code": 9109, "message": "Invalid access token" }],
+            "messages": [],
+            "result": null,
+            "zeta": "kept",
+            "alpha": ["kept"]
+        }))
+        .unwrap();
+        let fail = ApiFailure::Error(reqwest::StatusCode::FORBIDDEN, errors);
+        assert_eq!(
+            fail.to_string(),
+            "HTTP 403 Forbidden\n9109: Invalid access token\nalpha: [\"kept\"]\nzeta: \"kept\""
+        );
     }
 }
