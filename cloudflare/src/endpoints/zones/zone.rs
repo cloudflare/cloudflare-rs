@@ -86,6 +86,9 @@ pub struct CreateZoneParams<'a> {
 #[derive(Serialize, Clone, Debug, Default)]
 pub struct ListZonesParams {
     pub name: Option<String>,
+    /// Only zones belonging to this account
+    #[serde(rename = "account.id")]
+    pub account_id: Option<String>,
     pub status: Option<Status>,
     pub page: Option<u32>,
     pub per_page: Option<u32>,
@@ -125,6 +128,9 @@ pub enum Owner {
         id: Option<String>,
         name: Option<String>,
     },
+    /// An owner type this crate does not model yet.
+    #[serde(other)]
+    Other,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -132,6 +138,8 @@ pub enum Owner {
 pub enum Type {
     Full,
     Partial,
+    Secondary,
+    Internal,
 }
 
 #[derive(Deserialize, Debug)]
@@ -142,7 +150,9 @@ pub struct HostingPartner {
     pub website: String,
 }
 
-#[derive(Deserialize, Debug)]
+/// None of these fields are required by the API schema.
+#[derive(Deserialize, Debug, Default)]
+#[serde(default)]
 pub struct Meta {
     /// Maximum custom certificates that can be uploaded/used.
     pub custom_certificate_quota: u32,
@@ -162,8 +172,9 @@ pub struct Zone {
     pub name: String,
     /// Information about the account the zone belongs to
     pub account: AccountDetails,
-    /// The last time proof of ownership was detected and the zone was made active
-    pub activated_on: DateTime<Utc>,
+    /// The last time proof of ownership was detected and the zone was made active.
+    /// `None` for zones that have never been activated, e.g. pending zones.
+    pub activated_on: Option<DateTime<Utc>>,
     /// A list of beta features in which the zone is participating
     pub betas: Option<Vec<String>>,
     /// When the zone was created
@@ -194,7 +205,9 @@ pub struct Zone {
     /// Indicates if the zone is only using Cloudflare DNS services. A true value means the zone
     /// will not receive security or performance benefits.
     pub paused: bool,
-    /// Available permissions on the zone for the current user requesting the item
+    /// Available permissions on the zone for the current user requesting the item.
+    /// Deprecated by the API and may be absent.
+    #[serde(default)]
     pub permissions: Vec<String>,
     /// A zone plan
     // TODO: Correct, but undocumented in the official API docs nor in the official TypeScript library. What should we do?
@@ -215,3 +228,49 @@ pub struct Zone {
 // TODO: This should probably be a derive macro
 impl ApiResult for Zone {}
 impl ApiResult for Vec<Zone> {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn pending_zone_decodes() {
+        let zone: Zone = serde_json::from_value(json!({
+            "id": "023e105f4ecef8ad9ca31a8372d0c353",
+            "name": "example.com",
+            "status": "pending",
+            "paused": false,
+            "type": "secondary",
+            "development_mode": 0,
+            "name_servers": ["a.ns.cloudflare.com"],
+            "original_name_servers": null,
+            "original_registrar": null,
+            "original_dnshost": null,
+            "created_on": "2024-01-01T00:00:00Z",
+            "modified_on": "2024-01-01T00:00:00Z",
+            "activated_on": null,
+            "meta": { "step": 4 },
+            "owner": { "id": null, "type": "account", "name": null },
+            "account": { "id": "acc", "name": "Account" }
+        }))
+        .unwrap();
+        assert!(zone.activated_on.is_none());
+        assert!(matches!(zone.zone_type, Type::Secondary));
+        assert!(matches!(zone.owner, Owner::Other));
+        assert!(zone.permissions.is_empty());
+    }
+
+    #[test]
+    fn list_filters_by_account() {
+        let params = ListZonesParams {
+            name: Some("example.com".into()),
+            account_id: Some("acc".into()),
+            ..Default::default()
+        };
+        assert_eq!(
+            serialize_query(&params).unwrap(),
+            "name=example.com&account.id=acc"
+        );
+    }
+}
